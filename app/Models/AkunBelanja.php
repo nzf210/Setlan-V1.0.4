@@ -1,0 +1,15 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class AkunBelanja extends Model
+{
+    use HasFactory;
+    protected $table = 'akun_belanja';
+    public $timestamps = false;
+
+}
