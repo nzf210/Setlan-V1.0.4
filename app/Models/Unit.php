@@ -5,18 +5,15 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class MOpd extends Model
+class Unit extends Model
 {
     use HasFactory;
-    protected $table = 'm_opds';
-    protected $primaryKey = 'id_opd';
-    protected $keyType = 'string';
-    public $incrementing = false;
+    protected $table = 'unit';
+    protected $primaryKey = 'id_unit';
     public $timestamps = false;
-
     protected $fillable = [
+        'id_unit',
         'id_opd',
-        'id_kab',
-        'nama_opd'
+        'nama_unit',
     ];
 }

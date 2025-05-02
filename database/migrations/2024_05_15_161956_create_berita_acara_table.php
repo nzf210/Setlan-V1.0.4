@@ -1,5 +1,8 @@
 <?php
 
+use App\Models\Kabupaten;
+use App\Models\Opd;
+use App\Models\Unit;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -12,9 +15,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('berita_acara', function (Blueprint $table) {
-            $table->id();
+            $table->id('id_berita_acara');
             $table->string('id_barang');
-            $table->date('no_ba');
+            $table->string('no_ba');
             $table->date('tgl_ba');
             $table->string('text1')->nullable();
             $table->string('text2')->nullable();
@@ -26,12 +29,12 @@ return new class extends Migration
             $table->jsonb('ttd4');
             $table->enum('type_ba', ['nota_pesanan', 'bast', 'ba_keluar', 'ba_masuk'])->default('nota_pesanan');
             $table->jsonb('image');
+            $table->foreignIdFor(Kabupaten::class, 'id_kabupaten')->constrained('kabupaten', 'id_kabupaten')->onDelete('cascade');
+            $table->foreignIdFor(Opd::class, 'id_opd')->constrained('opd', 'id_opd')->onDelete('cascade');
+            $table->foreignIdFor(Unit::class, 'id_unit')->constrained('unit', 'id_unit')->onDelete('cascade');
             $table->unsignedInteger('tahun');
-            $table->foreign('tahun')
-                ->references('year')
-                ->on('years')
-                ->onDelete('cascade');
             $table->timestamps();
+            $table->unique(['id_barang', 'no_ba', 'id_kabupaten', 'id_opd', 'id_unit', 'tahun'],'unique_berita_acara');
         });
     }
 
