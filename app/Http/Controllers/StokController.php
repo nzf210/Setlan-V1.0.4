@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\MutasiResource;
 use App\Models\Mutasi;
+use App\Models\MutasiModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
@@ -21,7 +22,7 @@ class StokController extends Controller
             $idUnit = $mutasiController->getCookies()[2];
 
             $filterCondition = 'greater'; // or 'less_or_equal' for jumlah <= 0
-            $brgMasuk = Mutasi::with(['barang.category', 'barang.akun', 'barang.satuan', 'subkeg', 'kab', 'opd', 'unit'])
+            $brgMasuk = MutasiModel::with(['barang.category', 'barang.akun', 'barang.satuan', 'subkeg', 'kab', 'opd', 'unit'])
                 ->select(
                     'mutasi.id_barang',
                     'mutasi.id_kab',
@@ -186,7 +187,7 @@ class StokController extends Controller
             $idUnit = $mutasiController->getCookies()[2];
 
             $filterCondition = 'greater'; // or 'less_or_equal' for jumlah <= 0
-            $brgMasuk = Mutasi::with(['barang.category', 'barang.akun', 'barang.satuan', 'subkeg', 'kab', 'opd', 'unit'])
+            $brgMasuk = MutasiModel::with(['barang.category', 'barang.akun', 'barang.satuan', 'subkeg', 'kab', 'opd', 'unit'])
                 ->select(
                     'mutasi.id_barang',
                     'mutasi.id_kab',

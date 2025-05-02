@@ -27,8 +27,8 @@ The Laravel framework is open-sourced software licensed under the [MIT license](
 
 
 # Proses Instalasi
-* git clone https://github.com/nzf210/Setlan.git
-* cd Setlan
+* git clone https://github.com/nzf210/Setlan-V1.0.4.git
+* cd Setlan-V1.0.4
 * if using Docker: ./vendor/bin/sail up -d
 * composer install
 * npm install

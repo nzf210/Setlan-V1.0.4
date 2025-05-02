@@ -18,7 +18,7 @@ class MutasiDraftMasukResource extends JsonResource
             'id' => $this->id,
             'id_barang' => $this->id_barang,
             'id_subkeg' => $this->id_subkeg,
-            'id_kab' => $this->id_kab,
+            'id_kabupaten' => $this->id_kab,
             'id_opd' => $this->id_opd,
             'id_unit' => $this->id_unit,
             'jumlah' => $this->jumlah,
@@ -38,11 +38,11 @@ class MutasiDraftMasukResource extends JsonResource
             'updated_at' => $this->updated_at,
 
             // Relasi
-            'unit' => new MUnitResource($this->whenLoaded('unit')),
-            'opd' => new MOpdResource($this->whenLoaded('opd')),
-            'kabupaten' => new MKabResource($this->whenLoaded('kab')),
+            'unit' => new UnitResource($this->whenLoaded('unit')),
+            'opd' => new OpdResource($this->whenLoaded('opd')),
+            'kabupaten' => new KabupatenResource($this->whenLoaded('kab')),
             'barang' => new BarangResource($this->whenLoaded('barang')),
-            'subkeg' => new UnitSubKegResource($this->whenLoaded('subkeg')),
+            'sub_kegiatan' => new SubKegiatanResource($this->whenLoaded('sub_kegiatan')),
         ];
     }
 }

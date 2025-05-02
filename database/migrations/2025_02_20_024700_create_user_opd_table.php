@@ -1,8 +1,7 @@
 <?php
 
-
-use App\Models\Opd;
-use App\Models\User;
+use App\Models\OpdModel;
+use App\Models\UserModel;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -13,8 +12,8 @@ return new class extends Migration
     {
         Schema::create('user_opd', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(User::class, 'id_user')->nullable()->constrained('users', 'id')->onDelete('cascade');
-            $table->foreignIdFor(Opd::class, 'id_opd')->nullable()->constrained('opd', 'id_opd')->onDelete('cascade');
+            $table->foreignIdFor(UserModel::class, 'id_user')->nullable()->constrained('users', 'id')->onDelete('cascade');
+            $table->foreignIdFor(OpdModel::class, 'id_opd')->nullable()->constrained('opd', 'id_opd')->onDelete('cascade');
             $table->timestamps();
         });
     }

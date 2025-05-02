@@ -16,12 +16,12 @@ class MutasiResource extends JsonResource
     {
         return [
             'id_barang' => $this->id_barang,
-            'id_keg' => $this->id_keg,
+            'id_kegiatan' => $this->id_kegiatan,
             'barang' => new BarangResource($this->whenLoaded('barang')),
-            'unit' => new MUnitResource($this->whenLoaded('unit')),
-            'opd' => new MOpdResource($this->whenLoaded('opd')),
-            'kab' => new MKabResource($this->whenLoaded('kab')),
-            'subkeg' => new MSubKegResource($this->whenLoaded('subkeg')),
+            'unit' => new UnitResource($this->whenLoaded('unit')),
+            'opd' => new OpdResource($this->whenLoaded('opd')),
+            'kabupaten' => new KabupatenResource($this->whenLoaded('kabupaten')),
+            'sub_kegiatan' => new SubKegiatanResource($this->whenLoaded('sub_kegiatan')),
             'jumlah' => $this->jumlah,
             'created_by' => $this->created_by,
             'updated_by' => $this->updated_by,
@@ -29,7 +29,7 @@ class MutasiResource extends JsonResource
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
             'total_jumlah' => $this->total_jumlah,
-            'akun' => new AkunAktifResource($this->whenLoaded('akun')),
+            'akun_aktif' => new AkunAktifResource($this->whenLoaded('akun_aktif')),
         ];
     }
 }

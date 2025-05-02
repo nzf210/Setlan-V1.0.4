@@ -1,9 +1,9 @@
 <?php
 
-use App\Models\Kabupaten;
-use App\Models\Opd;
-use App\Models\SubKegiatan;
-use App\Models\Unit;
+use App\Models\KabupatenModel;
+use App\Models\OpdModel;
+use App\Models\SubKegiatanModel;
+use App\Models\UnitModel;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -15,10 +15,10 @@ return new class extends Migration
     {
         Schema::create('sub_kegiatan_aktif', function (Blueprint $table) {
             $table->id('id_sub_kegiatan_aktif');
-            $table->foreignIdFor(Kabupaten::class, 'id_kabupaten')->constrained('kabupaten', 'id_kabupaten')->onDelete('cascade');
-            $table->foreignIdFor(Opd::class, 'id_opd')->constrained('opd', 'id_opd')->onDelete('cascade');
-            $table->foreignIdFor(Unit::class, 'id_unit')->constrained('unit', 'id_unit')->onDelete('cascade');
-            $table->foreignIdFor(SubKegiatan::class, 'id_sub_kegiatan')->constrained('sub_kegiatan', 'id_sub_kegiatan')->onDelete('cascade');
+            $table->foreignIdFor(KabupatenModel::class, 'id_kabupaten')->constrained('kabupaten', 'id_kabupaten')->onDelete('cascade');
+            $table->foreignIdFor(OpdModel::class, 'id_opd')->constrained('opd', 'id_opd')->onDelete('cascade');
+            $table->foreignIdFor(UnitModel::class, 'id_unit')->constrained('unit', 'id_unit')->onDelete('cascade');
+            $table->foreignIdFor(SubKegiatanModel::class, 'id_sub_kegiatan')->constrained('sub_kegiatan', 'id_sub_kegiatan')->onDelete('cascade');
             $table->unsignedInteger('tahun');
             $table->unique(['id_sub_kegiatan', 'tahun' ,'id_kabupaten', 'id_opd', 'id_unit'], 'unique_unit_sub_kegiatan');
         });

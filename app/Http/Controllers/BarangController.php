@@ -4,9 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\BarangResource;
 use App\Http\Resources\CategoryResource;
-use App\Models\Barang;
-use App\Models\KodeBarang;
-use App\Models\Mutasi;
+use App\Models\BarangModel;
+use App\Models\KodeBarangModel;
+use App\Models\MutasiModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
@@ -52,7 +52,7 @@ class BarangController extends Controller
         $perPage = request('per_page', 10); // Default 10 jika tidak ada
 
         // Query barang dasar
-        $barang = Barang::with(['category', 'akun', 'satuan'])
+        $barang = BarangModel::with(['category', 'akun', 'satuan'])
             ->where('id_kab', $idKab)
             ->where('tahun', $tahun);
 
@@ -66,7 +66,7 @@ class BarangController extends Controller
         // Paginasi hasil query
         $barangs = $barang->filtered()->paginate($perPage == -1 ? 10000000 : $perPage)->withQueryString();
         // Ambil data kategori barang
-        $category = KodeBarang::whereRaw('LENGTH(id_kd_barang) = 20')->paginate(10)->withQueryString();
+        $category = KodeBarangModel::whereRaw('LENGTH(id_kd_barang) = 20')->paginate(10)->withQueryString();
 
         // Render halaman dengan Inertia
         return Inertia::render('Setlan/Barang/MasterBarang', [
@@ -109,7 +109,7 @@ class BarangController extends Controller
             ]);
 
             $id = $this->generateCustomId();
-            $barang = new Barang();
+            $barang = new BarangModel();
             $barang->id_barang = $id;
             $barang->nama_barang = $request->nama_barang;
             $barang->merek = $request->merek;
@@ -126,7 +126,7 @@ class BarangController extends Controller
             $hsl = $barang->save();
 
             if($request->is_add_draft === '1' && $hsl){
-                $mutasi = new Mutasi();
+                $mutasi = new MutasiModel();
                 $mutasi->id_barang = $id;
                 $mutasi->id_unit = $idUnit;
                 $mutasi->id_opd = $idOpd;
@@ -160,7 +160,7 @@ class BarangController extends Controller
         ]);
 
         $id_barang = $request->id_barang;
-        $barang = Barang::where("id_barang", $id_barang)->firstOrFail();
+        $barang = BarangModel::where("id_barang", $id_barang)->firstOrFail();
         $barang->nama_barang = $request->nama_barang;
         $barang->merek = $request->merek;
         $barang->id_kd_barang = $request->id_kd_barang;
@@ -175,16 +175,16 @@ class BarangController extends Controller
 
     public function barangMasterDelete(Request $request, $id)
     {
-        Barang::where('id_barang', $id)->firstOrFail()->delete();
+        BarangModel::where('id_barang', $id)->firstOrFail()->delete();
         return redirect()->route('setlan.barang.master')->with('success', 'Berhasil Menghapus Barang.');
     }
 
-    public function barangMasuk(Barang $barang)
+    public function barangMasuk(BarangModel $barang)
     {
         return Inertia::render('Setlan/Barang/BarangMasuk');
     }
 
-    public function barangKeluar(Barang $barang)
+    public function barangKeluar(BarangModel $barang)
     {
         return Inertia::render('Setlan/Barang/BarangKeluar');
     }

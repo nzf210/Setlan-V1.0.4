@@ -3,12 +3,11 @@
 namespace App\Http\Controllers\Setlan;
 
 use App\Http\Controllers\Controller;
-use App\Models\MKab;
-use App\Models\MOpd;
-use App\Models\MUnit;
-use App\Models\UserKabupaten;
-use App\Models\UserOpd;
-use App\Models\UserUnit;
+use App\Models\OpdModel;
+use App\Models\UnitModel;
+use App\Models\UserKabupatenModel;
+use App\Models\UserOpdModel;
+use App\Models\UserUnitModel;
 use Closure;
 use Illuminate\Auth\Events\Validated;
 use Illuminate\Http\Request;
@@ -107,11 +106,11 @@ class SetCookieController extends Controller
             $idUser = Auth::user()->id;
             $userRole = Auth::user()->getRoleNames()[0];
 
-            $unitExistsInOpd = MUnit::where('id_unit', $idUnit)
+            $unitExistsInOpd = UnitModel::where('id_unit', $idUnit)
                                     ->where('id_opd', $idOpd)
                                     ->exists();
 
-            $opdExistsInKab = MOpd::where('id_opd', $idOpd)
+            $opdExistsInKab = OpdModel::where('id_opd', $idOpd)
                                     ->where('id_kab', $idKab)
                                     ->exists();
 
@@ -120,9 +119,9 @@ class SetCookieController extends Controller
                 return redirect()->back()->with('error', $result['message']);
             }
 
-            $isExistKab = UserKabupaten::where('id_kab', $idKab)->where('id_user', $idUser)->first();
-            $isExistOpd = UserOpd::where('id_opd', $idOpd)->where('id_user', $idUser)->first();
-            $isExistUnit = UserUnit::where('id_unit', $idUnit)->where('id_user', $idUser)->first();
+            $isExistKab = UserKabupatenModel::where('id_kab', $idKab)->where('id_user', $idUser)->first();
+            $isExistOpd = UserOpdModel::where('id_opd', $idOpd)->where('id_user', $idUser)->first();
+            $isExistUnit = UserUnitModel::where('id_unit', $idUnit)->where('id_user', $idUser)->first();
 
             $result = $this->validateUserRelations($isExistKab, $isExistOpd, $isExistUnit);
 

@@ -5,7 +5,7 @@ namespace Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Satuan>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\SatuanModel>
  */
 class SatuanFactory extends Factory
 {
@@ -175,7 +175,7 @@ class SatuanFactory extends Factory
             'description' => 'Kuantitas unit per hari'
         ],
     ];
-    
+
 
     public function definition(): array
     {

@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\AkunAktif;
-use App\Models\AkunBelanja;
-use App\Models\Year;
+use App\Models\AkunAktifModel;
+use App\Models\AkunBelanjaModel;
+use App\Models\TahunModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cookie;
@@ -34,13 +34,13 @@ class AkuntansiController extends Controller
         ]);
 
         $tahun = Cookie::get('year');
-        $tahun_aktif = Year::where('year', $tahun)->first();
+        $tahun_aktif = TahunModel::where('year', $tahun)->first();
 
         if (!$tahun_aktif || !$tahun_aktif->akun) {
             return back()->withError('Tahun aktif tidak ditemukan atau belum memiliki data akun');
         } else {
 
-            $query = AkunBelanja::query()
+            $query = AkunBelanjaModel::query()
             ->whereRaw('LENGTH(id_akun) = 17')
             ->where('tahun', $tahun_aktif->akun);
 
@@ -94,8 +94,8 @@ class AkuntansiController extends Controller
                 }
 
                 $tahun = Cookie::get('year');
-                $tahun_aktif = $now ? Year::where('year', $tahun)->first()->akun : $tahun;
-                $induk = AkunBelanja::where(['tahun' => $tahun_aktif , 'id_akun'=> $id_akun])->first();
+                $tahun_aktif = $now ? TahunModel::where('year', $tahun)->first()->akun : $tahun;
+                $induk = AkunBelanjaModel::where(['tahun' => $tahun_aktif , 'id_akun'=> $id_akun])->first();
                 if ($induk) {
                     $indukHierarki[] = $induk;
                 }
@@ -111,7 +111,7 @@ public function GetAkunAktif(){
             return redirect()->back()->withErrors('Parameter tahun atau kabupaten tidak valid');
         }
 
-        $data = AkunAktif::with(['akun','mKab'])->where(['id_kab' => $idKab, 'tahun' => $tahun]);
+        $data = AkunAktifModel::with(['akun','mKab'])->where(['id_kab' => $idKab, 'tahun' => $tahun]);
         $dt= $data->filtered()->paginate(25)->withQueryString();
 
         $dt->getCollection()->transform(function ($item) {
@@ -164,7 +164,7 @@ public function CreateAkunAktif(Request $request)
             DB::transaction(function () use ($validatedData) {
                 $succes = 0;
                 foreach ($validatedData['akuns'] as $akunData) {
-                    AkunAktif::create($akunData);
+                    AkunAktifModel::create($akunData);
                     $succes++;
                 }
                 if ($succes > 0) {
@@ -180,7 +180,7 @@ public function CreateAkunAktif(Request $request)
 }
 
 public function DeleteAkunAktif(Request $request, $id){
-        AkunAktif::where('id', $id)->firstOrFail()->delete();
+        AkunAktifModel::where('id', $id)->firstOrFail()->delete();
         return redirect()->back()->with('success', 'Berhasil Menghapus Akun Aktif.');
     }
 

@@ -2,14 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Setlan\SubKegiatanAktifController;
 use App\Http\Controllers\Setlan\UnitSubKegController;
-use App\Http\Resources\MSubKegResource;
 use App\Http\Resources\MutasiDraftMasukResource;
 use App\Http\Resources\MutasiResource;
-use App\Models\MKab;
-use App\Models\MOpd;
-use App\Models\Munit;
-use App\Models\Mutasi;
+use App\Http\Resources\SubKegiatanResource;
+use App\Models\KabupatenModel;
+use App\Models\MutasiModel;
+use App\Models\OpdModel;
+use App\Models\UnitModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -24,9 +25,9 @@ class MutasiController extends Controller
 {
     public function index()
     {
-        $mkab =  MKab::get()->sortBy(['id_kab']);
-        $mopd =  MOpd::get()->sortBy(['id_opd']);
-        $munit =  Munit::get()->sortBy(['id_unit']);
+        $mkab =  KabupatenModel::get()->sortBy(['id_kab']);
+        $mopd =  OpdModel::get()->sortBy(['id_opd']);
+        $munit =  UnitModel::get()->sortBy(['id_unit']);
         return redirect()->back()->with(['mkab' => $mkab, 'mopd' => $mopd, 'munit' => $munit]);
     }
 
@@ -47,12 +48,12 @@ class MutasiController extends Controller
         $request->validate(['id_barang' => 'required']);
 
         /** Cek apakah sudah ada di draft atau belum */
-        $barangMutasi = Mutasi::where(['type' => 'draft_masuk','id_barang' => $request->id_barang,
+        $barangMutasi = MutasiModel::where(['type' => 'draft_masuk','id_barang' => $request->id_barang,
                                         'id_kab' => $idKab,'id_opd' => $idOpd,'id_unit' => $idUnit, 'tahun' => $tahun])->first();
         if ($barangMutasi) {
             return redirect()->back()->with('info', 'Barang sudah di tambahkan ke list draft.');
             } else {
-                $mutasi = new Mutasi();
+                $mutasi = new MutasiModel();
                 $mutasi->id_barang = $request->id_barang;
                 $mutasi->id_unit = $idUnit;
                 $mutasi->id_opd = $idOpd;
@@ -75,7 +76,7 @@ class MutasiController extends Controller
                 $search = $request->input('search');
                 $search_sub = $request->input('search_sub');
 
-                $query = Mutasi::where(["type" => "draft_masuk","id_kab" => $idKab, "id_opd" => $idOpd, "id_unit" => $idUnit , "tahun" => $tahun])
+                $query = MutasiModel::where(["type" => "draft_masuk","id_kab" => $idKab, "id_opd" => $idOpd, "id_unit" => $idUnit , "tahun" => $tahun])
                             ->with(['unit','opd','kab','barang.category','barang.akun','barang.satuan','subkeg.subKegiatan']);
                 if ($search) {
                     $query->where(function ($q) use ($search) {
@@ -91,8 +92,8 @@ class MutasiController extends Controller
 
                 $dataMutasi = $query->paginate(10);
                 $dataMutasiResource = MutasiDraftMasukResource::collection($dataMutasi);
-                $datasub = (new UnitSubKegController())->getUnitSubKeg($search_sub);
-                $subKegiatanResource = MSubKegResource::collection($datasub);
+                $datasub = (new SubKegiatanAktifController())->getUnitSubKeg($search_sub);
+                $subKegiatanResource = SubKegiatanResource::collection($datasub);
                             return Inertia::render('Setlan/Barang/Masuk/Draft',
                             [    'data' =>  $dataMutasiResource,
                                         'calc' => $this->show(['draft_masuk']),
@@ -115,7 +116,7 @@ class MutasiController extends Controller
             $idOpd = $this->getCookies()[1];
             $idUnit = $this->getCookies()[2];
             $tahun = $this->getCookies()[3];
-            $draft = Mutasi::where(['id'=> $id, 'id_barang' => $id_barang, 'id_kab' => $idKab,
+            $draft = MutasiModel::where(['id'=> $id, 'id_barang' => $id_barang, 'id_kab' => $idKab,
             'id_opd' => $idOpd, 'id_unit' => $idUnit, 'type' => 'draft_masuk', 'tahun' => $tahun])
             ->firstOrFail();
             $draft->tgl_beli = $request->tgl_beli;
@@ -131,7 +132,7 @@ class MutasiController extends Controller
             $idOpd = $this->getCookies()[1];
             $idUnit = $this->getCookies()[2];
             $tahun = $this->getCookies()[3];
-            $draft = Mutasi::where
+            $draft = MutasiModel::where
                 ([
                     'id'=> $id, 'id_barang' => $id_barang, 'id_kab' => $idKab,
                     'id_opd' => $idOpd, 'id_unit' => $idUnit, 'type' => 'draft_masuk',
@@ -147,7 +148,7 @@ class MutasiController extends Controller
 }
 
     public function mutasiMasukDraftDelete(Request $request, $id,$id_barang){
-       try {
+        try {
                 if ($id || $id_barang ) {
                     $idKab = $this->getCookies()[0];
                     $idOpd = $this->getCookies()[1];
@@ -156,7 +157,7 @@ class MutasiController extends Controller
                 } else {
                     return back()->withErrors('Pilih unit terlebih dahulu.')->withInput();
                 }
-                Mutasi::where(['id'=> $id, 'id_barang' => $id_barang, 'id_kab' => $idKab,
+                MutasiModel::where(['id'=> $id, 'id_barang' => $id_barang, 'id_kab' => $idKab,
                 'id_opd' => $idOpd, 'id_unit' => $idUnit, 'type' => 'draft_masuk' , 'tahun' => $tahun])
                 ->firstOrFail()->delete();
                 return back()->with('success', 'Berhasil Menghapus Draft.');
@@ -171,7 +172,7 @@ class MutasiController extends Controller
                     $idUnit = $this->getCookies()[2];
                     $tahun = $this->getCookies()[3];
                     if($request->type === 'jumlah'){
-                        $draft = Mutasi::where(['id'=> $id, 'id_barang' => $id_barang, 'id_kab' => $idKab,
+                        $draft = MutasiModel::where(['id'=> $id, 'id_barang' => $id_barang, 'id_kab' => $idKab,
                             'id_opd' => $idOpd, 'id_unit' => $idUnit, 'type' => 'draft_masuk', 'tahun' => $tahun])
                             ->firstOrFail();
                             $draft->jumlah = $request->jumlah;
@@ -179,7 +180,7 @@ class MutasiController extends Controller
                             $draft->save();
                     }
                     if($request->type === 'pajak'){
-                        $draft = Mutasi::where(['id'=> $id, 'id_barang' => $id_barang, 'id_kab' => $idKab,
+                        $draft = MutasiModel::where(['id'=> $id, 'id_barang' => $id_barang, 'id_kab' => $idKab,
                             'id_opd' => $idOpd, 'id_unit' => $idUnit, 'type' => 'draft_masuk' , 'tahun' => $tahun])
                             ->firstOrFail();
                             $draft->pajak = $request->pajak < 0 ? 0 : $request->pajak ;
@@ -187,7 +188,7 @@ class MutasiController extends Controller
                             $draft->save();
                     }
                     if($request->type === 'penyesuaian'){
-                        $draft = Mutasi::where(['id'=> $id, 'id_barang' => $id_barang, 'id_kab' => $idKab,
+                        $draft = MutasiModel::where(['id'=> $id, 'id_barang' => $id_barang, 'id_kab' => $idKab,
                             'id_opd' => $idOpd, 'id_unit' => $idUnit, 'type' => 'draft_masuk' , 'tahun' => $tahun])
                             ->firstOrFail();
                             $draft->penyesuaian = $request->penyesuaian < 0 ? 0 : $request->penyesuaian;
@@ -196,7 +197,7 @@ class MutasiController extends Controller
                     }
                     if($request->type === 'id_subkeg'){
                         if($request->subkeg != '0'){
-                            $draft = Mutasi::where(['id'=> $id])
+                            $draft = MutasiModel::where(['id'=> $id])
                             ->firstOrFail();
                             $draft->id_subkeg = $request->subkeg;
                             $draft->updated_by = Auth::user()->id;
@@ -228,7 +229,7 @@ class MutasiController extends Controller
             $idOpd = $this->getCookies()[1];
             $idUnit = $this->getCookies()[2];
             $tahun = $this->getCookies()[3];
-            $brgMasuk = Mutasi::where(
+            $brgMasuk = MutasiModel::where(
                 [   'id_unit'=>$idUnit,
                     'id_opd'=>$idOpd,
                     'type'=>'masuk',
@@ -257,7 +258,7 @@ class MutasiController extends Controller
             $idKab = $this->getCookies()[0];
             $idOpd = $this->getCookies()[1];
             $idUnit = $this->getCookies()[2];
-            $sAwal = Mutasi::where(['id_unit'=>$idUnit, 'id_opd'=>$idOpd, 'type'=>'sawal', 'id_kab'=>$idKab])
+            $sAwal = MutasiModel::where(['id_unit'=>$idUnit, 'id_opd'=>$idOpd, 'type'=>'sawal', 'id_kab'=>$idKab])
             ->with(['unit','opd','kab','barang.category','barang.akun','barang.satuan','subkeg']);
             $wp = $sAwal->filtered()->paginate(25)->withQueryString();
             return Inertia::render('Setlan/Barang/Masuk/Sawal',
@@ -294,7 +295,7 @@ class MutasiController extends Controller
 
             // Handle saldo awal
             if ($request->type === 'sawal') {
-                Mutasi::where($this->getCommonConditions($idKab, $idOpd, $idUnit))->delete();
+                MutasiModel::where($this->getCommonConditions($idKab, $idOpd, $idUnit))->delete();
                 $redirectData['route'] = route('setlan.barang.saldoAwal');
             }
 
@@ -302,7 +303,7 @@ class MutasiController extends Controller
             throw_if(empty($request->data), \Exception::class, 'Tidak ada data yang diproses');
 
             // Update data
-            Mutasi::whereIn('id', $request->data)->update([
+            MutasiModel::whereIn('id', $request->data)->update([
                 'type' => $request->type,
                 'updated_by' => auth()->user()->id,
             ]);
@@ -335,7 +336,7 @@ class MutasiController extends Controller
         $idOpd = $this->getCookies()[1];
         $idUnit = $this->getCookies()[2];
         $tahun = $this->getCookies()[3];
-        $mutasiR6 = Mutasi::with(['barang', 'barang.akun'])->where(['id_kab' => $idKab, 'id_opd' => $idOpd, 'id_unit' => $idUnit , 'tahun' => $tahun])
+        $mutasiR6 = MutasiModel::with(['barang', 'barang.akun'])->where(['id_kab' => $idKab, 'id_opd' => $idOpd, 'id_unit' => $idUnit , 'tahun' => $tahun])
         ->whereIn('type', $type)
         ->get();
 
@@ -365,7 +366,7 @@ class MutasiController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Mutasi $mutasi)
+    public function edit(MutasiModel $mutasi)
     {
         //
     }
@@ -373,7 +374,7 @@ class MutasiController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Mutasi $mutasi)
+    public function update(Request $request, MutasiModel $mutasi)
     {
         //
     }
@@ -381,7 +382,7 @@ class MutasiController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Mutasi $mutasi)
+    public function destroy(MutasiModel $mutasi)
     {
         //
     }
