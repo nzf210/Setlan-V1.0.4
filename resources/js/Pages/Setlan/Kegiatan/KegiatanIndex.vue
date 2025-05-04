@@ -40,7 +40,6 @@ import {
     X,
     UploadIcon,
 } from "lucide-vue-next";
-import { ro } from "element-plus/es/locales.mjs";
 
 interface PaginationFilters {
     search?: string;
@@ -182,7 +181,7 @@ watch(
     }
 );
 
-watch([() => filters.value.year, () => filters.value.per_page], () => {
+watch([() => filters.value.tahun, () => filters.value.per_page], () => {
     updateFilters();
 });
 
@@ -198,7 +197,7 @@ const updateFilters = () => {
         route("setlan.kegiatan"),
         {
             search: filters.value.search,
-            year: filters.value.year,
+            year: filters.value.tahun,
             per_page: filters.value.per_page,
         },
         {

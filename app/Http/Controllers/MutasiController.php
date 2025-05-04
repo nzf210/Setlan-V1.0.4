@@ -57,7 +57,7 @@ class MutasiController extends Controller
                 $mutasi->id_barang = $request->id_barang;
                 $mutasi->id_unit = $idUnit;
                 $mutasi->id_opd = $idOpd;
-                $mutasi->id_kab = $idKab;
+                $mutasi->id_kabupaten = $idKab;
                 $mutasi->tahun = $tahun;
                 $mutasi->tgl_beli = date('Y-m-d');
                 $mutasi->created_by = Auth::user()->id;

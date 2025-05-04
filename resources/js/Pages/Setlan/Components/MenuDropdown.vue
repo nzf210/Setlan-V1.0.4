@@ -15,7 +15,15 @@ onMounted(() => {
 const logoutBtn = () => {
     resetState();
     localStorage.clear();
-    router.post(route("logout"));
+    router.post(
+        route("logout"),
+        {},
+        {
+            onSuccess: () => {
+                sessionStorage.clear();
+            },
+        }
+    );
 };
 
 const backPilihUnit = () => {

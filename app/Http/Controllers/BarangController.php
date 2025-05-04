@@ -118,7 +118,7 @@ class BarangController extends Controller
             $barang->harga = $request->harga;
             $barang->type = $request->type;
             $barang->created_by = Auth::user()->id;
-            $barang->id_kab = $idKab;
+            $barang->id_kabupaten = $idKab;
             $barang->id_unit = $idUnit;
             $barang->id_opd = $idOpd;
             $barang->tahun = $year;
@@ -131,7 +131,7 @@ class BarangController extends Controller
                 $mutasi->id_unit = $idUnit;
                 $mutasi->id_opd = $idOpd;
                 $mutasi->harga = $request->harga;
-                $mutasi->id_kab = $idKab;
+                $mutasi->id_kabupaten = $idKab;
                 $mutasi->tgl_beli = date('Y-m-d');
                 $mutasi->tahun = $year;
                 $mutasi->created_by = Auth::user()->id;

@@ -16,9 +16,7 @@ use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Validation\ValidationException;
 
-define('ID_OPD', 'required|string|max:22|min:22');
-define('ID_UNIT', 'required|string|max:5');
-define('tahun', 'required|string|max:4|min:4');
+define('REQ_NUM', 'required|numeric');
 class SetCookieController extends Controller
 {
     protected $minutes = 60 * 24 * 30; // 30 days
@@ -31,33 +29,33 @@ class SetCookieController extends Controller
         switch (Auth::user()->getRoleNames()[0]) {
             case 'super_admin':
                 $request->validate([
-                    'id_kabupaten' => 'required|string|max:5',
-                    'id_opd' => ID_OPD,
-                    'id_unit' => ID_OPD,
-                    'tahun' => YEAR,
+                    'id_kabupaten' =>  REQ_NUM,
+                    'id_opd' => REQ_NUM,
+                    'id_unit' => REQ_NUM,
+                    'tahun' => TAHUN,
                 ]);
-                Cookie::queue("id_kab", $request->id_kab, $this->minutes);
+                Cookie::queue("id_kabupaten", $request->id_kabupaten, $this->minutes);
                 Cookie::queue("id_opd", $request->id_opd, $this->minutes);
                 Cookie::queue("id_unit", $request->id_unit, $this->minutes);
-                Cookie::queue("year", $request->year, $this->minutes);
+                Cookie::queue("tahun", $request->tahun, $this->minutes);
             break;
             case 'admin_kab':
                 $request->validate([
-                'id_opd' => ID_OPD,
-                'id_unit' => ID_OPD,
-                'tahun' => YEAR,
+                'id_opd' => REQ_NUM,
+                'id_unit' => REQ_NUM,
+                'tahun' => TAHUN,
                 ]);
                 Cookie::queue("id_opd", $request->id_opd, $this->minutes);
                 Cookie::queue("id_unit", $request->id_unit, $this->minutes);
-                Cookie::queue("year", $request->year, $this->minutes);
+                Cookie::queue("tahun", $request->tahun, $this->minutes);
             break;
             default:
                 $request->validate([
-                'id_unit' => ID_OPD,
-                'tahun' => YEAR,
+                'id_unit' => REQ_NUM,
+                'tahun' => TAHUN,
                 ]);
                 Cookie::queue("id_unit", $request->id_unit, $this->minutes);
-                Cookie::queue("year", $request->year, $this->minutes);
+                Cookie::queue("tahun", $request->tahun, $this->minutes);
             break;
         }
         return Redirect::back()->with('success', "Set id cookie");
@@ -65,12 +63,12 @@ class SetCookieController extends Controller
 
     public function deleteCookie(Request $request)
     {
-        if ($request->id_kab == null && $request->id_opd == null && $request->id_unit == null) {
+        if ($request->id_kabupaten == null && $request->id_opd == null && $request->id_unit == null) {
             return Redirect::back()->with(['error' => 'Pilih Unit Dengan Benar.'], 400);
         }
 
-        if ($request->id_kab) {
-            Cookie::queue(Cookie::forget("id_kab"));
+        if ($request->id_kabupaten) {
+            Cookie::queue(Cookie::forget("id_kabupaten"));
         }
 
         if ($request->id_opd) {
@@ -104,7 +102,10 @@ class SetCookieController extends Controller
             $idUnit = Cookie::get('id_unit');
 
             $idUser = Auth::user()->id;
-            $userRole = Auth::user()->getRoleNames()[0];
+            /**
+             * @var mixed
+                $userRole = Auth::user()->getRoleNames()[0];
+             */
 
             $unitExistsInOpd = UnitModel::where('id_unit', $idUnit)
                                     ->where('id_opd', $idOpd)

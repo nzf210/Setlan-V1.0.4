@@ -270,7 +270,7 @@ watch(
     }
 );
 
-watch([() => filters.value.year, () => filters.value.per_page], () => {
+watch([() => filters.value.tahun, () => filters.value.per_page], () => {
     updateFilters();
 });
 
@@ -286,7 +286,7 @@ const updateFilters = () => {
         route("setlan.subKegiatan"),
         {
             search: filters.value.search,
-            year: filters.value.year,
+            year: filters.value.tahun,
             per_page: filters.value.per_page,
         },
         {

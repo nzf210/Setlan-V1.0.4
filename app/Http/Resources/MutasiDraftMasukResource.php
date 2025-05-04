@@ -18,7 +18,7 @@ class MutasiDraftMasukResource extends JsonResource
             'id' => $this->id,
             'id_barang' => $this->id_barang,
             'id_subkeg' => $this->id_subkeg,
-            'id_kabupaten' => $this->id_kab,
+            'id_kabupaten' => $this->id_kabupaten,
             'id_opd' => $this->id_opd,
             'id_unit' => $this->id_unit,
             'jumlah' => $this->jumlah,

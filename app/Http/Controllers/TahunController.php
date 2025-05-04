@@ -2,10 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Year;
+use App\Models\TahunModel;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
-define('TAHUN', 'sometimes|integer|exists:years,year');
 class TahunController extends Controller
 {
 
@@ -55,9 +54,9 @@ class TahunController extends Controller
         return redirect()->back();
     }
 
-    public function destroy(Year $year, $id)
+    public function destroy(TahunModel $tahun, $id)
     {
-        $year->where('id', $id)->delete();
+        $tahun->where('id', $id)->delete();
         return redirect()->back();
     }
 

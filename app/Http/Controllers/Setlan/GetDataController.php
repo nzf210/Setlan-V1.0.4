@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Setlan;
 
 use App\Http\Controllers\Controller;
-use App\Models\MKab;
-use App\Models\MOpd;
+use App\Models\KabupatenModel;
+use App\Models\OpdModel;
 use Cookie;
 use Illuminate\Http\Request;
 
@@ -21,7 +21,7 @@ class GetDataController extends Controller
             })
             ->paginate(10);
             $kab->getCollection()->transform(fn ($item) => [
-                    'id'    => $item->id_kab,
+                    'id'    => $item->id_kabupaten,
                     'name' => $item->nama_kab
                 ]
             );

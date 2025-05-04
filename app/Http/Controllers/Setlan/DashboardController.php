@@ -7,10 +7,9 @@ use App\Models\KabupatenModel;
 use App\Models\OpdModel;
 use App\Models\TahunModel;
 use App\Models\UnitModel;
-use App\Models\UserKabupaten;
 use App\Models\UserKabupatenModel;
-use App\Models\UserOpd;
-use App\Models\UserUnit;
+use App\Models\UserOpdModel;
+use App\Models\UserUnitModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cookie;
@@ -37,7 +36,7 @@ class DashboardController extends Controller
             'user' => Auth::user(),
             'tahun' => Cookie::get('tahun') ?? date('Y'),
             'role' => Auth::user()->getRoleNames()[0],
-            'nama_kab' => $namaKab->first()->nama_kab,
+            'nama_kabupaten' => $namaKab->first()->nama_kabupaten,
             'nama_opd' => $namaOpd->first()->nama_opd,
             'nama_unit' => $namaUnit->first()->nama_unit,
         ]);
@@ -81,8 +80,8 @@ class DashboardController extends Controller
             ->orderBy('tahun', 'desc')
             ->get()
             ->map(fn($item) => [
-                'value' => (string) $item->year,
-                'label' => (string) $item->year,
+                'value' => (string) $item->tahun,
+                'label' => (string) $item->tahun,
             ]);
     }
 
@@ -109,14 +108,14 @@ private function handleSuperAdminRole()
 
 private function handleAdminKabRole($user)
 {
-    $id_kab = UserKabupatenModel::where('id_user', $user->id)->pluck('id_kabupaten')->first();
-    $list_kab = KabupatenModel::where('id_kabupaten', $id_kab)->get()->toArray();
-    $list_opd = OpdModel::where('id_kabupaten', $id_kab)->get(['id_opd', 'nama_opd'])->toArray();
+    $id_kabupaten = UserKabupatenModel::where('id_user', $user->id)->pluck('id_kabupaten')->first();
+    $list_kabupaten = KabupatenModel::where('id_kabupaten', $id_kabupaten)->get()->toArray();
+    $list_opd = OpdModel::where('id_kabupaten', $id_kabupaten)->get(['id_opd', 'nama_opd'])->toArray();
 
-    Cookie::queue("id_kab", $id_kab, $this->minutes);
+    Cookie::queue("id_kabupaten", $id_kabupaten, $this->minutes);
 
     return [
-        'kabupaten' => $list_kab,
+        'kabupaten' => $list_kabupaten,
         'opd' => $list_opd,
         'unit' => [],
     ];
@@ -124,12 +123,12 @@ private function handleAdminKabRole($user)
 
 private function handleAdminOpdRole($user)
 {
-    $id_opd = UserOpd::where('id_user', $user->id)->pluck('id_opd')->first();
+    $id_opd = UserOpdModel::where('id_user', $user->id)->pluck('id_opd')->first();
     $list_opd = OpdModel::where('id_opd', $id_opd)->get()->toArray();
     $list_kab = KabupatenModel::where('id_kabupaten', $list_opd[0]['id_kabupaten'])->get()->toArray();
     $list_unit = UnitModel::where('id_opd', $id_opd)->get(['nama_unit', 'id_unit'])->toArray();
 
-    Cookie::queue("id_kab", $list_kab[0]['id_kabupaten'], $this->minutes);
+    Cookie::queue("id_kabupaten", $list_kab[0]['id_kabupaten'], $this->minutes);
     Cookie::queue("id_opd", $list_opd[0]['id_opd'], $this->minutes);
 
     return [
@@ -141,12 +140,12 @@ private function handleAdminOpdRole($user)
 
 private function handleDefaultRole($user)
 {
-    $id_unit = UserUnit::where('id_user', $user->id)->pluck('id_unit')->toArray();
+    $id_unit = UserUnitModel::where('id_user', $user->id)->pluck('id_unit')->toArray();
     $list_unit = UnitModel::whereIn('id_unit', $id_unit)->get(['id_unit', 'nama_unit'])->toArray();
     $list_opd = OpdModel::where('id_opd', $id_unit[0])->get(['id_opd', 'nama_opd', 'id_kabupaten'])->toArray();
-    $id_kab = KabupatenModel::where('id_kabupaten', $list_opd[0]['id_kabupaten'])->get(['id_kabupaten', 'nama_kab'])->toArray();
+    $id_kab = KabupatenModel::where('id_kabupaten', $list_opd[0]['id_kabupaten'])->get(['id_kabupaten', 'nama_kabupaten'])->toArray();
 
-    Cookie::queue("id_kab", $id_kab[0]['id_kabupaten'], $this->minutes);
+    Cookie::queue("id_kabupaten", $id_kab[0]['id_kabupaten'], $this->minutes);
     Cookie::queue("id_opd", $list_opd[0]['id_opd'], $this->minutes);
 
     // Hapus 'id_opd' dari setiap item di $list_unit

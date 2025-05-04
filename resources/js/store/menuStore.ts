@@ -14,11 +14,11 @@ export const useMenuStore = defineStore('menuStore', () => {
         const savedState = localStorage.getItem('menuStoreState');
         if (savedState) {
             const parsedState = JSON.parse(savedState);
-            tahun.value = parsedState.tahun || '';
-            namaKabupaten.value = parsedState.namaKabupaten || '';
-            namaUnit.value = parsedState.namaUnit || '';
-            namaOpd.value = parsedState.namaOpd || '';
-            namaUser.value = parsedState.namaUser || '';
+            tahun.value = parsedState.tahun ?? '';
+            namaKabupaten.value = parsedState.namaKabupaten ?? '';
+            namaUnit.value = parsedState.namaUnit ?? '';
+            namaOpd.value = parsedState.namaOpd ?? '';
+            namaUser.value = parsedState.namaUser ?? '';
         }
     };
 

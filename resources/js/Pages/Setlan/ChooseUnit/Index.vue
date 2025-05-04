@@ -1,12 +1,9 @@
 <script setup lang="ts">
-import { comboSearch } from "@/store/ComboSearchStore";
 import { onMounted, ref } from "vue";
 import { Head, router } from "@inertiajs/vue3";
 import ComboSelect from "@/Pages/Setlan/Components/ComboSelect.vue";
 import Button from "@/components/ui/button/Button.vue";
 import Label from "@/components/ui/label/Label.vue";
-
-const combo_search = comboSearch();
 
 import { useMenuStore } from "@/store/menuStore";
 const menuStrore = useMenuStore();
@@ -18,7 +15,7 @@ interface User {
 }
 const props = defineProps<{
     user: User;
-    kab: Array<{ id_kab: string; nama_kab: string }>;
+    kabupaten: Array<{ id_kabupaten: string; nama_kabupaten: string }>;
     opd: Array<{ id_opd: string; nama_opd: string }>;
     unit: Array<{ id_unit: string; nama_unit: string }>;
     title?: string;
@@ -26,48 +23,27 @@ const props = defineProps<{
     tahun: Array<{ value: string; label: string }>;
 }>();
 
-const kabSelect = ref<Array<{ id_kab: string; nama_kab: string }>>(props.kab);
+const kabSelect = ref<Array<{ id_kabupaten: string; nama_kabupaten: string }>>(
+    props.kabupaten
+);
 const opdSelect = ref<Array<{ id_opd: string; nama_opd: string }>>(props.opd);
 const unitSelect = ref<Array<{ id_unit: string; nama_unit: string }>>(props.unit);
-const activeSelected = ref<{ id_kab: string; id_opd: string; id_unit: string }>({
-    id_kab: "",
+const activeSelected = ref<{ id_kabupaten: string; id_opd: string; id_unit: string }>({
+    id_kabupaten: "",
     id_opd: "",
     id_unit: "",
 });
 
-const isFirstLogin = ref<boolean>(false);
-
-const fetchCookieStatus = () => {
-    router.get(
-        route("setlan.checkCookie"),
-        {},
-        {
-            preserveState: true,
-            onSuccess: (page) => {
-                combo_search.setChooseUnit(page.props.cookies);
-            },
+const selectKab = () => {
+    return kabSelect.value.map(
+        (kabupaten: { id_kabupaten: string; nama_kabupaten: string }) => {
+            return { value: kabupaten.id_kabupaten, label: kabupaten.nama_kabupaten };
         }
     );
 };
-
-const checkFirstLogin = () => {
-    const firstLogin = localStorage.getItem("isFirstLogin");
-    if (firstLogin) {
-        isFirstLogin.value = true;
-        localStorage.removeItem("isFirstLogin");
-    } else {
-        isFirstLogin.value = false;
-    }
-};
-
-const selectKab = () => {
-    return kabSelect.value.map((kab: { id_kab: string; nama_kab: string }) => {
-        return { value: kab.id_kab, label: kab.nama_kab };
-    });
-};
 const selectOpd = () => {
-    return opdSelect.value.map((kab: { id_opd: string; nama_opd: string }) => {
-        return { value: kab.id_opd, label: kab.nama_opd };
+    return opdSelect.value.map((kabupaten: { id_opd: string; nama_opd: string }) => {
+        return { value: kabupaten.id_opd, label: kabupaten.nama_opd };
     });
 };
 const selectUnit = () => {
@@ -92,7 +68,7 @@ const labelTahun = "Tahun";
 
 onMounted(() => {
     if (props.user?.roles[0].name === "super_admin") {
-        localStorage.setItem("list_kab", JSON.stringify(props.kab));
+        localStorage.setItem("list_kab", JSON.stringify(props.kabupaten));
     } else if (props.user?.roles[0].name === "admin_kab") {
         localStorage.setItem("list_opd", JSON.stringify(props.opd));
     } else {
@@ -101,7 +77,7 @@ onMounted(() => {
 });
 
 const handleChangeKab = (value: { label: string; value: string }) => {
-    activeSelected.value.id_kab = value.value;
+    activeSelected.value.id_kabupaten = value.value;
     setNamaKabupaten(value.label);
     router.get(
         route("setlan.getListOpd", { id: value.value }),
@@ -120,7 +96,7 @@ const handleChangeKab = (value: { label: string; value: string }) => {
 const handleChangeOpd = (value: { label: string; value: string }) => {
     setNamaOpd(value.label);
     if (props.user?.roles[0].name !== "super_admin") {
-        setNamaKabupaten(props.kab[0].nama_kab);
+        setNamaKabupaten(props.kabupaten[0].nama_kabupaten);
     }
     router.get(
         route("setlan.getListUnit", { id: value.value }),
@@ -143,7 +119,7 @@ const handleChangeUnit = (value: { label: string; value: string }) => {
         props.user?.roles[0].name !== "admin_kab" &&
         props.user?.roles[0].name !== "super_admin"
     ) {
-        setNamaKabupaten(props.kab[0].nama_kab);
+        setNamaKabupaten(props.kabupaten[0].nama_kabupaten);
         setNamaOpd(props.opd[0].nama_opd);
     }
     activeSelected.value.id_unit = value.value;
@@ -155,13 +131,14 @@ const handleChangeYear = (value: { label: string; value: string }) => {
     router.post(
         route("setlan.setCookie"),
         {
-            id_kab: activeSelected.value.id_kab,
+            id_kabupaten: activeSelected.value.id_kabupaten,
             id_opd: activeSelected.value.id_opd,
             id_unit: activeSelected.value.id_unit,
-            year: value.value,
+            tahun: Number(value.value),
         },
         {
             preserveState: true,
+            preserveScroll: true,
         }
     );
 };
