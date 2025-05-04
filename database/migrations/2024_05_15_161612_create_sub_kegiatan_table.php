@@ -18,7 +18,7 @@ return new class extends Migration
         Schema::create('sub_kegiatan', function (Blueprint $table) {
             $table->id('id_sub_kegiatan');
             $table->string('kode_sub_kegiatan');
-            $table->string('nama_sub_kegiatan');
+            $table->text('nama_sub_kegiatan');
             $table->unsignedInteger('tahun');
             $table->foreignId('id_kegiatan')
                     ->constrained('kegiatan', 'id_kegiatan')

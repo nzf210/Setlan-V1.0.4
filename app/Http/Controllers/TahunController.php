@@ -11,26 +11,26 @@ class TahunController extends Controller
 
     public function index()
     {
-        $tahun = Year::all();
+        $tahun = TahunModel::all();
         return back()->with('value', $tahun);
     }
     public function view()
     {
-        $tahun = Year::all();
+        $tahun = TahunModel::all();
         return Inertia::render('Setlan/Tahun/Index', ['tahun' => $tahun]);
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'year' => 'required|integer|unique:years,year',
+            'tahun' => 'required|integer|unique:years,year',
         ]);
 
-        Year::create([
-            'year' => $validated['year'],
-            'akun' => $validated['year'],
-            'keg' => $validated['year'],
-            'sub_keg' => $validated['year'],
+        TahunModel::create([
+            'tahun' => $validated['tahun'],
+            'akun' => $validated['tahun'],
+            'keg' => $validated['tahun'],
+            'sub_keg' => $validated['tahun'],
         ]);
 
         return redirect()->back();
@@ -38,7 +38,7 @@ class TahunController extends Controller
 
     public function update(Request $request, $id)
     {
-        $tahun = Year::findOrFail($id);
+        $tahun = TahunModel::findOrFail($id);
 
         $validated = $request->validate([
             'akun' => TAHUN,

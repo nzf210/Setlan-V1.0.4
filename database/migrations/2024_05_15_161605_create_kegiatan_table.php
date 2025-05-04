@@ -11,7 +11,7 @@ return new class extends Migration
         Schema::create('kegiatan', function (Blueprint $table) {
             $table->id('id_kegiatan');
             $table->string('kode_kegiatan');
-            $table->string('nama_kegiatan');
+            $table->text('nama_kegiatan');
             $table->unsignedInteger('tahun');
             $table->unique(['kode_kegiatan', 'tahun'], 'unique_kegiatan');
         });

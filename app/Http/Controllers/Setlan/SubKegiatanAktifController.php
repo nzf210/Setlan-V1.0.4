@@ -23,13 +23,13 @@ class SubKegiatanAktifController extends Controller
 {
     $user = auth()->user();
     $role = $user->roles->first()?->name ?? 'guest';
-    $idKabUser = UserKabupatenModel::where('id_user', $user->id)->value('id_kab');
+    $idKabUser = UserKabupatenModel::where('id_user', $user->id)->value('id_kabupaten');
     $idOpd = UserOpdModel::where('id_user', $user->id)->value('id_opd');
 
     $initialData = [
         'kabupatens' => $role === 'super_admin' ? KabupatenModel::all() : [],
         'opds' => match ($role) {
-            'admin_kab' => OpdModel::where('id_kab', $idKabUser)->get(),
+            'admin_kab' => OpdModel::where('id_kabupaten', $idKabUser)->get(),
             'admin_opd', 'operator' => OpdModel::where('id_opd', $idOpd)->get(),
             default => [],
         },
@@ -47,7 +47,7 @@ class SubKegiatanAktifController extends Controller
 }
 
     public function getOpds($id_kab) {
-        $data = OpdModel::where('id_kab', operator: $id_kab)->get();
+        $data = OpdModel::where('id_kabupaten', operator: $id_kab)->get();
         return back()->with('value', $data);
     }
 
@@ -66,10 +66,10 @@ class SubKegiatanAktifController extends Controller
     }
 
     public function saveData(Request $request) {
-        $tahun = Cookie::get('year');
+        $tahun = Cookie::get('tahun');
         $user = auth()->user();
 
-        $idKabUser = UserKabupatenModel::where('id_user', $user->id)->pluck('id_kab')->first();
+        $idKabUser = UserKabupatenModel::where('id_user', $user->id)->pluck('id_kabupaten')->first();
         $idOpd = UserOpdModel::where('id_user', $user->id)->pluck('id_opd')->first();
         $role = $user->roles->pluck('name')[0];
 
@@ -96,7 +96,7 @@ class SubKegiatanAktifController extends Controller
             ],
         ]);
         SubKegiatanAktifModel::create([
-            'id_kab' => $validated['kabupaten_id'],
+            'id_kabupaten' => $validated['kabupaten_id'],
             'id_opd' => $validated['opd_id'],
             'id_unit' => $validated['unit_id'],
             'id_subkeg' => $validated['id_subkeg'],
@@ -126,7 +126,7 @@ class SubKegiatanAktifController extends Controller
     {
         $user = auth()->user();
         $role = $user->roles->first()?->name ?? 'guest';
-        $idKabUser = UserKabupatenModel::where('id_user', $user->id)->value('id_kab');
+        $idKabUser = UserKabupatenModel::where('id_user', $user->id)->value('id_kabupaten');
         $idOpd = UserOpdModel::where('id_user', $user->id)->value('id_opd');
 
         $query = SubKegiatanAktifModel::with([
@@ -134,7 +134,7 @@ class SubKegiatanAktifController extends Controller
             'opd',
             'unit',
             'subKegiatan.kegs'
-        ])->where('tahun', Cookie::get('year'));
+        ])->where('tahun', Cookie::get('tahun'));
 
         $query->when($idOrName, function ($q) use ($idOrName) {
             $q->where('id_subkeg', 'like', "%{$idOrName}%")
@@ -145,7 +145,7 @@ class SubKegiatanAktifController extends Controller
 
         switch ($role) {
             case 'admin_kab':
-                $query->where('id_kab', $idKabUser);
+                $query->where('id_kabupaten', $idKabUser);
                 break;
 
             case 'admin_opd':

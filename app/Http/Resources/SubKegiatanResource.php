@@ -18,7 +18,7 @@ class SubKegiatanResource extends JsonResource
             'id' => $this->id,
             'id_unit' => $this->id_unit,
             'id_opd' => $this->id_opd,
-            'id_kab' => $this->id_kab,
+            'id_kabupaten' => $this->id_kab,
             'id_subkeg' => $this->id_subkeg,
             'nama_keg' => $this->subKegiatan?->kegs?->nama,
             'nama' => $this->subKegiatan?->nama,

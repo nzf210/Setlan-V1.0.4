@@ -11,12 +11,13 @@ class UserKabupatenModel extends Model
     protected $table = "user_kabupaten";
 
     protected $fillable = [
-        'id_kab',
+        'id_kabupaten',
+        'kode_kabupaten',
         'id_user'
     ];
 
     public function users()
     {
-        return $this->belongsToMany(UserModel::class, 'users' );
+        return $this->belongsToMany(User::class, 'users' );
     }
 }

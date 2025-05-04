@@ -15,10 +15,10 @@ class DatabaseSeeders extends Seeder
     public function run(): void
     {
         $this->call([
-            BarangModel::class,
-            KodeBarangModel::class,
             KabupatenModel::class,
             OpdModel::class,
+            BarangModel::class,
+            KodeBarangModel::class,
             UnitModel::class,
             SatuanModel::class,
         ]);

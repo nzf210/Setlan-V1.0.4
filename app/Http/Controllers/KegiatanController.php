@@ -18,10 +18,10 @@ class KegiatanController extends Controller
     {
         $search = $request->input('search');
         $perPage = $request->input('per_page', 10);
-        $tahun = $request->input('year', Cookie::get('year'));
+        $tahun = $request->input('tahun', Cookie::get('tahun'));
 
         // Validasi tahun
-        $tahun_aktif = TahunModel::where('year', $tahun)->first();
+        $tahun_aktif = TahunModel::where('tahun', $tahun)->first();
         if (!$tahun || !$tahun_aktif) {
             return back()->withErrors([
                 'system' => SESI
@@ -42,17 +42,17 @@ class KegiatanController extends Controller
         $kegiatans = $query->paginate($perPage)
             ->appends([
                 'search' => $search,
-                'year' => $tahun,
+                'tahun' => $tahun,
                 'per_page' => $perPage
             ]);
-        $years = TahunModel::pluck('year')->sortDesc()->values();
+        $years = TahunModel::pluck('tahun')->sortDesc()->values();
 
         return Inertia::render('Setlan/Kegiatan/KegiatanIndex', [
             'kegiatans' => $kegiatans,
             'years' => $years,
             'filters' => [
                 'search' => $search,
-                'year' => $tahun,
+                'tahun' => $tahun,
                 'per_page' => $perPage
             ]
         ]);
@@ -60,8 +60,8 @@ class KegiatanController extends Controller
 
     public function store(Request $request)
 {
-    $tahun = Cookie::get('year');
-    $tahun_aktif = TahunModel::where('year', $tahun)->first();
+    $tahun = Cookie::get('tahun');
+    $tahun_aktif = TahunModel::where('tahun', $tahun)->first();
     if (!$tahun || !$tahun_aktif) {
         $response = back()->withErrors([
             'system' => SESI
@@ -92,8 +92,8 @@ class KegiatanController extends Controller
 
     public function update(Request $request, KegiatanModel $kegiatan)
 {
-    $tahun = Cookie::get('year');
-    $tahunAktif = TahunModel::where('year', $tahun)->first();
+    $tahun = Cookie::get('tahun');
+    $tahunAktif = TahunModel::where('tahun', $tahun)->first();
 
     // Validasi tahun cookie
     if (!$tahun || !$tahunAktif) {

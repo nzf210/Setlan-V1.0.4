@@ -98,7 +98,7 @@ watch(
                     <label class="block text-gray-700 font-semibold mb-2" for="kab">
                         Kabupaten
                     </label>
-                    <ComboSelect :load-options="kabs" v-model="kabSelect" :id="'kab'" />
+                    <ComboSelect :load-options="kabs" v-model="kabSelect" :id="'kabupaten'" />
                 </div>
                 <div v-if="opd.length > 1">
                     <label class="block text-gray-700 font-semibold mb-2" for="opd">

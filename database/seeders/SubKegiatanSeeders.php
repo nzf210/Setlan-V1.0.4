@@ -10,9 +10,7 @@ class SubKegiatanSeeders extends Seeder
 {
     public function run(): void
     {
-        $factory = new SubKegiatanFactory();
-        foreach ($factory->predefinedData() as $data) {
-          SubKegiatanModel::upsert($data,['id_subkeg']);
-        }
+
+        SubKegiatanModel::factory()->count(1120)->create();
     }
 }

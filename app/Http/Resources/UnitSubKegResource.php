@@ -16,7 +16,7 @@ class UnitSubKegResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'id_kab' => $this->id_kab,
+            'id_kabupaten' => $this->id_kab,
             'id_opd' => $this->id_opd,
             'id_unit' => $this->id_unit,
             'id_subkeg' => $this->id_subkeg,

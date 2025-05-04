@@ -13,9 +13,9 @@ class KegiatanModel extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'id_kegiatan',
         'tahun',
-        'nama_kegiatan',
+        'kode_kegiatan',
+        'nama_kegiatan'
     ];
 
 }

@@ -14,10 +14,10 @@ use Inertia\Inertia;
 class KodeBarangController extends Controller
 {
     public function get(Request $request){
-        $idKab = Cookie::get('id_kab');
-        $tahun = Cookie::get('year');
-        $tahun_aktif = TahunModel::where('year', $tahun)->first();
-        $query = KodeBarangModel::whereRaw('LENGTH(id_kd_barang) = 20')->where(['id_kab' => $idKab, 'tahun' => $tahun_aktif->kd_id_barang]);
+        $idKab = Cookie::get('id_kabupaten');
+        $tahun = Cookie::get('tahun');
+        $tahun_aktif = TahunModel::where('tahun', $tahun)->first();
+        $query = KodeBarangModel::whereRaw('LENGTH(id_kd_barang) = 20')->where(['id_kabupaten' => $idKab, 'tahun' => $tahun_aktif->kd_id_barang]);
         $search = $request->has('nama');
         if ($search && $request->nama != '') {
             if (preg_match('/[0-9\.]/', $request->nama)) {
@@ -32,11 +32,11 @@ class KodeBarangController extends Controller
 
     public function index(Request $request)
     {
-        $idKab = Cookie::get('id_kab');
-        $tahun = Cookie::get('year');
-        $tahun_aktif = TahunModel::where('year', $tahun)->first();
+        $idKab = Cookie::get('id_kabupaten');
+        $tahun = Cookie::get('tahun');
+        $tahun_aktif = TahunModel::where('tahun', $tahun)->first();
         $query = KodeBarangModel::query()
-            ->where(    ['id_kab' => $idKab, 'tahun' => $tahun_aktif->kd_id_barang])
+            ->where(    ['id_kabupaten' => $idKab, 'tahun' => $tahun_aktif->kd_id_barang])
             ->when($request->search, function ($query, $search) {
                 $query->where(function ($q) use ($search) {
                     $q->where('id_kd_barang', 'like', "%{$search}%")
@@ -46,8 +46,8 @@ class KodeBarangController extends Controller
             ->orderBy('tahun', 'desc')
             ->orderBy('id_kd_barang');
         return Inertia::render('Setlan/Barang/KodeBarang/Index', [
-            'kodeBarang' => $query->with('kab')->paginate(10)->withQueryString(),
-            'years' => TahunModel::pluck('year')->sortDesc()->values(),
+            'kodeBarang' => $query->with('kabupaten')->paginate(10)->withQueryString(),
+            'years' => TahunModel::pluck('tahun')->sortDesc()->values(),
             'filters' => $request->only(['search']),
             'can' => [
                 'create' => auth()->user()->can('create', KodeBarangModel::class),
@@ -60,9 +60,9 @@ class KodeBarangController extends Controller
     public function store(Request $request)
 {
     // Get required values from cookies
-    $idKab = Cookie::get('id_kab');
-    $tahun = Cookie::get('year');
-    $tahun_aktif = TahunModel::where('year', $tahun)->first();
+    $idKab = Cookie::get('id_kabupaten');
+    $tahun = Cookie::get('tahun');
+    $tahun_aktif = TahunModel::where('tahun', $tahun)->first();
     // Validate required cookie values
     if (!$idKab || !$tahun || !$tahun_aktif) {
         return back()->withErrors([
@@ -77,7 +77,7 @@ class KodeBarangController extends Controller
             'string',
             'max:255',
             Rule::unique('kode_barang')->where(function ($query) use ($idKab, $tahun_aktif) {
-                return $query->where('id_kab', $idKab)
+                return $query->where('id_kabupaten', $idKab)
                             ->where('tahun', $tahun_aktif->kd_id_barang);
             })
         ],
@@ -88,7 +88,7 @@ class KodeBarangController extends Controller
         // Create with combined data
         KodeBarangModel::create([
             ...$validated,
-            'id_kab' => $idKab,
+            'id_kabupaten' => $idKab,
             'tahun' => $tahun_aktif->kd_id_barang,
         ]);
 
@@ -112,9 +112,9 @@ class KodeBarangController extends Controller
 {
     // Authorization check
     Gate::authorize('update', $kodeBarang);
-    $idKab = Cookie::get('id_kab');
-    $tahun = Cookie::get('year');
-    $tahun_aktif = TahunModel::where('year', $tahun)->first();
+    $idKab = Cookie::get('id_kabupaten');
+    $tahun = Cookie::get('tahun');
+    $tahun_aktif = TahunModel::where('tahun', $tahun)->first();
     // Validate required cookie values
     if (!$idKab || !$tahun || !$tahun_aktif) {
         return back()->withErrors([
@@ -129,7 +129,7 @@ class KodeBarangController extends Controller
                 'string',
                 'max:255',
                 Rule::unique('kode_barang', 'id_kd_barang')
-                    ->where('id_kab', $idKab)
+                    ->where('id_kabupaten', $idKab)
                     ->where('tahun', $tahun_aktif->kd_id_barang)
                     ->ignore($request->id)
             ],

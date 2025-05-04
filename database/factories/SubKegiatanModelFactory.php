@@ -2,15 +2,17 @@
 
 namespace Database\Factories;
 
+use App\Models\KegiatanModel;
+use App\Models\SubKegiatanModel;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 define('ID_OPD','id_opd');
 define('ID_UNIT','id_unit');
 define('ID_KEG','id_keg');
 define('ID_SUBKEG','id_subkeg');
-class SubKegiatanFactory extends Factory
+class SubKegiatanModelFactory extends Factory
 {
-    protected static $subKeg =[
+    protected static $subKegiatan =[
 [ 'tahun' =>  2024, ID_KEG => '1.01.02.2.01' , ID_SUBKEG => '1.01.0.00.0.00.01.0000.1.01.02.2.01.0001' , 'nama' => 'Pembangunan Unit Sekolah Baru (USB)' ],
 [ 'tahun' =>  2024, ID_KEG => '1.01.02.2.01' , ID_SUBKEG => '1.01.0.00.0.00.01.0000.1.01.02.2.01.0003' , 'nama' => 'Pembangunan Ruang Guru/Kepala Sekolah/TU' ],
 [ 'tahun' =>  2024, ID_KEG => '1.01.02.2.01' , ID_SUBKEG => '1.01.0.00.0.00.01.0000.1.01.02.2.01.0004' , 'nama' => 'Pembangunan Ruang Unit Kesehatan Sekolah' ],
@@ -1133,13 +1135,19 @@ class SubKegiatanFactory extends Factory
 [ 'tahun' =>  2024, ID_KEG => '7.01.01.2.09' , ID_SUBKEG => '7.01.2.13.0.00.08.0000.7.01.01.2.09.0001' , 'nama' => 'Penyediaan Jasa Pemeliharaan, Biaya Pemeliharaan, dan Pajak Kendaraan Perorangan Dinas atau Kendaraan Dinas Jabatan' ]
     ];
 
+    protected $model = SubKegiatanModel::class;
+    protected static $index = 0;
     public function definition(): array
     {
-        return[];
+        $subKegiatan = self::$subKegiatan[self::$index];
+        self::$index = (self::$index + 1) % count(self::$subKegiatan);
+        $kegiatan = KegiatanModel::inRandomOrder()->first();
+        return [
+            'tahun' => $subKegiatan['tahun'],
+            'id_kegiatan' => $kegiatan->id_kegiatan,
+            'kode_sub_kegiatan' => $subKegiatan['id_subkeg'],
+            'nama_sub_kegiatan' => $subKegiatan['nama'],
+        ];
     }
 
-    public function predefinedData(): array
-    {
-        return static::$subKeg;
-    }
 }

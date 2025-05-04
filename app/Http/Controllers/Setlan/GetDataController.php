@@ -14,9 +14,9 @@ class GetDataController extends Controller
     {
         $keyword = $request->input('search');
 
-        $kab = MKab::query()
+        $kab = KabupatenModel::query()
             ->when($keyword, function ($query) use ($keyword) {
-                $query->where('id_kab', '=', $keyword)
+                $query->where('id_kabupaten', '=', $keyword)
                     ->orWhere('nama_kab', 'LIKE', "%{$keyword}%");
             })
             ->paginate(10);
@@ -35,12 +35,12 @@ class GetDataController extends Controller
         $keyword = $request->input('search');
 
         if (!$id) {
-            $id = Cookie::get('id_kab');
+            $id = Cookie::get('id_kabupaten');
         }
 
-        $opd = MOpd::query()
+        $opd = OpdModel::query()
             ->when($keyword, function ($query) use ($keyword, $id) {
-                $query->where('id_kab', '=', $id)
+                $query->where('id_kabupaten', '=', $id)
                     ->orWhere('id_opd', 'LIKE', "%{$keyword}%")
                     ->orWhere('nama_opd', 'LIKE', "%{$keyword}%");
             })

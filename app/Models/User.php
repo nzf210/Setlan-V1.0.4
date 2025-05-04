@@ -8,7 +8,8 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
 
-class UserModel extends Authenticatable
+define('SET_NULL','SET_NULL');
+class User extends Authenticatable
 {
     use HasFactory, Notifiable, HasRoles;
 

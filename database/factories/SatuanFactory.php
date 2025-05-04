@@ -4,174 +4,171 @@ namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-/**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\SatuanModel>
- */
 class SatuanFactory extends Factory
 {
     protected static $elements = [
         [
-            'nama' => 'Meter',
+            'nama_satuan' => 'Meter',
             'description' => 'Satuan panjang'
         ],
         [
-            'nama' => 'Meter Kubik',
+            'nama_satuan' => 'Meter Kubik',
             'description' => 'Satuan volume'
         ],
         [
-            'nama' => 'Meter Persegi',
+            'nama_satuan' => 'Meter Persegi',
             'description' => 'Satuan luas'
         ],
         [
-            'nama' => 'Kilogram',
+            'nama_satuan' => 'Kilogram',
             'description' => 'Satuan massa'
         ],
         [
-            'nama' => 'Paket',
+            'nama_satuan' => 'Paket',
             'description' => 'Barang yang dikemas'
         ],
         [
-            'nama' => 'Dokumen',
+            'nama_satuan' => 'Dokumen',
             'description' => 'Berkas dokumen'
         ],
         [
-            'nama' => 'Buah',
+            'nama_satuan' => 'Buah',
             'description' => 'Barang satuan buah'
         ],
         [
-            'nama' => 'Lembar',
+            'nama_satuan' => 'Lembar',
             'description' => 'Lembar kertas'
         ],
         [
-            'nama' => 'Pcs',
+            'nama_satuan' => 'Pcs',
             'description' => 'Barang satuan'
         ],
         [
-            'nama' => 'Pak',
+            'nama_satuan' => 'Pak',
             'description' => 'Satuan pak'
         ],
         [
-            'nama' => 'Unit',
+            'nama_satuan' => 'Unit',
             'description' => 'Unit tunggal'
         ],
         [
-            'nama' => 'Tahun',
+            'nama_satuan' => 'Tahun',
             'description' => 'Satuan waktu satu tahun'
         ],
         [
-            'nama' => 'Bulan',
+            'nama_satuan' => 'Bulan',
             'description' => 'Satuan waktu satu bulan'
         ],
         [
-            'nama' => 'Hari',
+            'nama_satuan' => 'Hari',
             'description' => 'Satuan waktu satu hari'
         ],
         [
-            'nama' => 'Jam',
+            'nama_satuan' => 'Jam',
             'description' => 'Satuan waktu satu jam'
         ],
         [
-            'nama' => 'Menit',
+            'nama_satuan' => 'Menit',
             'description' => 'Satuan waktu satu menit'
         ],
         [
-            'nama' => 'Detik',
+            'nama_satuan' => 'Detik',
             'description' => 'Satuan waktu satu detik'
         ],
         [
-            'nama' => 'Orang / Bulan',
+            'nama_satuan' => 'Orang / Bulan',
             'description' => 'Pengukuran sumber daya manusia per bulan'
         ],
         [
-            'nama' => 'Orang / Tahun',
+            'nama_satuan' => 'Orang / Tahun',
             'description' => 'Pengukuran sumber daya manusia per tahun'
         ],
         [
-            'nama' => 'Orang / Hari',
+            'nama_satuan' => 'Orang / Hari',
             'description' => 'Pengukuran sumber daya manusia per hari'
         ],
         [
-            'nama' => 'Orang / Bulan',
+            'nama_satuan' => 'Orang / Bulan',
             'description' => 'Pengukuran sumber daya manusia per bulan'
         ],
         [
-            'nama' => 'Orang / Tahun',
+            'nama_satuan' => 'Orang / Tahun',
             'description' => 'Pengukuran sumber daya manusia per tahun'
         ],
         [
-            'nama' => 'Orang / Hari',
+            'nama_satuan' => 'Orang / Hari',
             'description' => 'Pengukuran sumber daya manusia per hari'
         ],
         [
-            'nama' => 'Dus',
+            'nama_satuan' => 'Dus',
             'description' => 'Satuan kontainer'
         ],
         [
-            'nama' => 'Kilometer',
+            'nama_satuan' => 'Kilometer',
             'description' => 'Satuan jarak'
         ],
         [
-            'nama' => 'Tablet',
+            'nama_satuan' => 'Tablet',
             'description' => 'Satuan obat'
         ],
         [
-            'nama' => 'Ampul',
+            'nama_satuan' => 'Ampul',
             'description' => 'Botol kecil yang disegel'
         ],
         [
-            'nama' => 'Cubic Centimeter',
+            'nama_satuan' => 'Cubic Centimeter',
             'description' => 'Satuan volume'
         ],
         [
-            'nama' => 'Kodi',
+            'nama_satuan' => 'Kodi',
             'description' => 'Satuan kuantitas (20 item)'
         ],
         [
-            'nama' => 'Kotak',
+            'nama_satuan' => 'Kotak',
             'description' => 'Kotak kontainer'
         ],
         [
-            'nama' => 'Liter',
+            'nama_satuan' => 'Liter',
             'description' => 'Satuan volume'
         ],
         [
-            'nama' => 'Liter / Bulan',
+            'nama_satuan' => 'Liter / Bulan',
             'description' => 'Volume per bulan'
         ],
         [
-            'nama' => 'Liter / Tahun',
+            'nama_satuan' => 'Liter / Tahun',
             'description' => 'Volume per tahun'
         ],
         [
-            'nama' => 'Liter / Hari',
+            'nama_satuan' => 'Liter / Hari',
             'description' => 'Volume per hari'
         ],
         [
-            'nama' => 'Kilogram',
+            'nama_satuan' => 'Kilogram',
             'description' => 'Satuan massa'
         ],
         [
-            'nama' => 'Kilogram / Bulan',
+            'nama_satuan' => 'Kilogram / Bulan',
             'description' => 'Massa per bulan'
         ],
         [
-            'nama' => 'Kilogram / Tahun',
+            'nama_satuan' => 'Kilogram / Tahun',
             'description' => 'Massa per tahun'
         ],
         [
-            'nama' => 'Kilogram / Hari',
+            'nama_satuan' => 'Kilogram / Hari',
             'description' => 'Massa per hari'
         ],
         [
-            'nama' => 'Pcs / Bulan',
+            'nama_satuan' => 'Pcs / Bulan',
             'description' => 'Kuantitas unit per bulan'
         ],
         [
-            'nama' => 'Pcs / Tahun',
+            'nama_satuan' => 'Pcs / Tahun',
             'description' => 'Kuantitas unit per tahun'
         ],
         [
-            'nama' => 'Pcs / Hari',
+            'nama_satuan' => 'Pcs / Hari',
             'description' => 'Kuantitas unit per hari'
         ],
     ];

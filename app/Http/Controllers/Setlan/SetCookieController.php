@@ -18,7 +18,7 @@ use Illuminate\Validation\ValidationException;
 
 define('ID_OPD', 'required|string|max:22|min:22');
 define('ID_UNIT', 'required|string|max:5');
-define('YEAR', 'required|string|max:4|min:4');
+define('tahun', 'required|string|max:4|min:4');
 class SetCookieController extends Controller
 {
     protected $minutes = 60 * 24 * 30; // 30 days
@@ -31,10 +31,10 @@ class SetCookieController extends Controller
         switch (Auth::user()->getRoleNames()[0]) {
             case 'super_admin':
                 $request->validate([
-                    'id_kab' => 'required|string|max:5',
+                    'id_kabupaten' => 'required|string|max:5',
                     'id_opd' => ID_OPD,
                     'id_unit' => ID_OPD,
-                    'year' => YEAR,
+                    'tahun' => YEAR,
                 ]);
                 Cookie::queue("id_kab", $request->id_kab, $this->minutes);
                 Cookie::queue("id_opd", $request->id_opd, $this->minutes);
@@ -45,7 +45,7 @@ class SetCookieController extends Controller
                 $request->validate([
                 'id_opd' => ID_OPD,
                 'id_unit' => ID_OPD,
-                'year' => YEAR,
+                'tahun' => YEAR,
                 ]);
                 Cookie::queue("id_opd", $request->id_opd, $this->minutes);
                 Cookie::queue("id_unit", $request->id_unit, $this->minutes);
@@ -54,7 +54,7 @@ class SetCookieController extends Controller
             default:
                 $request->validate([
                 'id_unit' => ID_OPD,
-                'year' => YEAR,
+                'tahun' => YEAR,
                 ]);
                 Cookie::queue("id_unit", $request->id_unit, $this->minutes);
                 Cookie::queue("year", $request->year, $this->minutes);
@@ -99,7 +99,7 @@ class SetCookieController extends Controller
     public function checkStatus()
     {
         try {
-            $idKab = Cookie::get('id_kab');
+            $idKab = Cookie::get('id_kabupaten');
             $idOpd = Cookie::get('id_opd');
             $idUnit = Cookie::get('id_unit');
 
@@ -111,7 +111,7 @@ class SetCookieController extends Controller
                                     ->exists();
 
             $opdExistsInKab = OpdModel::where('id_opd', $idOpd)
-                                    ->where('id_kab', $idKab)
+                                    ->where('id_kabupaten', $idKab)
                                     ->exists();
 
             $result = $this->validateUnitRelations($unitExistsInOpd, $opdExistsInKab);
@@ -119,7 +119,7 @@ class SetCookieController extends Controller
                 return redirect()->back()->with('error', $result['message']);
             }
 
-            $isExistKab = UserKabupatenModel::where('id_kab', $idKab)->where('id_user', $idUser)->first();
+            $isExistKab = UserKabupatenModel::where('id_kabupaten', $idKab)->where('id_user', $idUser)->first();
             $isExistOpd = UserOpdModel::where('id_opd', $idOpd)->where('id_user', $idUser)->first();
             $isExistUnit = UserUnitModel::where('id_unit', $idUnit)->where('id_user', $idUser)->first();
 

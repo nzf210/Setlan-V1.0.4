@@ -18,6 +18,6 @@ class UserUnitModel extends Model
 
     public function users()
     {
-        return $this->belongsToMany(UserModel::class);
+        return $this->belongsToMany(User::class);
     }
 }

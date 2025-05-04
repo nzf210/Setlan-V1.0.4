@@ -2,16 +2,16 @@
 
 use App\Http\Controllers\AkuntansiController;
 use App\Http\Controllers\BarangController;
-use App\Http\Controllers\KodeBarang;
-use App\Http\Controllers\MKegController;
-use App\Http\Controllers\MSubkegController;
+use App\Http\Controllers\KodeBarangController;
+use App\Http\Controllers\KegiatanController;
+use App\Http\Controllers\Setlan\SubKegiatanAktifController;
+use App\Http\Controllers\SubkegiatanController;
 use App\Http\Controllers\MutasiController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Setlan\DashboardController;
 use App\Http\Controllers\Setlan\GetDataController;
 use App\Http\Controllers\Setlan\SatuanController;
 use App\Http\Controllers\Setlan\SetCookieController;
-use App\Http\Controllers\Setlan\UnitSubKegController;
 use App\Http\Controllers\StokController;
 use App\Http\Controllers\TahunController;
 use Illuminate\Foundation\Application;
@@ -61,11 +61,11 @@ Route::middleware(['auth', 'cors'])->prefix('setlan')->group(function () {
     Route::get('/barang/masuk', [BarangController::class, 'barangMasuk'])->name('setlan.barang.masuk');
 
     /**# Kode Barang */
-    Route::get('/barang/kodeBarang', [KodeBarang::class, 'get'])->name('setlan.kodebarang');
-    Route::get('/barang/pengaturan/kodeBarang', [KodeBarang::class, 'index'])->name('setlan.pengaturan.kodebarang');
-    Route::post('/barang/pengaturan/kdbStore', [KodeBarang::class, 'store'])->name('setlan.pengaturan.create');
-    Route::patch('/barang/pengaturan/kdbEdit', [KodeBarang::class, 'update'])->name('setlan.pengaturan.edit');
-    Route::delete('/barang/pengaturan/kdbDelete/{id}', [KodeBarang::class, 'destroy'])->name('setlan.pengaturan.hapus');
+    Route::get('/barang/kodeBarang', [KodeBarangController::class, 'get'])->name('setlan.kodebarang');
+    Route::get('/barang/pengaturan/kodeBarang', [KodeBarangController::class, 'index'])->name('setlan.pengaturan.kodebarang');
+    Route::post('/barang/pengaturan/kdbStore', [KodeBarangController::class, 'store'])->name('setlan.pengaturan.create');
+    Route::patch('/barang/pengaturan/kdbEdit', [KodeBarangController::class, 'update'])->name('setlan.pengaturan.edit');
+    Route::delete('/barang/pengaturan/kdbDelete/{id}', [KodeBarangController::class, 'destroy'])->name('setlan.pengaturan.hapus');
 
 
     Route::get('/barang/keluar', [BarangController::class, 'barangKeluar'])->name('setlan.barang.keluar');
@@ -93,7 +93,7 @@ Route::middleware(['auth', 'cors'])->prefix('setlan')->group(function () {
     Route::get('/satuan', [SatuanController::class, 'index'])->name('setlan.satuan');
 
     /**# Sub Kegiatan */
-    Route::get('/msubkeg', [MSubkegController::class, 'show'])->name('setlan.msubkeg');
+    Route::get('/msubkeg', [SubkegiatanController::class, 'show'])->name('setlan.msubkeg');
 
     /**# Tahun */
     Route::get('/tahun', [TahunController::class, 'index'])->name('setlan.tahun');
@@ -103,27 +103,27 @@ Route::middleware(['auth', 'cors'])->prefix('setlan')->group(function () {
     Route::delete('/pengaturan/tahun/delete/{id}', [TahunController::class, 'destroy'])->name('setlan.pengaturan.tahun.delete');
 
     /**# Kegiatan */
-    Route::get('/kegiatan', [MKegController::class, 'index'])->name('setlan.kegiatan');
-    Route::get('/pengaturan/kegiatan', [MKegController::class, 'view'])->name('setlan.kegiatan.pengaturan');
-    Route::post('/pengaturan/kegiatan/create', [MKegController::class, 'store'])->name('setlan.kegiatan.pengaturan.create');
-    Route::patch('/pengaturan/kegiatan/edit/{id}', [MKegController::class, 'update'])->name('setlan.kegiatan.pengaturan.edit');
-    Route::delete('/pengaturan/kegiatan/delete/{id}', [MKegController::class, 'destroy'])->name('setlan.kegiatan.pengaturan.delete');
+    Route::get('/kegiatan', [KegiatanController::class, 'index'])->name('setlan.kegiatan');
+    Route::get('/pengaturan/kegiatan', [KegiatanController::class, 'view'])->name('setlan.kegiatan.pengaturan');
+    Route::post('/pengaturan/kegiatan/create', [KegiatanController::class, 'store'])->name('setlan.kegiatan.pengaturan.create');
+    Route::patch('/pengaturan/kegiatan/edit/{id}', [KegiatanController::class, 'update'])->name('setlan.kegiatan.pengaturan.edit');
+    Route::delete('/pengaturan/kegiatan/delete/{id}', [KegiatanController::class, 'destroy'])->name('setlan.kegiatan.pengaturan.delete');
 
     /**# Sub Kegiatan */
-    Route::get('/subkegiatan', [MSubkegController::class, 'index'])->name('setlan.subKegiatan');
-    Route::post('/pengaturan/subkegiatan/create', [MSubkegController::class, 'store'])->name('setlan.subKegiatan.pengaturan.create');
-    Route::patch('/pengaturan/subkegiatan/edit', [MSubkegController::class, 'update'])->name('setlan.subKegiatan.pengaturan.edit');
-    Route::delete('/pengaturan/subkegiatan/{id}/delete', [MSubkegController::class, 'destroy'])->name('setlan.subKegiatan.pengaturan.delete');
+    Route::get('/subkegiatan', [SubkegiatanController::class, 'index'])->name('setlan.subKegiatan');
+    Route::post('/pengaturan/subkegiatan/create', [SubkegiatanController::class, 'store'])->name('setlan.subKegiatan.pengaturan.create');
+    Route::patch('/pengaturan/subkegiatan/edit', [SubkegiatanController::class, 'update'])->name('setlan.subKegiatan.pengaturan.edit');
+    Route::delete('/pengaturan/subkegiatan/{id}/delete', [SubkegiatanController::class, 'destroy'])->name('setlan.subKegiatan.pengaturan.delete');
 
     /**# Unit Sub Kegiatan */
-    Route::get('/unitsubkeg', [UnitSubKegController::class, 'index'])->name('setlan.unitSubKeg');
-    Route::get('/unitsubkegopd/{id_kab}', [UnitSubKegController::class, 'getOpds'])->name('setlan.unitSubKegOpd');
-    Route::get('/unitsubkegunit/{id_opd}', [UnitSubKegController::class, 'getUnits'])->name('setlan.unitSubKegUnit');
-    Route::get('/unitsubkegiatan', [UnitSubKegController::class, 'getSubKegiatans'])->name('setlan.unitSubKegiatan');
-    Route::get('/unitsubkegiatanGet/{idOrName?}', [UnitSubKegController::class, 'getUnitSubkegiatan'])->name('setlan.getUnitSubKegiatan');
-    Route::post('/unitsubkegSimpan', [UnitSubKegController::class, 'saveData'])->name('setlan.unitSubKegSimpan');
-    Route::patch('/unitsubkeg/edit', [UnitSubKegController::class, 'update'])->name('setlan.unitSubKeg.update');
-    Route::delete('/unitsubkegs/{id}/hapus', [UnitSubKegController::class, 'destroy'])->name('setlan.unitSubKeg.delete');
+    Route::get('/unitsubkeg', [SubKegiatanAktifController::class, 'index'])->name('setlan.unitSubKeg');
+    Route::get('/unitsubkegopd/{id_kab}', [SubKegiatanAktifController::class, 'getOpds'])->name('setlan.unitSubKegOpd');
+    Route::get('/unitsubkegunit/{id_opd}', [SubKegiatanAktifController::class, 'getUnits'])->name('setlan.unitSubKegUnit');
+    Route::get('/unitsubkegiatan', [SubKegiatanAktifController::class, 'getSubKegiatans'])->name('setlan.unitSubKegiatan');
+    Route::get('/unitsubkegiatanGet/{idOrName?}', [SubKegiatanAktifController::class, 'getUnitSubkegiatan'])->name('setlan.getUnitSubKegiatan');
+    Route::post('/unitsubkegSimpan', [SubKegiatanAktifController::class, 'saveData'])->name('setlan.unitSubKegSimpan');
+    Route::patch('/unitsubkeg/edit', [SubKegiatanAktifController::class, 'update'])->name('setlan.unitSubKeg.update');
+    Route::delete('/unitsubkegs/{id}/hapus', [SubKegiatanAktifController::class, 'destroy'])->name('setlan.unitSubKeg.delete');
 
     /**# Get Data Support */
     Route::get('/gsV1/kab', [GetDataController::class, 'getkabupaten'])->name('setlan.gsV1.kabupaten');

@@ -15,7 +15,7 @@ class KabupatenResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id_kab' => $this->id_kab,
+            'id_kabupaten' => $this->id_kab,
             'nama_kab' => $this->nama_kab,
         ];
     }

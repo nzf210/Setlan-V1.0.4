@@ -33,8 +33,8 @@ class AkuntansiController extends Controller
             'id_akun' => 'nullable|string'
         ]);
 
-        $tahun = Cookie::get('year');
-        $tahun_aktif = TahunModel::where('year', $tahun)->first();
+        $tahun = Cookie::get('tahun');
+        $tahun_aktif = TahunModel::where('tahun', $tahun)->first();
 
         if (!$tahun_aktif || !$tahun_aktif->akun) {
             return back()->withError('Tahun aktif tidak ditemukan atau belum memiliki data akun');
@@ -93,8 +93,8 @@ class AkuntansiController extends Controller
                         break;
                 }
 
-                $tahun = Cookie::get('year');
-                $tahun_aktif = $now ? TahunModel::where('year', $tahun)->first()->akun : $tahun;
+                $tahun = Cookie::get('tahun');
+                $tahun_aktif = $now ? TahunModel::where('tahun', $tahun)->first()->akun : $tahun;
                 $induk = AkunBelanjaModel::where(['tahun' => $tahun_aktif , 'id_akun'=> $id_akun])->first();
                 if ($induk) {
                     $indukHierarki[] = $induk;
@@ -105,13 +105,13 @@ class AkuntansiController extends Controller
     }
 
 public function GetAkunAktif(){
-        $idKab = request()->cookie('id_kab');
-        $tahun = request()->cookie('year');
+        $idKab = request()->cookie('id_kabupaten');
+        $tahun = request()->cookie('tahun');
         if (!$idKab || !$tahun) {
             return redirect()->back()->withErrors('Parameter tahun atau kabupaten tidak valid');
         }
 
-        $data = AkunAktifModel::with(['akun','mKab'])->where(['id_kab' => $idKab, 'tahun' => $tahun]);
+        $data = AkunAktifModel::with(['akun','mKab'])->where(['id_kabupaten' => $idKab, 'tahun' => $tahun]);
         $dt= $data->filtered()->paginate(25)->withQueryString();
 
         $dt->getCollection()->transform(function ($item) {
@@ -127,14 +127,14 @@ public function CreateAkunAktif(Request $request)
         $tahun = null;
         $error = null;
 
-        if (request()->hasCookie('id_kab')) {
-            $idKab = request()->cookie('id_kab');
+        if (request()->hasCookie('id_kabupaten')) {
+            $idKab = request()->cookie('id_kabupaten');
         } else {
             $error = 'id Kabupaten belum di set.';
         }
 
-        if (request()->hasCookie('year')) {
-            $tahun = request()->cookie('year');
+        if (request()->hasCookie('tahun')) {
+            $tahun = request()->cookie('tahun');
         } else {
             $error = 'tahun belum di set.';
         }
@@ -146,7 +146,7 @@ public function CreateAkunAktif(Request $request)
         try {
         $akuns = $request->input('akuns', []);
         $akunsWithIdKab = array_map(function($akun) use ($idKab,$tahun) {
-            $akun['id_kab'] = $idKab;
+            $akun['id_kabupaten'] = $idKab;
             $akun['tahun'] = $tahun;
             $akun['ids'] = $akun['id'];
             return $akun;

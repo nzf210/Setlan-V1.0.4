@@ -2,14 +2,14 @@
 
 namespace Database\Seeders;
 
-use App\Models\UserModel;
+use App\Models\User;
 use Illuminate\Database\Seeder;
 
 class UsersSeeders extends Seeder
 {
     public function run(): void
     {
-        $admin = UserModel::factory()->create([
+        $admin = User::factory()->create([
             'name' => 'Test Super Admin',
             'username' => 'test',
             'password' => bcrypt('password'),
@@ -17,7 +17,7 @@ class UsersSeeders extends Seeder
         ]);
         $admin->assignRole('super_admin');
 
-        $userAdminKab = UserModel::factory()->create([
+        $userAdminKab = User::factory()->create([
             'name' => 'Test Admin KAB',
             'username' => 'test1',
             'password' => bcrypt('password'),
@@ -25,7 +25,7 @@ class UsersSeeders extends Seeder
         ]);
         $userAdminKab->assignRole('admin_kab');
 
-        $opdMulti = UserModel::factory()->create([
+        $opdMulti = User::factory()->create([
             'name' => 'Test Admin OPD',
             'username' => 'test2',
             'password' => bcrypt('password'),
@@ -34,7 +34,7 @@ class UsersSeeders extends Seeder
         $opdMulti->assignRole('admin_opd');
 
 
-        $operator = UserModel::factory()->create([
+        $operator = User::factory()->create([
             'name' => 'Test Operator',
             'username' => 'test3',
             'password' => bcrypt('password'),
@@ -42,7 +42,7 @@ class UsersSeeders extends Seeder
         ]);
         $operator->assignRole('operator');
 
-        $opdMultiTes = UserModel::factory()->create([
+        $opdMultiTes = User::factory()->create([
             'name' => 'Tes kab',
             'username' => 'testkab',
             'password' => bcrypt('password'),

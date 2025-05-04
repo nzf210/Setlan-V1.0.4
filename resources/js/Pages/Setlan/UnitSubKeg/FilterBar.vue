@@ -40,7 +40,7 @@ const updateFilter = (key: keyof Props["filters"], value: string) => {
     <div class="grid grid-cols-4 gap-4 mb-6">
         <Combobox :options="$page.props.kabs as KabOption[]" label-key="nama_kab" value-key="id_kab"
             placeholder="Filter Kabupaten" v-model="selectedKabupaten"
-            @update:modelValue="(val: string | number) => updateFilter('id_kab', val as string)" />
+            @update:modelValue="(val: string | number) => updateFilter('id_kabupaten', val as string)" />
     </div>
 
 </template>

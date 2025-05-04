@@ -42,7 +42,7 @@ class AuthenticatedSessionController extends Controller
      */
     public function destroy(Request $request): RedirectResponse
     {
-        Cookie::queue(Cookie::forget('id_kab'));
+        Cookie::queue(Cookie::forget('id_kabupaten'));
         Cookie::queue(Cookie::forget('id_unit'));
         Cookie::queue(Cookie::forget('id_opd'));
         Auth::guard('web')->logout();

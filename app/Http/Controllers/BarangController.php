@@ -40,12 +40,12 @@ class BarangController extends Controller
     public function masterBarang()
 {
     try {
-        if (!request()->hasCookie('id_kab') || !request()->hasCookie('id_unit') || !request()->hasCookie('id_opd')) {
+        if (!request()->hasCookie('id_kabupaten') || !request()->hasCookie('id_unit') || !request()->hasCookie('id_opd')) {
             return back()->withErrors(PILIH_UNIT)->withInput();
         }
 
-        $idKab = request()->cookie('id_kab');
-        $tahun = request()->cookie('year');
+        $idKab = request()->cookie('id_kabupaten');
+        $tahun = request()->cookie('tahun');
 
         $hargaFrom = request('harga.from', 0); // Default 0 jika tidak ada
         $hargaTo = request('harga.to', 100000000); // Default 100,000,000 jika tidak ada
@@ -53,7 +53,7 @@ class BarangController extends Controller
 
         // Query barang dasar
         $barang = BarangModel::with(['category', 'akun', 'satuan'])
-            ->where('id_kab', $idKab)
+            ->where('id_kabupaten', $idKab)
             ->where('tahun', $tahun);
 
         // Cek apakah nilai filter adalah default
@@ -85,11 +85,11 @@ class BarangController extends Controller
     {
         $response = null;
         try {
-            if (request()->hasCookie('id_kab') || request()->hasCookie('id_unit') || request()->hasCookie('id_opd')) {
-                $idKab = request()->cookie('id_kab');
+            if (request()->hasCookie('id_kabupaten') || request()->hasCookie('id_unit') || request()->hasCookie('id_opd')) {
+                $idKab = request()->cookie('id_kabupaten');
                 $idUnit = request()->cookie('id_unit');
                 $idOpd = request()->cookie('id_opd');
-                $year = request()->cookie('year');
+                $year = request()->cookie('tahun');
             } else {
                 $response = back()->withErrors(PILIH_UNIT)->withInput();
             }

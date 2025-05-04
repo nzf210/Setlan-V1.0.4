@@ -14,7 +14,7 @@ return new class extends Migration
             $table->string('kode_barang');
             $table->foreignId('id_kabupaten')->constrained('kabupaten', 'id_kabupaten')->onDelete('cascade');
             $table->unsignedInteger('tahun');
-            $table->string('nama_kode_barang');
+            $table->text('nama_kode_barang');
             $table->unique(['kode_barang', 'id_kabupaten', 'tahun'], 'unique_kode_barang');
         });
     }

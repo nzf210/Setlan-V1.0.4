@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class AkunAktifModel extends Model
+class AkunBelanjaAktifModel extends Model
 {
     use HasFactory;
     protected $table = 'akunaktif';
@@ -14,7 +14,7 @@ class AkunAktifModel extends Model
     protected $fillable = [
         'ids',
         'id_akun',
-        'id_kab',
+        'id_kabupaten',
         'nama',
         'tahun'
     ];

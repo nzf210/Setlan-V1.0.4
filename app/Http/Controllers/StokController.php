@@ -22,7 +22,7 @@ class StokController extends Controller
             $idUnit = $mutasiController->getCookies()[2];
 
             $filterCondition = 'greater'; // or 'less_or_equal' for jumlah <= 0
-            $brgMasuk = MutasiModel::with(['barang.category', 'barang.akun', 'barang.satuan', 'subkeg', 'kab', 'opd', 'unit'])
+            $brgMasuk = MutasiModel::with(['barang.category', 'barang.akun', 'barang.satuan', 'subkeg', 'kabupaten', 'opd', 'unit'])
                 ->select(
                     'mutasi.id_barang',
                     'mutasi.id_kab',
@@ -187,7 +187,7 @@ class StokController extends Controller
             $idUnit = $mutasiController->getCookies()[2];
 
             $filterCondition = 'greater'; // or 'less_or_equal' for jumlah <= 0
-            $brgMasuk = MutasiModel::with(['barang.category', 'barang.akun', 'barang.satuan', 'subkeg', 'kab', 'opd', 'unit'])
+            $brgMasuk = MutasiModel::with(['barang.category', 'barang.akun', 'barang.satuan', 'subkeg', 'kabupaten', 'opd', 'unit'])
                 ->select(
                     'mutasi.id_barang',
                     'mutasi.id_kab',

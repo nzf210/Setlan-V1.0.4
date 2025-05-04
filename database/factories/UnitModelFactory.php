@@ -2,13 +2,13 @@
 
 namespace Database\Factories;
 
-use App\Models\MUnit;
+use App\Models\OpdModel;
+use App\Models\UnitModel;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 
-class UnitFactory extends Factory
+class UnitModelFactory extends Factory
 {
-
     protected static $index = 0;
     protected static $unit = [
         [
@@ -247,14 +247,16 @@ class UnitFactory extends Factory
             "nama_unit" => "UNIT UJI COBA III"
         ]
     ];
-    protected $model = MUnit::class;
+    protected $model = UnitModel::class;
     public function definition(): array
     {
         $unit = self::$unit[self::$index];
         self::$index = (self::$index + 1) % count(self::$unit);
+        $opd = OpdModel::inRandomOrder()->first();
+
         return [
-            'id_unit' => $unit['id_unit'],
-            'id_opd' => $unit['id_opd'],
+            'id_opd' => $opd->id_opd,
+            'kode_unit' => $unit['id_unit'],
             'nama_unit' => $unit['nama_unit'],
         ];
     }

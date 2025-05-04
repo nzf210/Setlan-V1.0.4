@@ -40,7 +40,7 @@ class MutasiDraftMasukResource extends JsonResource
             // Relasi
             'unit' => new UnitResource($this->whenLoaded('unit')),
             'opd' => new OpdResource($this->whenLoaded('opd')),
-            'kabupaten' => new KabupatenResource($this->whenLoaded('kab')),
+            'kabupaten' => new KabupatenResource($this->whenLoaded('kabupaten')),
             'barang' => new BarangResource($this->whenLoaded('barang')),
             'sub_kegiatan' => new SubKegiatanResource($this->whenLoaded('sub_kegiatan')),
         ];

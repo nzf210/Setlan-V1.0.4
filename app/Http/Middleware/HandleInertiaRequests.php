@@ -41,7 +41,7 @@ class HandleInertiaRequests extends Middleware
                 'error' => fn () => $request->session()->get('error'),
                 'info' => fn () => $request->session()->get('info'),
                 'value' => fn () => $request->session()->get('value'),
-                'kab' => fn () => $request->session()->get('kab'),
+                'kabupaten' => fn () => $request->session()->get('kabupaten'),
                 'unit' => fn () => $request->session()->get('unit'),
                 'opd' => fn () => $request->session()->get('opd'),
             ],

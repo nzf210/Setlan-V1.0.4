@@ -25,7 +25,7 @@ class MutasiController extends Controller
 {
     public function index()
     {
-        $mkab =  KabupatenModel::get()->sortBy(['id_kab']);
+        $mkab =  KabupatenModel::get()->sortBy(['id_kabupaten']);
         $mopd =  OpdModel::get()->sortBy(['id_opd']);
         $munit =  UnitModel::get()->sortBy(['id_unit']);
         return redirect()->back()->with(['mkab' => $mkab, 'mopd' => $mopd, 'munit' => $munit]);
@@ -49,7 +49,7 @@ class MutasiController extends Controller
 
         /** Cek apakah sudah ada di draft atau belum */
         $barangMutasi = MutasiModel::where(['type' => 'draft_masuk','id_barang' => $request->id_barang,
-                                        'id_kab' => $idKab,'id_opd' => $idOpd,'id_unit' => $idUnit, 'tahun' => $tahun])->first();
+                                        'id_kabupaten' => $idKab,'id_opd' => $idOpd,'id_unit' => $idUnit, 'tahun' => $tahun])->first();
         if ($barangMutasi) {
             return redirect()->back()->with('info', 'Barang sudah di tambahkan ke list draft.');
             } else {
@@ -77,7 +77,7 @@ class MutasiController extends Controller
                 $search_sub = $request->input('search_sub');
 
                 $query = MutasiModel::where(["type" => "draft_masuk","id_kab" => $idKab, "id_opd" => $idOpd, "id_unit" => $idUnit , "tahun" => $tahun])
-                            ->with(['unit','opd','kab','barang.category','barang.akun','barang.satuan','subkeg.subKegiatan']);
+                            ->with(['unit','opd','kabupaten','barang.category','barang.akun','barang.satuan','subkeg.subKegiatan']);
                 if ($search) {
                     $query->where(function ($q) use ($search) {
                         $q->where('id_barang', 'like', "%{$search}%")
@@ -116,7 +116,7 @@ class MutasiController extends Controller
             $idOpd = $this->getCookies()[1];
             $idUnit = $this->getCookies()[2];
             $tahun = $this->getCookies()[3];
-            $draft = MutasiModel::where(['id'=> $id, 'id_barang' => $id_barang, 'id_kab' => $idKab,
+            $draft = MutasiModel::where(['id'=> $id, 'id_barang' => $id_barang, 'id_kabupaten' => $idKab,
             'id_opd' => $idOpd, 'id_unit' => $idUnit, 'type' => 'draft_masuk', 'tahun' => $tahun])
             ->firstOrFail();
             $draft->tgl_beli = $request->tgl_beli;
@@ -134,7 +134,7 @@ class MutasiController extends Controller
             $tahun = $this->getCookies()[3];
             $draft = MutasiModel::where
                 ([
-                    'id'=> $id, 'id_barang' => $id_barang, 'id_kab' => $idKab,
+                    'id'=> $id, 'id_barang' => $id_barang, 'id_kabupaten' => $idKab,
                     'id_opd' => $idOpd, 'id_unit' => $idUnit, 'type' => 'draft_masuk',
                     'tahun' => $tahun
                 ])
@@ -157,7 +157,7 @@ class MutasiController extends Controller
                 } else {
                     return back()->withErrors('Pilih unit terlebih dahulu.')->withInput();
                 }
-                MutasiModel::where(['id'=> $id, 'id_barang' => $id_barang, 'id_kab' => $idKab,
+                MutasiModel::where(['id'=> $id, 'id_barang' => $id_barang, 'id_kabupaten' => $idKab,
                 'id_opd' => $idOpd, 'id_unit' => $idUnit, 'type' => 'draft_masuk' , 'tahun' => $tahun])
                 ->firstOrFail()->delete();
                 return back()->with('success', 'Berhasil Menghapus Draft.');
@@ -172,7 +172,7 @@ class MutasiController extends Controller
                     $idUnit = $this->getCookies()[2];
                     $tahun = $this->getCookies()[3];
                     if($request->type === 'jumlah'){
-                        $draft = MutasiModel::where(['id'=> $id, 'id_barang' => $id_barang, 'id_kab' => $idKab,
+                        $draft = MutasiModel::where(['id'=> $id, 'id_barang' => $id_barang, 'id_kabupaten' => $idKab,
                             'id_opd' => $idOpd, 'id_unit' => $idUnit, 'type' => 'draft_masuk', 'tahun' => $tahun])
                             ->firstOrFail();
                             $draft->jumlah = $request->jumlah;
@@ -180,7 +180,7 @@ class MutasiController extends Controller
                             $draft->save();
                     }
                     if($request->type === 'pajak'){
-                        $draft = MutasiModel::where(['id'=> $id, 'id_barang' => $id_barang, 'id_kab' => $idKab,
+                        $draft = MutasiModel::where(['id'=> $id, 'id_barang' => $id_barang, 'id_kabupaten' => $idKab,
                             'id_opd' => $idOpd, 'id_unit' => $idUnit, 'type' => 'draft_masuk' , 'tahun' => $tahun])
                             ->firstOrFail();
                             $draft->pajak = $request->pajak < 0 ? 0 : $request->pajak ;
@@ -188,7 +188,7 @@ class MutasiController extends Controller
                             $draft->save();
                     }
                     if($request->type === 'penyesuaian'){
-                        $draft = MutasiModel::where(['id'=> $id, 'id_barang' => $id_barang, 'id_kab' => $idKab,
+                        $draft = MutasiModel::where(['id'=> $id, 'id_barang' => $id_barang, 'id_kabupaten' => $idKab,
                             'id_opd' => $idOpd, 'id_unit' => $idUnit, 'type' => 'draft_masuk' , 'tahun' => $tahun])
                             ->firstOrFail();
                             $draft->penyesuaian = $request->penyesuaian < 0 ? 0 : $request->penyesuaian;
@@ -212,11 +212,11 @@ class MutasiController extends Controller
     }
 
     public function getCookies(){
-        if ( request()->hasCookie('id_kab') || request()->hasCookie('id_unit') || request()->hasCookie('id_opd') || request()->hasCookie('year')) {
-            $idKab = request()->cookie('id_kab');
+        if ( request()->hasCookie('id_kabupaten') || request()->hasCookie('id_unit') || request()->hasCookie('id_opd') || request()->hasCookie('tahun')) {
+            $idKab = request()->cookie('id_kabupaten');
             $idUnit = request()->cookie('id_unit');
             $idOpd = request()->cookie('id_opd');
-            $tahun = request()->cookie('year');
+            $tahun = request()->cookie('tahun');
             return [$idKab, $idOpd,$idUnit, $tahun];
         } else {
             return back()->withErrors('Pilih unit terlebih dahulu.')->withInput();
@@ -233,10 +233,10 @@ class MutasiController extends Controller
                 [   'id_unit'=>$idUnit,
                     'id_opd'=>$idOpd,
                     'type'=>'masuk',
-                    'id_kab'=>$idKab,
+                    'id_kabupaten'=>$idKab,
                     'tahun'=>$tahun
                 ])
-            ->with(['unit','opd','kab','barang.category','barang.akun','barang.satuan','subkeg']);
+            ->with(['unit','opd','kabupaten','barang.category','barang.akun','barang.satuan','subkeg']);
             $wp = $brgMasuk->filtered()->paginate(25)->withQueryString();
             return Inertia::render('Setlan/Barang/Masuk/BarangMasuk',
 
@@ -258,8 +258,8 @@ class MutasiController extends Controller
             $idKab = $this->getCookies()[0];
             $idOpd = $this->getCookies()[1];
             $idUnit = $this->getCookies()[2];
-            $sAwal = MutasiModel::where(['id_unit'=>$idUnit, 'id_opd'=>$idOpd, 'type'=>'sawal', 'id_kab'=>$idKab])
-            ->with(['unit','opd','kab','barang.category','barang.akun','barang.satuan','subkeg']);
+            $sAwal = MutasiModel::where(['id_unit'=>$idUnit, 'id_opd'=>$idOpd, 'type'=>'sawal', 'id_kabupaten'=>$idKab])
+            ->with(['unit','opd','kabupaten','barang.category','barang.akun','barang.satuan','subkeg']);
             $wp = $sAwal->filtered()->paginate(25)->withQueryString();
             return Inertia::render('Setlan/Barang/Masuk/Sawal',
             [   'data' => $wp,
@@ -322,7 +322,7 @@ class MutasiController extends Controller
     {
         return [
             'type' => 'sawal',
-            'id_kab' => $idKab,
+            'id_kabupaten' => $idKab,
             'id_opd' => $idOpd,
             'id_unit' => $idUnit
         ];
@@ -336,7 +336,7 @@ class MutasiController extends Controller
         $idOpd = $this->getCookies()[1];
         $idUnit = $this->getCookies()[2];
         $tahun = $this->getCookies()[3];
-        $mutasiR6 = MutasiModel::with(['barang', 'barang.akun'])->where(['id_kab' => $idKab, 'id_opd' => $idOpd, 'id_unit' => $idUnit , 'tahun' => $tahun])
+        $mutasiR6 = MutasiModel::with(['barang', 'barang.akun'])->where(['id_kabupaten' => $idKab, 'id_opd' => $idOpd, 'id_unit' => $idUnit , 'tahun' => $tahun])
         ->whereIn('type', $type)
         ->get();
 
