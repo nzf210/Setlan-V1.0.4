@@ -13,8 +13,8 @@ return new class extends Migration
             $table->foreignId('id_kabupaten')->constrained('kabupaten', 'id_kabupaten')->onDelete('cascade');
             $table->unsignedInteger('tahun')->default(0);
             $table->unsignedInteger('tahun_akun')->default(0);
-            $table->unsignedInteger('tahun_kode_barang')->default(0);
             $table->unsignedInteger('tahun_kegiatan')->default(0);
+            $table->unsignedInteger('tahun_kode_barang')->default(0);
             $table->unsignedInteger('tahun_sub_kegiatan')->default(0);
             $table->unique(['id_kabupaten', 'tahun']);
         });

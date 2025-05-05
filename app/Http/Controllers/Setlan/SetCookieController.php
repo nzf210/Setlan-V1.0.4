@@ -16,7 +16,6 @@ use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Validation\ValidationException;
 
-define('REQ_NUM', 'required|numeric');
 class SetCookieController extends Controller
 {
     protected $minutes = 60 * 24 * 30; // 30 days

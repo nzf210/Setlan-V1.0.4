@@ -2,19 +2,19 @@
 
 namespace App\Http\Controllers\Setlan;
 
-use App\Http\Controllers\Controller;
-use App\Models\KabupatenModel;
+use Inertia\Inertia;
 use App\Models\OpdModel;
-use App\Models\TahunModel;
 use App\Models\UnitModel;
-use App\Models\UserKabupatenModel;
+use App\Models\TahunModel;
 use App\Models\UserOpdModel;
-use App\Models\UserUnitModel;
 use Illuminate\Http\Request;
+use App\Models\UserUnitModel;
+use App\Models\KabupatenModel;
+use App\Models\UserKabupatenModel;
+use Illuminate\Support\Facades\Log;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cookie;
-use Illuminate\Support\Facades\Log;
-use Inertia\Inertia;
 
 define('SETIDX', 'Setlan/ChooseUnit/Index');
 class DashboardController extends Controller
@@ -24,7 +24,6 @@ class DashboardController extends Controller
     public function index()
     {
         try {
-
         $idKab = Cookie::get('id_kabupaten');
         $idOpd = Cookie::get('id_opd');
         $idUnit = Cookie::get('id_unit');
@@ -40,16 +39,13 @@ class DashboardController extends Controller
             'nama_opd' => $namaOpd->first()->nama_opd,
             'nama_unit' => $namaUnit->first()->nama_unit,
         ]);
-
-    } catch (\Throwable $th) {
-        Log::info($th);
-    }
-
+        } catch (\Throwable $th) {
+            Log::info($th);
+        }
     }
 
     public function unit()
     {
-
         $list_data = $this->checkRoleLogin();
         return Inertia::render(SETIDX, [
             'user' => Auth::user(),
@@ -58,7 +54,6 @@ class DashboardController extends Controller
             'unit' => $list_data['unit'],
             'tahun' => $this->getTahun(),
         ]);
-
     }
 
     public function getListOpd(Request $request)

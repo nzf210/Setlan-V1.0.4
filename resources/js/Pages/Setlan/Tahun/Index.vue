@@ -13,18 +13,20 @@ import {
     CalendarDays,
     Loader2,
 } from "lucide-vue-next";
+import { Can } from "@/types";
 
 interface Tahun {
-    id: number;
-    year: number;
-    akun: number;
-    kd_id_barang: number;
-    keg: number;
-    sub_keg: number;
+    id_tahun: number;
+    tahun: number;
+    tahun_akun: number;
+    tahun_kode_barang: number;
+    tahun_sub_kegiatan: number;
+    tahun_kegiatan: number;
 }
 
 const props = defineProps<{
     tahun: Tahun[];
+    can: Can;
 }>();
 
 const daftarTahun = ref<Tahun[]>(props.tahun);
@@ -35,7 +37,7 @@ const updatingAkunId = ref<number | null>(null);
 const deletingId = ref<number | null>(null);
 
 const formTambah = useForm({
-    year: "",
+    tahun: "",
 });
 
 const notifikasi = ref({
@@ -56,23 +58,23 @@ const showNotifikasi = (type: "success" | "error", message: string): void => {
 };
 
 const tambahTahun = () => {
-    formTambah.year = tahunBaru.value;
+    formTambah.tahun = tahunBaru.value;
     formTambah.post(route("setlan.pengaturan.tahun.create"), {
         preserveScroll: true,
         onSuccess: () => {
             const newYear = {
-                id: Math.max(...daftarTahun.value.map((y) => y.id)) + 1,
-                year: parseInt(tahunBaru.value),
-                akun: parseInt(tahunBaru.value),
-                keg: parseInt(tahunBaru.value),
-                sub_keg: parseInt(tahunBaru.value),
-                kd_id_barang: 0,
+                id_tahun: Math.max(...daftarTahun.value.map((y) => y.id_tahun)) + 1,
+                tahun: parseInt(tahunBaru.value),
+                tahun_akun: parseInt(tahunBaru.value),
+                tahun_kegiatan: parseInt(tahunBaru.value),
+                tahun_sub_kegiatan: parseInt(tahunBaru.value),
+                tahun_kode_barang: 0,
             };
             daftarTahun.value.push(newYear);
             tahunBaru.value = "";
             formTambah.reset();
             showNotifikasi("success", "Tahun berhasil ditambahkan");
-            router.reload({ only: ["years"] });
+            router.reload({ only: ["tahun"] });
         },
         onError: () => {
             showNotifikasi("error", "Gagal menambahkan tahun");
@@ -81,16 +83,16 @@ const tambahTahun = () => {
 };
 
 const updateKodeBarang = async (tahun: Tahun) => {
-    updatingKegId.value = tahun.id;
-    const originalValue = tahun.kd_id_barang;
+    updatingKegId.value = tahun.id_tahun;
+    const originalValue = tahun.tahun_kode_barang;
 
     try {
-        console.log("tahun.keg", tahun.id);
+        console.log("tahun.keg", tahun.id_tahun);
 
         await router.patch(
-            route("setlan.pengaturan.tahun.edit", { id: tahun.id }),
+            route("setlan.pengaturan.tahun.edit", { id: tahun.id_tahun }),
             {
-                kd_id_barang: tahun.kd_id_barang,
+                tahun_kode_barang: tahun.tahun_kode_barang,
             },
             {
                 preserveScroll: true,
@@ -101,7 +103,7 @@ const updateKodeBarang = async (tahun: Tahun) => {
             }
         );
     } catch (error) {
-        tahun.keg = originalValue;
+        tahun.tahun_kegiatan = originalValue;
         showNotifikasi("error", `Gagal memperbarui Tahun Kode Barang: ${error}`);
     } finally {
         updatingKegId.value = null;
@@ -109,15 +111,15 @@ const updateKodeBarang = async (tahun: Tahun) => {
 };
 
 const updateSubKegiatan = async (tahun: Tahun) => {
-    updatingSubKegId.value = tahun.id;
-    const originalValue = tahun.sub_keg;
+    updatingSubKegId.value = tahun.id_tahun;
+    const originalValue = tahun.tahun_sub_kegiatan;
 
     try {
         await router.patch(
-            route("setlan.pengaturan.tahun.edit", { id: tahun.id }),
+            route("setlan.pengaturan.tahun.edit", { id: tahun.id_tahun }),
             {
-                sub_keg: tahun.sub_keg,
-                keg: tahun.sub_keg,
+                sub_kegiatan: tahun.tahun_sub_kegiatan,
+                kegiatan: tahun.tahun_kegiatan,
             },
             {
                 preserveScroll: true,
@@ -130,7 +132,7 @@ const updateSubKegiatan = async (tahun: Tahun) => {
 
         showNotifikasi("success", "Tahun Sub Kegiatan berhasil diperbarui");
     } catch (error) {
-        tahun.sub_keg = originalValue;
+        tahun.tahun_sub_kegiatan = originalValue;
         showNotifikasi("error", `Gagal memperbarui Tahun Sub Kegiatan: ${error}`);
     } finally {
         updatingSubKegId.value = null;
@@ -138,14 +140,14 @@ const updateSubKegiatan = async (tahun: Tahun) => {
 };
 
 const updateAkun = (tahun: Tahun) => {
-    updatingAkunId.value = tahun.id;
-    const originalValue = tahun.akun;
+    updatingAkunId.value = tahun.id_tahun;
+    const originalValue = tahun.tahun_akun;
 
     try {
         router.patch(
-            route("setlan.pengaturan.tahun.edit", { id: tahun.id }),
+            route("setlan.pengaturan.tahun.edit", { id: tahun.id_tahun }),
             {
-                akun: tahun.akun,
+                tahun_akun: tahun.tahun_akun,
             },
             {
                 onSuccess: () => {
@@ -156,7 +158,7 @@ const updateAkun = (tahun: Tahun) => {
             }
         );
     } catch (error) {
-        tahun.akun = originalValue;
+        tahun.tahun_akun = originalValue;
         showNotifikasi("error", `Gagal memperbarui Tahun Akun: ${error}`);
     } finally {
         updatingAkunId.value = null;
@@ -167,7 +169,7 @@ const hapusTahun = (id: number) => {
     if (!confirm("Apakah Anda yakin ingin menghapus tahun ini?")) return;
 
     deletingId.value = id;
-    const index = daftarTahun.value.findIndex((y) => y.id === id);
+    const index = daftarTahun.value.findIndex((y) => y.id_tahun === id);
     const deletedYear = { ...daftarTahun.value[index] };
     daftarTahun.value.splice(index, 1);
 
@@ -224,8 +226,8 @@ const hapusTahun = (id: number) => {
                             placeholder="Masukkan tahun (contoh: 2024)"
                             class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                             :disabled="formTambah.processing" />
-                        <p v-if="formTambah.errors.year" class="mt-2 text-sm text-red-600">
-                            {{ formTambah.errors.year }}
+                        <p v-if="formTambah.errors.tahun" class="mt-2 text-sm text-red-600">
+                            {{ formTambah.errors.tahun }}
                         </p>
                     </div>
                     <button type="submit"
@@ -285,22 +287,23 @@ const hapusTahun = (id: number) => {
                             </tr>
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200">
-                            <tr v-for="tahun in daftarTahun" :key="tahun.id">
+                            <tr v-for="tahun in daftarTahun" :key="tahun.id_tahun">
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                    {{ tahun.year }}
+                                    {{ tahun.tahun }}
                                 </td>
 
                                 <!-- Tahun Kode Barang -->
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="relative">
-                                        <select v-model="tahun.kd_id_barang" @change="updateKodeBarang(tahun)"
+                                        <select v-model="tahun.tahun_kode_barang" @change="updateKodeBarang(tahun)"
                                             class="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
-                                            :disabled="updatingKegId === tahun.id">
-                                            <option v-for="opt in daftarTahun" :key="'keg-' + opt.id" :value="opt.year">
-                                                {{ opt.year }}
+                                            :disabled="updatingKegId === tahun.id_tahun">
+                                            <option v-for="opt in daftarTahun" :key="'keg-' + opt.tahun_kode_barang"
+                                                :value="opt.tahun_kode_barang">
+                                                {{ opt.tahun_kode_barang }}
                                             </option>
                                         </select>
-                                        <Loader2 v-if="updatingKegId === tahun.id"
+                                        <Loader2 v-if="updatingKegId === tahun.id_tahun"
                                             class="absolute right-3 top-2.5 h-4 w-4 animate-spin text-gray-400" />
                                     </div>
                                 </td>
@@ -308,14 +311,15 @@ const hapusTahun = (id: number) => {
                                 <!-- Tahun Sub Kegiatan -->
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="relative">
-                                        <select v-model="tahun.sub_keg" @change="updateSubKegiatan(tahun)"
+                                        <select v-model="tahun.tahun_sub_kegiatan" @change="updateSubKegiatan(tahun)"
                                             class="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
-                                            :disabled="updatingSubKegId === tahun.id">
-                                            <option v-for="opt in daftarTahun" :key="'sub-' + opt.id" :value="opt.year">
-                                                {{ opt.year }}
+                                            :disabled="updatingSubKegId === tahun.id_tahun">
+                                            <option v-for="opt in daftarTahun" :key="'sub-' + opt.id_tahun"
+                                                :value="opt.tahun_sub_kegiatan">
+                                                {{ opt.tahun_sub_kegiatan }}
                                             </option>
                                         </select>
-                                        <Loader2 v-if="updatingSubKegId === tahun.id"
+                                        <Loader2 v-if="updatingSubKegId === tahun.id_tahun"
                                             class="absolute right-3 top-2.5 h-4 w-4 animate-spin text-gray-400" />
                                     </div>
                                 </td>
@@ -323,24 +327,24 @@ const hapusTahun = (id: number) => {
                                 <!-- Tahun Akun -->
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="relative">
-                                        <select v-model="tahun.akun" @change="updateAkun(tahun)"
+                                        <select v-model="tahun.tahun_akun" @change="updateAkun(tahun)"
                                             class="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
-                                            :disabled="updatingAkunId === tahun.id">
-                                            <option v-for="opt in daftarTahun" :key="'akun-' + opt.id"
-                                                :value="opt.year">
-                                                {{ opt.year }}
+                                            :disabled="updatingAkunId === tahun.id_tahun">
+                                            <option v-for="opt in daftarTahun" :key="'akun-' + opt.id_tahun"
+                                                :value="opt.tahun_akun">
+                                                {{ opt.tahun_akun }}
                                             </option>
                                         </select>
-                                        <Loader2 v-if="updatingAkunId === tahun.id"
+                                        <Loader2 v-if="updatingAkunId === tahun.id_tahun"
                                             class="absolute right-3 top-2.5 h-4 w-4 animate-spin text-gray-400" />
                                     </div>
                                 </td>
 
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                    <button @click="hapusTahun(tahun.id)"
+                                    <button @click="hapusTahun(tahun.id_tahun)"
                                         class="text-red-600 hover:text-red-900 p-1 rounded-md hover:bg-red-50 disabled:opacity-50"
-                                        title="Hapus tahun" :disabled="deletingId === tahun.id">
-                                        <Trash2 v-if="deletingId !== tahun.id" class="w-4 h-4" />
+                                        title="Hapus tahun" :disabled="deletingId === tahun.id_tahun">
+                                        <Trash2 v-if="deletingId !== tahun.id_tahun" class="w-4 h-4" />
                                         <Loader2 v-else class="w-4 h-4 animate-spin" />
                                     </button>
                                 </td>

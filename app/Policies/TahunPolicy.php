@@ -2,15 +2,14 @@
 
 namespace App\Policies;
 
-use App\Models\KodeBarang;
+use App\Models\TahunModel;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Auth\Access\Response;
 
-class KodeBarangPolicy
+class TahunPolicy
 {
     use HandlesAuthorization;
-
     public function viewAny()
     {
         return true;

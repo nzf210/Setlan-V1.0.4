@@ -7,7 +7,10 @@ export interface User {
     name: string;
     username: string;
     phone: string;
+    roles: { name: string }[];
 }
+
+
 
 export interface Message {
     value: any;
@@ -35,4 +38,11 @@ export interface Props {
 
 export interface Page {
     props: Props
+}
+
+
+export interface Can {
+    create: boolean;
+    edit: boolean;
+    delete: boolean;
 }

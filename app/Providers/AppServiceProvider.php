@@ -2,29 +2,25 @@
 
 namespace App\Providers;
 
-use App\Models\KodeBarang;
+use App\Models\KodeBarangModel;
+use App\Models\TahunModel;
 use App\Policies\KodeBarangPolicy;
+use App\Policies\TahunPolicy;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Pagination\Paginator;
-use Illuminate\Support\ServiceProvider;
-
+use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 class AppServiceProvider extends ServiceProvider
 {
-    /**
-     * Register any application services.
-     */
     protected $policies = [
-        KodeBarang::class => KodeBarangPolicy::class,
+        KodeBarangModel::class => KodeBarangPolicy::class,
+        TahunModel::class => TahunPolicy::class,
     ];
 
     public function register(): void
     {
-        //
+        $this->registerPolicies();
     }
 
-    /**
-     * Bootstrap any application services.
-     */
     public function boot(): void
     {
         JsonResource::withoutWrapping();

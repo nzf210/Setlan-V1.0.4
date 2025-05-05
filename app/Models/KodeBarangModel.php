@@ -26,7 +26,7 @@ class KodeBarangModel extends Model
         return $this->belongsTo(BarangModel::class);
     }
 
-    public function kab(){
+    public function kabupaten(){
         return $this->belongsTo(KabupatenModel::class, 'id_kabupaten', 'id_kabupaten');
     }
 

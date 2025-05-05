@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import Swal from "sweetalert2";
-import { Head, Link, router, useForm } from "@inertiajs/vue3";
+import { Head, router, useForm } from "@inertiajs/vue3";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -24,17 +24,18 @@ import {
     PaginationNext,
     PaginationPrev,
 } from "@/components/ui/pagination";
-import { UploadIcon } from "lucide-vue-next";
+import { UploadIcon, X } from "lucide-vue-next";
+import { Can } from "@/types";
 
 interface KodeBarang {
-    id: number;
-    id_kd_barang: string;
-    id_kab: string;
+    id_kode_barang: number;
+    kode_barang: string;
+    id_kabupaten: string;
     tahun: number;
-    nama: string;
-    kab: {
-        id_kab: string;
-        nama_kab: string;
+    nama_kode_barang: string;
+    kabupaten: {
+        id_kabupaten: string;
+        nama_kabupaten: string;
     };
 }
 
@@ -53,18 +54,23 @@ interface PaginatedResult<KodeBarang> {
     to: number;
     links: { url: string | null; label: string; active: boolean }[];
 }
+interface Filters {
+    search: string;
+}
 const props = defineProps<{
     kodeBarang: PaginatedResult<KodeBarang>;
     kabOptions: Array<{ id_kab: string; nama: string }>;
-    years: Array<{ year: number }>;
+    tahun: Array<{ tahun: number }>;
+    can: Can;
+    filters: Filters;
 }>();
 
 const form = useForm({
-    id: "",
-    id_kd_barang: "",
-    id_kab: "",
+    id_kode_barang: 0,
+    kode_barang: "",
+    id_kabupaten: 0,
     tahun: new Date().getFullYear(),
-    nama: "",
+    nama_kode_barang: "",
 });
 
 const showImportModal = ref(false);
@@ -85,11 +91,10 @@ const handleFileSelect = (event: Event) => {
 };
 
 const handleEdit = (id: KodeBarang) => {
-    form.id = String(id.id);
-    form.id_kd_barang = id.id_kd_barang;
-    form.id_kab = id.kab.nama_kab;
+    form.id_kode_barang = id.id_kode_barang;
+    form.kode_barang = id.kode_barang;
     form.tahun = id.tahun;
-    form.nama = id.nama;
+    form.nama_kode_barang = id.nama_kode_barang;
     showTambahModal.value = true;
 };
 const submitEdit = () => {
@@ -145,11 +150,10 @@ const submitHapus = (id: number) => {
     });
 };
 const submitCreate = () => {
-    console.log("form submitCreate", form);
-    form.post(route("setlan.pengaturan.create"), {
+    console.log("form submitCreate", form.data());
+    form.post(route("setlan.pengaturan.kodeBarang.create"), {
         onSuccess: (page) => {
             showTambahModal.value = false;
-
             showNotifikasi("success", page.props.flash.success);
         },
         onError: (page) => {
@@ -183,6 +187,35 @@ const showNotifikasi = (type: "success" | "error", message: string): void => {
         notifikasi.value.show = false;
     }, 3000);
 };
+
+const search = ref(props.filters.search);
+
+const handleSearch = () => {
+    router.get(
+        route("setlan.pengaturan.kodebarang"),
+        { search: search.value },
+        {
+            preserveState: true,
+            replace: true,
+            preserveScroll: true,
+            only: ["filters"],
+        }
+    );
+};
+
+// Reset filter jika input dikosongkan
+watch(search, (newVal) => {
+    if (newVal) {
+        console.log("newVal", newVal);
+        router.visit(route("setlan.pengaturan.kodebarang", { search: newVal }), {
+            preserveState: true,
+            replace: true,
+            preserveScroll: true,
+            only: ["filters"],
+            async: true,
+        });
+    }
+});
 </script>
 
 <template>
@@ -194,11 +227,19 @@ const showNotifikasi = (type: "success" | "error", message: string): void => {
     <div class="p-6">
         <div class="flex justify-between mb-6">
             <h1 class="text-2xl font-bold">Kode Barang</h1>
-            <div class="space-x-2">
+            <div class="space-x-2" v-if="can.create">
                 <Button @click="showImportModal = true"> Import Excel </Button>
-                <Link method="post" :href="route('setlan.pengaturan.create')" as="button">
                 <Button @click="showTambahModal = true" as="button">Tambah Baru</Button>
-                </Link>
+            </div>
+            <div class="relative my-2">
+                <div class="relative max-w-sm">
+                    <Input v-model="search" placeholder="Cari kode barang..." class="pl-10 pr-8 w-max-sm" />
+                    <Search class="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+                    <button v-if="search" @click="search = ''"
+                        class="absolute right-2 top-2.5 text-muted-foreground hover:text-foreground transition-colors">
+                        <X class="h-4 w-4" />
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -213,7 +254,7 @@ const showNotifikasi = (type: "success" | "error", message: string): void => {
                 <h3 class="mb-2 text-lg font-medium text-gray-900">Data Kosong</h3>
                 <p class="text-gray-500 mb-4">Belum ada kode barang yang terdaftar</p>
                 <Button class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-                    @click="showTambahModal = true" as="button">
+                    @click="showTambahModal = true" as="button" v-if="can.create">
                     Tambah Baru
                 </Button>
             </div>
@@ -227,18 +268,19 @@ const showNotifikasi = (type: "success" | "error", message: string): void => {
                         <TableHead>Kabupaten</TableHead>
                         <TableHead>Tahun</TableHead>
                         <TableHead>Nama Barang</TableHead>
-                        <TableHead>Aksi</TableHead>
+                        <TableHead v-if="can.edit || can.delete">Aksi</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    <TableRow v-for="item in kodeBarang.data" :key="item.id">
-                        <TableCell>{{ item?.id_kd_barang }}</TableCell>
-                        <TableCell>{{ item?.kab?.nama_kab }}</TableCell>
+                    <TableRow v-for="item in kodeBarang.data" :key="item.id_kode_barang">
+                        <TableCell>{{ item?.kode_barang }}</TableCell>
+                        <TableCell>{{ item?.kabupaten?.nama_kabupaten }}</TableCell>
                         <TableCell>{{ item?.tahun }}</TableCell>
-                        <TableCell>{{ item?.nama }}</TableCell>
+                        <TableCell>{{ item?.nama_kode_barang }}</TableCell>
                         <TableCell class="space-x-2">
-                            <Button @click="handleEdit(item)" variant="outline">Edit</Button>
-                            <Button variant="destructive" @click="submitHapus(item.id)" :disabled="item.id === 1">
+                            <Button v-if="can.edit" @click="handleEdit(item)" variant="outline">Edit</Button>
+                            <Button v-if="can.delete" variant="destructive" @click="submitHapus(item.id_kode_barang)"
+                                :disabled="item.id_kode_barang === 0">
                                 Hapus
                             </Button>
                         </TableCell>
@@ -272,13 +314,13 @@ const showNotifikasi = (type: "success" | "error", message: string): void => {
             </div>
             <!-- Pagination -->
         </div>
+
         <!-- Import Modal -->
         <Dialog v-model:open="showImportModal">
             <DialogContent>
                 <DialogHeader>
                     <DialogTitle>Import dari Excel</DialogTitle>
                 </DialogHeader>
-
                 <form @submit.prevent="form.post(route('setlan.pengaturan.import'))">
                     <div class="grid gap-4 py-4">
                         <div class="grid w-full max-w-sm items-center gap-1.5">
@@ -305,19 +347,22 @@ const showNotifikasi = (type: "success" | "error", message: string): void => {
         <Dialog v-model:open="showTambahModal">
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle>{{ form.id ? "Edit" : "Tambah" }} Kode Barang</DialogTitle>
+                    <DialogTitle>{{
+                        form.id_kode_barang && form.id_kode_barang !== 0 ? "Edit" : "Tambah"
+                        }}
+                        Kode Barang</DialogTitle>
                 </DialogHeader>
 
-                <form @submit.prevent="form.id ? submitEdit() : submitCreate()">
+                <form @submit.prevent="form.id_kode_barang !== 0 ? submitEdit() : submitCreate()">
                     <div class="grid gap-4 py-4">
                         <div class="grid grid-cols-4 items-center gap-4">
                             <Label for="id_kd_barang">Kode Barang</Label>
-                            <Input id="id_kd_barang" v-model="form.id_kd_barang" class="col-span-3" />
+                            <Input id="id_kd_barang" v-model="form.kode_barang" class="col-span-3" />
                         </div>
 
                         <div class="grid grid-cols-4 items-center gap-4">
                             <Label for="nama_barang">Nama Barang</Label>
-                            <Input id="nama_barang" v-model="form.nama" class="col-span-3" />
+                            <Input id="nama_barang" v-model="form.nama_kode_barang" class="col-span-3" />
                         </div>
 
                         <Button type="submit">Simpan</Button>

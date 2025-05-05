@@ -6,13 +6,11 @@ import Button from "@/components/ui/button/Button.vue";
 import Label from "@/components/ui/label/Label.vue";
 
 import { useMenuStore } from "@/store/menuStore";
+import { User } from "@/types";
 const menuStrore = useMenuStore();
 
 const { setNamaKabupaten, setNamaOpd, setNamaUnit, setTahun, setNamaUser } = menuStrore;
 
-interface User {
-    roles: { name: string }[];
-}
 const props = defineProps<{
     user: User;
     kabupaten: Array<{ id_kabupaten: string; nama_kabupaten: string }>;
@@ -21,6 +19,15 @@ const props = defineProps<{
     title?: string;
     listopd?: Array<{ id_opd: string; nama_opd: string }>;
     tahun: Array<{ value: string; label: string }>;
+    page?: {
+        props: {
+            auth: {
+                user: {
+                    name: string;
+                };
+            };
+        };
+    };
 }>();
 
 const kabSelect = ref<Array<{ id_kabupaten: string; nama_kabupaten: string }>>(

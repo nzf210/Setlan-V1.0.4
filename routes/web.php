@@ -63,7 +63,7 @@ Route::middleware(['auth', 'cors'])->prefix('setlan')->group(function () {
     /**# Kode Barang */
     Route::get('/barang/kodeBarang', [KodeBarangController::class, 'get'])->name('setlan.kodebarang');
     Route::get('/barang/pengaturan/kodeBarang', [KodeBarangController::class, 'index'])->name('setlan.pengaturan.kodebarang');
-    Route::post('/barang/pengaturan/kdbStore', [KodeBarangController::class, 'store'])->name('setlan.pengaturan.create');
+    Route::post('/barang/pengaturan/kdbStore', [KodeBarangController::class, 'store'])->name('setlan.pengaturan.kodeBarang.create');
     Route::patch('/barang/pengaturan/kdbEdit', [KodeBarangController::class, 'update'])->name('setlan.pengaturan.edit');
     Route::delete('/barang/pengaturan/kdbDelete/{id}', [KodeBarangController::class, 'destroy'])->name('setlan.pengaturan.hapus');
 

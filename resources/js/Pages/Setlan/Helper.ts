@@ -304,13 +304,3 @@ export const constructNestedArray = (options:any) => {
     meta: PaginationMeta;
   }
 
-//   export interface PaginatedMutasiResponse {
-//     current_page: number;
-//     data: Mutasi[];
-//     first_page_url: string;
-//     from: number;
-//     last_page: number;
-//     last_page_url: string;
-//     links: PaginationLinks;
-//     meta: PaginationMeta;
-//   }
