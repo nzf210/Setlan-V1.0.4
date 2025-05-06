@@ -17,7 +17,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('barang', function (Blueprint $table) {
-            $table->string('id_barang', 6)->primary();
+            $table->string('id_barang', 8)->primary()->unique();
             $table->string('nama_barang');
             $table->string('merek');
             $table->string('type')->nullable();
@@ -26,7 +26,7 @@ return new class extends Migration
             $table->foreignIdFor(UnitModel::class, 'id_unit')->constrained('unit', 'id_unit')->onDelete('cascade');
             $table->foreignIdFor(OpdModel::class, 'id_opd')->constrained('opd', 'id_opd')->onDelete('cascade');
             $table->foreignIdFor(KodeBarangModel::class, 'id_kode_barang')->constrained('kode_barang', 'id_kode_barang')->onDelete('cascade');
-            $table->foreignIdFor(AkunBelanjaAktifModel::class, 'id_akun')->constrained('akun_aktif', 'id_akun')->onDelete('cascade');
+            $table->foreignIdFor(AkunBelanjaAktifModel::class, 'id_akun_aktif')->constrained('akun_aktif', 'id_akun_aktif')->onDelete('cascade');
             $table->foreignIdFor(SatuanModel::class, 'id_satuan')->constrained('satuan', 'id_satuan')->onDelete('cascade');
             $table->foreignIdFor(User::class, 'created_by');
             $table->foreignIdFor(User::class, 'updated_by')->nullable();

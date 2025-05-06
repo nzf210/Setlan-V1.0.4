@@ -10,7 +10,13 @@ class AkunBelanjaModel extends Model
 {
     use HasFactory;
     protected $table = 'akun_belanja';
-    protected $primaryKey = 'id_akun_belanja';
+    protected $primaryKey = 'id_akun';
     public $timestamps = false;
+    protected $fillable = [
+        'id_akun',
+        'nama_akun',
+        'tahun',
+        'kode_akun'
+    ];
 
 }
