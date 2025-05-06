@@ -22,7 +22,7 @@ return new class extends Migration
             $table->foreignIdFor(KabupatenModel::class, 'id_kabupaten')->constrained('kabupaten', 'id_kabupaten')->onDelete('cascade');
             $table->foreignIdFor(OpdModel::class, 'id_opd')->constrained('opd', 'id_opd')->onDelete('cascade');
             $table->foreignIdFor(UnitModel::class, 'id_unit')->constrained('unit', 'id_unit')->onDelete('cascade');
-            $table->foreignIdFor(SubKegiatanAktifModel::class, 'id_sub_kegiatan')->nullable()->constrained('sub_kegiatan_aktif', 'id_sub_kegiatan')->onDelete('set null');
+            $table->foreignIdFor(SubKegiatanAktifModel::class, 'id_sub_kegiatan_aktif')->nullable()->constrained('sub_kegiatan_aktif', 'id_sub_kegiatan_aktif')->onDelete('set null');
             $table->foreignIdFor(BeritaAcaraModel::class, 'id_berita_acara')->constrained('berita_acara', 'id_berita_acara')->onDelete('cascade');
             $table->integer('jumlah')->default(1);
             $table->decimal('pajak', 3, 2)->default(0);

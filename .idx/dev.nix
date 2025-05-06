@@ -1,35 +1,36 @@
-# To learn more about how to use Nix to configure your environment
-# see: https://developers.google.com/idx/guides/customize-idx-env
 {pkgs}: {
-  # Which nixpkgs channel to use.
-  channel = "stable-23.11"; # or "unstable"
-  # Use https://search.nixos.org/packages to find packages
+ 
+  channel = "stable-23.11";
   packages = [
-    pkgs.php82
-    pkgs.php82Packages.composer
+    pkgs.php83
+    pkgs.php83Packages.composer
     pkgs.nodejs_20
     pkgs.bun
     # pkgs.ocamlPackages.sail
   ];
   # Sets environment variables in the workspace
   env = {
-    APP_NAME="Setlan";
-    APP_ENV="local";
-    APP_KEY=base64:wDtrkGH9cGbXou4veMdrnubEe/iRQDtRorZj/jHKCpk=;
-    APP_DEBUG=true;
-    APP_TIMEZONE="UTC";
-    APP_URL=https://9002-idx-setlan-1716105265281.cluster-nx3nmmkbnfe54q3dd4pfbgilpc.cloudworkstations.dev/;
-    #* POSTGRES
-    DB_CONNECTION="pgsql";
-    DB_HOST="aws-0-ap-southeast-1.pooler.supabase.com";
-    DB_PORT=5432;
-    DB_DATABASE="postgres";
-    DB_USERNAME="postgres.tjwztuqmxzffhokhkmjs";
-    DB_PASSWORD="vTJuzUKr9QWUtYR2";
-
+    shellHook = ''
+      # Create .env if it doesn't exist
+      if [ ! -f ".env" ]; then
+        cat > .env <<EOF
+      EOF
+      fi
+      
+      # Install dependencies
+      if [ ! -d "vendor" ]; then
+        composer install
+      fi
+      
+      # Generate key if not set
+      if ! grep -q "^APP_KEY=base64:" .env; then
+        php artisan key:generate
+      fi
+    '';
+ 
     SESSION_DRIVER="database";
-    SESSION_LIFETIME=120;
-    SESSION_ENCRYPT=false;
+    SESSION_LIFETIME="120";
+    SESSION_ENCRYPT="false";
     SESSION_PATH="/";
     SESSION_DOMAIN=null;
 
@@ -46,14 +47,18 @@
       # "Vue.volar"
     ];
     # Enable previews and customize configuration
+   previews = {
+    enable = true;
     previews = {
-      enable = true;
-      previews = {
-        web = {
-          command = ["php" "artisan" "serve" "--port" "$PORT" "--host" "0.0.0.0"];
-          manager = "web";
-        };
+      laravel = {
+        command = ["sh" "-c" "composer install && php artisan serve --port 8000 --host 0.0.0.0"];
+        manager = "process";
+      };
+      vue = {
+        command = ["sh" "-c" "bun install && bun run dev --port 8001 --host 0.0.0.0"];
+        manager = "web";
       };
     };
+  };
   };
 }

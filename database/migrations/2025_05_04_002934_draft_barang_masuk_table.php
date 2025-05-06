@@ -13,9 +13,10 @@ return new class extends Migration
         Schema::create('draft_barang_masuk', function (Blueprint $table) {
             $table->id('id_draft');
             $table->foreignId('id_unit')->constrained('unit', 'id_unit')->onDelete('cascade');
-            $table->foreignIdFor(BarangModel::class, 'id_barang')->nullable()->constrained('barang', 'id_barang')->onDelete('cascade');
+            $table->string('id_barang');
+            $table->foreign('id_barang')->references('id_barang')->on('barang')->onDelete('cascade');
             $table->foreignIdFor(User::class, 'created_by')->nullable()->constrained('users', 'id')->onDelete('set null');
-            $table->foreignId('id_sub_kegiatan')->constrained('sub_kegiatan', 'id_sub_kegiatan')->onDelete('cascade');
+            $table->foreignId('id_sub_kegiatan_aktif')->constrained('sub_kegiatan_aktif', 'id_sub_kegiatan_aktif')->onDelete('cascade');
             $table->foreignId('id_berita_acara')->nullable()->constrained('berita_acara', 'id_berita_acara')->onDelete('set null');
             $table->integer('jumlah')->default(1);
             $table->decimal('harga', 19, 2)->default(0);
