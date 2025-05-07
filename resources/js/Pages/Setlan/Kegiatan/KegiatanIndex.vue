@@ -43,14 +43,14 @@ import {
 
 interface PaginationFilters {
     search?: string;
-    year?: string;
+    tahun?: string;
     per_page?: number;
 }
 
 interface Kegiatan {
-    id: number;
-    id_keg: string;
-    nama: string;
+    id_kegiatan: number;
+    kode_kegiatan: string;
+    nama_kegiatan: string;
     tahun: number;
 }
 
@@ -73,13 +73,13 @@ interface PaginatedResult<Kegiatan> {
 const props = defineProps<{
     kegiatans: PaginatedResult<Kegiatan>;
     filters: PaginationFilters;
-    years: Array<{ year: number }>;
+    tahun: Array<{ tahun: number }>;
     auth: { role: string };
 }>();
 
 const filters = ref({
     search: props.filters.search || "",
-    year: props.filters.year || "",
+    tahun: props.filters.tahun || "",
     per_page: props.filters.per_page || 10,
 });
 
@@ -87,10 +87,10 @@ const page = ref(props.kegiatans.current_page);
 
 const showModal = ref(false);
 const form = ref({
-    id: 0,
-    id_keg: "",
-    nama: "",
-    tahun: "",
+    id_kegiatan: 0,
+    kode_kegiatan: "",
+    nama_kegiatan: "",
+    tahun: 0,
 });
 const editing = ref(false);
 
@@ -98,7 +98,7 @@ const roles = props?.auth.role === "admin_kab" || props?.auth.role === "super_ad
 
 const columns = roles
     ? [
-        { key: "id_keg", header: "ID Kegiatan" },
+        { key: "id_keg", header: "Kode Kegiatan" },
         { key: "nama", header: "Nama Kegiatan" },
         { key: "tahun", header: "Tahun" },
         { key: "actions", header: "Aksi" },
@@ -110,18 +110,23 @@ const columns = roles
     ];
 
 const openSubKeg = (kegiatan: Kegiatan) => {
-    router.visit(`/subkegiatan/${kegiatan.id}`);
+    router.visit(`/subkegiatan/${kegiatan.id_kegiatan}`);
 };
 
 const submit = () => {
     if (editing.value) {
         router.patch(
-            route("setlan.kegiatan.pengaturan.edit", { id: form.value.id }),
+            route("setlan.kegiatan.pengaturan.edit", { id: form.value.id_kegiatan }),
             form.value,
             {
                 onSuccess: (page) => {
                     showModal.value = false;
-                    form.value = { id: 0, id_keg: "", nama: "", tahun: "" };
+                    form.value = {
+                        id_kegiatan: 0,
+                        kode_kegiatan: "",
+                        nama_kegiatan: "",
+                        tahun: 0,
+                    };
                     if (page.props.flash.success) {
                         showNotifikasi("success", "Berhasil mengubah kegiatan");
                     } else {
@@ -135,10 +140,14 @@ const submit = () => {
         );
     } else {
         router.post(route("setlan.kegiatan.pengaturan.create"), form.value, {
-            onSuccess: () => {
+            onSuccess: (page) => {
                 showModal.value = false;
-                form.value = { id: 0, id_keg: "", nama: "", tahun: "" };
-                showNotifikasi("success", "Berhasil menambah kegiatan");
+                form.value = { id_kegiatan: 0, kode_kegiatan: "", nama_kegiatan: "", tahun: 0 };
+                if (page.props.flash.success) {
+                    showNotifikasi("success", "Berhasil menambah kegiatan");
+                } else {
+                    showNotifikasi("error", "Gagal menambah kegiatan");
+                }
             },
 
             onError() {
@@ -149,7 +158,11 @@ const submit = () => {
 };
 
 const editKegiatan = (kegiatan: Kegiatan) => {
-    form.value = { ...kegiatan, tahun: kegiatan.tahun.toString(), id: kegiatan.id };
+    form.value = {
+        ...kegiatan,
+        tahun: kegiatan.tahun,
+        id_kegiatan: kegiatan.id_kegiatan,
+    };
     editing.value = true;
     showModal.value = true;
 };
@@ -187,7 +200,7 @@ watch([() => filters.value.tahun, () => filters.value.per_page], () => {
 
 watch(showModal, () => {
     if (!showModal.value) {
-        form.value = { id: 0, id_keg: "", nama: "", tahun: "" };
+        form.value = { id_kegiatan: 0, kode_kegiatan: "", nama_kegiatan: "", tahun: 0 };
         editing.value = false;
     }
 });
@@ -197,7 +210,7 @@ const updateFilters = () => {
         route("setlan.kegiatan"),
         {
             search: filters.value.search,
-            year: filters.value.tahun,
+            tahun: filters.value.tahun,
             per_page: filters.value.per_page,
         },
         {
@@ -246,11 +259,11 @@ const handleFileSelect = (event: Event) => {
 };
 
 const formImport = useForm({
-    id: "",
-    id_kd_barang: "",
-    id_kab: "",
-    tahun: new Date().getFullYear(),
-    nama: "",
+    id_kegiatan: "",
+    kode_barang: "",
+    id_kabupeten: "",
+    tahun: "",
+    nama_kegiatan: "",
 });
 </script>
 
@@ -304,15 +317,15 @@ const formImport = useForm({
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    <TableRow v-for="row in kegiatans.data" :key="row.id">
-                        <TableCell class="font-bold">{{ row.id_keg }}</TableCell>
-                        <TableCell class="font-bold">{{ row.nama }}</TableCell>
+                    <TableRow v-for="row in kegiatans.data" :key="row.id_kegiatan">
+                        <TableCell class="font-bold">{{ row.kode_kegiatan }}</TableCell>
+                        <TableCell class="font-bold">{{ row.nama_kegiatan }}</TableCell>
                         <TableCell>{{ row?.tahun }}</TableCell>
                         <TableCell class="flex gap-2" v-if="roles">
                             <Button variant="outline" title="Edit" size="sm" @click="editKegiatan(row)">
                                 <Edit class="w-4 h-4" color="#2865c8" />
                             </Button>
-                            <Button variant="outline" title="Hapus" size="sm" @click="deleteKegiatan(row.id)">
+                            <Button variant="outline" title="Hapus" size="sm" @click="deleteKegiatan(row.id_kegiatan)">
                                 <Trash2 class="w-4 h-4" color="#e7724b" />
                             </Button>
                             <Button variant="outline" title="Sub Kegiatan" size="sm" @click="openSubKeg(row)">
@@ -357,12 +370,12 @@ const formImport = useForm({
                 </DialogHeader>
                 <form @submit.prevent="submit" class="space-y-4">
                     <div>
-                        <Label for="id_keg">ID Kegiatan</Label>
-                        <Input v-model="form.id_keg" required />
+                        <Label for="id_keg">Kode Kegiatan</Label>
+                        <Input v-model="form.kode_kegiatan" required />
                     </div>
                     <div>
                         <Label for="nama">Nama Kegiatan</Label>
-                        <Input v-model="form.nama" required />
+                        <Input v-model="form.nama_kegiatan" required />
                     </div>
                     <div>
                         <Label for="tahun">Tahun</Label>
@@ -371,8 +384,8 @@ const formImport = useForm({
                                 <SelectValue placeholder="Pilih Tahun" />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem v-for="year in years" :key="year.year" :value="year.year">
-                                    {{ year.year }}
+                                <SelectItem v-for="year in tahun" :key="year.tahun" :value="year.tahun">
+                                    {{ year.tahun }}
                                 </SelectItem>
                             </SelectContent>
                         </Select>

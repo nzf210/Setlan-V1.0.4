@@ -12,6 +12,7 @@ import {
     CheckCircle,
     CalendarDays,
     Loader2,
+    X,
 } from "lucide-vue-next";
 import { Can } from "@/types";
 
@@ -87,9 +88,7 @@ const updateKodeBarang = async (tahun: Tahun) => {
     const originalValue = tahun.tahun_kode_barang;
 
     try {
-        console.log("tahun.keg", tahun.id_tahun);
-
-        await router.patch(
+        router.patch(
             route("setlan.pengaturan.tahun.edit", { id: tahun.id_tahun }),
             {
                 tahun_kode_barang: tahun.tahun_kode_barang,
@@ -97,6 +96,7 @@ const updateKodeBarang = async (tahun: Tahun) => {
             {
                 preserveScroll: true,
                 preserveState: true,
+                async: true,
                 onSuccess: () => {
                     showNotifikasi("success", "Tahun Kode Barang berhasil diperbarui");
                 },
@@ -114,16 +114,18 @@ const updateSubKegiatan = async (tahun: Tahun) => {
     updatingSubKegId.value = tahun.id_tahun;
     const originalValue = tahun.tahun_sub_kegiatan;
 
+    console.log("originalValue", originalValue, tahun);
     try {
-        await router.patch(
+        router.patch(
             route("setlan.pengaturan.tahun.edit", { id: tahun.id_tahun }),
             {
-                sub_kegiatan: tahun.tahun_sub_kegiatan,
-                kegiatan: tahun.tahun_kegiatan,
+                tahun_sub_kegiatan: tahun.tahun_sub_kegiatan,
+                tahun_kegiatan: tahun.tahun_sub_kegiatan,
             },
             {
                 preserveScroll: true,
                 preserveState: true,
+                async: true,
                 onSuccess: () => {
                     showNotifikasi("success", "Tahun Sub Kegiatan berhasil diperbarui");
                 },

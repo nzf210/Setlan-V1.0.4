@@ -2,16 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\SubKegiatanResource;
-use App\Models\KegiatanModel;
-use App\Models\SubKegiatanAktifModel;
-use App\Models\SubKegiatanModel;
-use App\Models\TahunModel;
-use Cookie;
 use DB;
-use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
+use Cookie;
 use Inertia\Inertia;
+use App\Models\TahunModel;
+use Illuminate\Http\Request;
+use App\Models\KegiatanModel;
+use Illuminate\Validation\Rule;
+use App\Models\SubKegiatanModel;
+use App\Models\SubKegiatanAktifModel;
+use App\Http\Resources\SubKegiatanResource;
 
 class SubkegiatanController extends Controller
 {
@@ -50,44 +50,41 @@ class SubkegiatanController extends Controller
         }
 
         // Query untuk Kegiatan
-        $kegiatanQuery = KegiatanModel::where('m_kegs.tahun', $tahun_aktif->keg)
+        $kegiatanQuery = KegiatanModel::where('kegiatan.tahun', $tahun_aktif->tahun_kegiatan)
             ->select(
-                'm_kegs.id as id', // Add primary key for kegiatan
-                'id_keg as kode',
-                'nama',
-                DB::raw("'keg' as type"),
-                'm_kegs.tahun',
-                'id_keg as parent_id'
-            )
-            ->when($search, function($query) use ($search) {
-                $query->where('nama', 'LIKE', "%{$search}%")
-                    ->orWhere('id_keg', 'like', "%{$search}%");
-            });
-        $kegiatan = KegiatanModel::where('m_kegs.tahun', $tahun_aktif->keg)
+                'kegiatan.id_kegiatan as id_kegiatan', // Add primary key for kegiatan
+                'kode_kegiatan',
+                'nama_kegiatan',
+                    DB::raw("'keg' as type"),
+                'kegiatan.tahun',
+                'id_kegiatan as parent_id'
+            );
+        $kegiatan = KegiatanModel::where('kegiatan.tahun', $tahun_aktif->tahun_kegiatan)
                     ->when($search, function($query) use ($search) {
-                        $query->where('nama', 'LIKE', "%{$search}%")
-                            ->orWhere('id_keg', 'like', "%{$search}%");
+                        $query->where('nama_kegiatan', 'LIKE', "%{$search}%")
+                            ->orWhere('kode_kegiatan', 'like', "%{$search}%");
                     });
         // Query untuk Sub Kegiatan
-        $subkegiatanQuery = SubKegiatanModel::where('m_subkegs.tahun', $tahun_aktif->keg)
-            ->with('keg')
-            ->join('m_kegs', function($join) {
-                $join->on('m_subkegs.id_keg', '=', 'm_kegs.id_keg')
-                    ->on('m_subkegs.tahun', '=', 'm_kegs.tahun');
+        $subkegiatanQuery = SubKegiatanModel::where('sub_kegiatan.tahun', $tahun_aktif->tahun_sub_kegiatan)
+            ->with('kegiatan')
+            ->join('kegiatan', function($join) {
+                $join->on('sub_kegiatan.id_kegiatan', '=', 'kegiatan.id_kegiatan')
+                    ->on('sub_kegiatan.tahun', '=', 'kegiatan.tahun');
             })
             ->select(
-                'm_subkegs.id as id', // Add primary key for subkegiatan
-                'm_subkegs.id_subkeg as kode',
-                'm_subkegs.nama',
+                'sub_kegiatan.id_sub_kegiatan as id_sub_kegiatan', // Add primary key for subkegiatan
+                'sub_kegiatan.kode_sub_kegiatan as kode_sub_kegiatan',
+                'sub_kegiatan.nama_sub_kegiatan as nama_sub_kegiatan',
                 DB::raw("'sub' as type"),
-                'm_subkegs.tahun',
-                'm_kegs.id_keg as parent_id'
+                'sub_kegiatan.tahun',
+                'kegiatan.id_kegiatan as parent_id'
             )
             ->when($search, function($query) use ($search) {
-                $query->where('m_subkegs.nama', 'LIKE', "%{$search}%")
-                    ->orWhere('id_subkeg', 'like', "%{$search}%");
+                $query->where('sub_kegiatan.nama_sub_kegiatan', 'LIKE', "%{$search}%")
+                    ->orWhere('kode_sub_kegiatan', 'like', "%{$search}%");
             });
 
+        dd($subkegiatanQuery);
         // Gabungkan query
         $results = $kegiatanQuery->unionAll($subkegiatanQuery)
             ->orderBy('parent_id')

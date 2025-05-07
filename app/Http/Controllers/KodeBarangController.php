@@ -35,6 +35,11 @@ class KodeBarangController extends Controller
         $idKab = Cookie::get('id_kabupaten');
         $tahun = Cookie::get('tahun');
         $tahun_aktif = TahunModel::where(['tahun' => $tahun, 'id_kabupaten' => $idKab])->first();
+        if (!$idKab || !$tahun || !$tahun_aktif) {
+            return back()->withErrors([
+                'system' => SESI
+            ]);
+        }
         $query = KodeBarangModel::query()
             ->where(    ['id_kabupaten' => $idKab, 'tahun' => $tahun_aktif->tahun_kode_barang])
             ->when($request->search, function ($query, $search) {

@@ -62,13 +62,14 @@ class TahunController extends Controller
         if ($request->has('tahun_kegiatan')) {
             $validated['tahun_sub_kegiatan'] = $validated['tahun_kegiatan'];
         }
-        $tahun->update($validated);
 
+        $tahun->update($validated);
         return redirect()->back();
     }
 
     public function destroy(TahunModel $tahun, $id)
     {
+
         $tahun->where('id_tahun', $id)->delete();
         return redirect()->back();
     }

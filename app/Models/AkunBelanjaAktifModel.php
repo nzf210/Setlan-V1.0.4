@@ -12,10 +12,9 @@ class AkunBelanjaAktifModel extends Model
     protected $table = 'akunaktif';
     public $timestamps = false;
     protected $fillable = [
-        'ids',
+        'id_akun_aktif',
         'id_akun',
         'id_kabupaten',
-        'nama',
         'tahun'
     ];
 
@@ -26,7 +25,7 @@ class AkunBelanjaAktifModel extends Model
     }
 
     public function akun(){
-        return $this->belongsTo(AkunBelanjaModel::class, 'ids','id');
+        return $this->belongsTo(AkunBelanjaModel::class, 'id_akun','id_akun');
     }
 
     public function  scopeFiltered(Builder $quary)

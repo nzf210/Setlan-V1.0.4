@@ -2,16 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\KegiatanModel;
-use App\Models\TahunModel;
 use DB;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cookie;
-use Illuminate\Validation\Rule;
 use Inertia\Inertia;
+use App\Models\TahunModel;
+use Illuminate\Http\Request;
+use App\Models\KegiatanModel;
+use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Cookie;
+use Illuminate\Database\Eloquent\Builder;
 
-define('SESI', 'Sesi tidak valid. Silakan refresh halaman dan coba lagi.');
 class KegiatanController extends Controller
 {
     public function index(Request $request)
@@ -20,7 +19,6 @@ class KegiatanController extends Controller
         $perPage = $request->input('per_page', 10);
         $tahun = $request->input('tahun', Cookie::get('tahun'));
 
-        // Validasi tahun
         $tahun_aktif = TahunModel::where('tahun', $tahun)->first();
         if (!$tahun || !$tahun_aktif) {
             return back()->withErrors([
@@ -28,16 +26,14 @@ class KegiatanController extends Controller
             ]);
         }
 
-        // Query dasar
-        $query = KegiatanModel::where('tahun', $tahun_aktif->keg)
+        $query = KegiatanModel::where('tahun', $tahun_aktif->tahun_kegiatan)
         ->when($search, function(Builder $q) use ($search) {
             $q->where(function(Builder $query) use ($search) {
-                $query->where('nama', 'like', "%{$search}%")
-                        ->orWhere('id_keg', 'like', "%{$search}%");
+                $query->where('nama_kegiatan', 'like', "%{$search}%")
+                        ->orWhere('kode_kegiatan', 'like', "%{$search}%");
             });
         })
-        ->orderBy('id_keg');
-
+        ->orderBy('kode_kegiatan');
         // Pagination dengan tetap mempertahankan filter
         $kegiatans = $query->paginate($perPage)
             ->appends([
@@ -45,11 +41,11 @@ class KegiatanController extends Controller
                 'tahun' => $tahun,
                 'per_page' => $perPage
             ]);
-        $years = TahunModel::pluck('tahun')->sortDesc()->values();
+        $tahun_aktif->pluck('tahun')->sortDesc()->values();
 
         return Inertia::render('Setlan/Kegiatan/KegiatanIndex', [
             'kegiatans' => $kegiatans,
-            'years' => $years,
+            'tahun' => $tahun_aktif,
             'filters' => [
                 'search' => $search,
                 'tahun' => $tahun,
@@ -68,20 +64,32 @@ class KegiatanController extends Controller
         ]);
     } else {
         try {
-                $validated = $request->validate([
-                        'id_keg' => 'required|string|max:255',
-                        'nama' => 'required|string',
-                        'tahun' => 'nullable|exists:years,year'
-                    ]);
-                $validated['tahun'] = $tahun_aktif->keg;
-                            DB::transaction(function () use ($request, $validated) {
-                            KegiatanModel::create([
-                                'id_keg' => $request->id_keg,
-                                'nama' => $request->nama,
-                                'tahun' => $validated['tahun']
-                            ]);
-                        });
-            $response = redirect()->back()->with('success', 'Kegiatan berhasil dibuat');
+            $request->id_kegiatan = null;
+            $validated = $request->validate([
+                            'kode_kegiatan' => [
+                                    'required',
+                                    'string',
+                                    'regex:/^[0-9.]+$/',
+                                        Rule::unique('kegiatan', 'kode_kegiatan')
+                                        ->where(fn($query) => $query->where('tahun', $tahun_aktif->tahun_kegiatan))],
+                            'nama_kegiatan' => 'required|string'
+            ]);
+
+            $validated['tahun'] = $tahun_aktif->tahun_kegiatan;
+
+            $result = DB::transaction(fn() => KegiatanModel::create([
+                    'kode_kegiatan' => $request->kode_kegiatan,
+                    'nama_kegiatan' => $request->nama_kegiatan,
+                    'tahun' => $validated['tahun']
+                ]));
+            $transactionSuccess =
+                $result->exists &&
+                DB::transactionLevel() === 0 &&
+                KegiatanModel::where('id_kegiatan', $result->id_kegiatan)->exists();
+            if($transactionSuccess) {
+                return redirect()->back()->with('success', 'Created successfully!');
+            }
+            $response = redirect()->back()->with('error', 'Gagal membuat kegiatan');
         } catch (\Throwable $th) {
             $response = redirect()->back()->with('error', 'Gagal membuat kegiatan: ' . $th->getMessage());
         }
@@ -103,25 +111,24 @@ class KegiatanController extends Controller
     try {
         // Validasi input
         $validated = $request->validate([
-            'id_keg' => [
+            'id_kegiatan' => REQ_NUM,
+            'kode_kegiatan' => [
                 'required',
                 'string',
                 'max:255',
-                Rule::unique('m_kegs')->where(fn($query) => $query->where('tahun', $tahunAktif->year))
-                    ->ignore($request->id)
+                Rule::unique('kegiatan')->where(fn($query) => $query->where('tahun', $tahunAktif->tahun_kegiatan))
+                    ->ignore($request->id_kegiatan, 'id_kegiatan')
             ],
-            'nama' => 'required|string|max:65535',
+            'nama_kegiatan' => LONG_STR,
             'tahun' => [
                 'nullable',
                 'integer',
-                'exists:years,year',
-                Rule::unique('m_kegs')->where(fn($query) => $query->where('id_keg', $request->id_keg))
-                    ->ignore($request->id)
+                'exists:tahun,tahun'
             ]
         ]);
 
         // Eksekusi database
-        DB::transaction(fn() => $kegiatan->where('id', $request->id)->update($validated));
+        DB::transaction(fn() => $kegiatan->where('id_kegiatan', $request->id_kegiatan)->update($validated));
 
         return redirect()->back()->with('success', 'Kegiatan berhasil diperbarui');
 
@@ -140,7 +147,7 @@ class KegiatanController extends Controller
     {
         try {
             DB::transaction(function () use ($kegiatan, $id) {
-                $kegiatan->where('id', $id)->delete();
+                $kegiatan->where('id_kegiatan', $id)->delete();
             });
 
             return redirect()->back()->with('success', 'Kegiatan berhasil dihapus');
