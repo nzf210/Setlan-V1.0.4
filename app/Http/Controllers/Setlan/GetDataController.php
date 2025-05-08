@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Setlan;
 
 use App\Http\Controllers\Controller;
 use App\Models\KabupatenModel;
+use App\Models\KegiatanModel;
 use App\Models\OpdModel;
+use App\Models\TahunModel;
 use Cookie;
 use Illuminate\Http\Request;
 
@@ -53,6 +55,20 @@ class GetDataController extends Controller
         return back()->with([
             'value' => $opd,
             'search' => $keyword,
+        ]);
+    }
+    public function getkegiatan(Request $request,  $id= null)
+    {
+        $tahun = Cookie::get('tahun');
+
+        $tahun_aktif = TahunModel::where(['tahun' => $tahun])->first();
+
+        if (!$id && $tahun_aktif) {
+            $id = Cookie::get('id_kabupaten');
+        }
+        $kegiatan = KegiatanModel::where(['id_kegiatan' => $id , 'tahun' => $tahun_aktif->tahun_kegiatan])->get();
+        return back()->with([
+            'value' => $kegiatan,
         ]);
     }
 }

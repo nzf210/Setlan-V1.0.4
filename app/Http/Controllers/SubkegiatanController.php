@@ -77,19 +77,20 @@ class SubkegiatanController extends Controller
                 'sub_kegiatan.nama_sub_kegiatan as nama_sub_kegiatan',
                 DB::raw("'sub' as type"),
                 'sub_kegiatan.tahun',
-                'kegiatan.id_kegiatan as parent_id'
+                'kegiatan.id_kegiatan as parent_id',
             )
             ->when($search, function($query) use ($search) {
                 $query->where('sub_kegiatan.nama_sub_kegiatan', 'LIKE', "%{$search}%")
                     ->orWhere('kode_sub_kegiatan', 'like', "%{$search}%");
             });
 
-        dd($subkegiatanQuery);
+        // dd($subkegiatanQuery);
         // Gabungkan query
         $results = $kegiatanQuery->unionAll($subkegiatanQuery)
             ->orderBy('parent_id')
             ->orderBy('type')
-            ->orderBy('kode')
+            ->orderBy('kode_kegiatan')
+            ->orderBy('nama_kegiatan')
             ->paginate($perPage)
             ->withQueryString();
 
@@ -106,6 +107,8 @@ class SubkegiatanController extends Controller
 
     public function store(Request $request)
 {
+
+    dd($request->all());
         $tahun = Cookie::get('tahun');
 
         // Validasi tahun
@@ -115,36 +118,27 @@ class SubkegiatanController extends Controller
                 'system' => SESI
             ]);
         }
-        $request['tahun'] = $tahun_aktif->keg;
+        $request['tahun'] = $tahun_aktif->tahun_sub_kegiatan;
 
-    if($request->namasub === 'nsub'){
-        $request['id_subkeg'] = $request->kode;
-    } else {
-        $request['id_keg'] = $request->kode;
-    }
-
-    $request->validate([
-        'id_subkeg' => [
-            'required',
-            'string',
-            'max:50',
-            Rule::unique('m_subkegs')->where(fn ($query) =>
-                    $query->where('id_keg', $request->id_keg)
-                    ->where('tahun', $tahun_aktif->keg)
-            )
-        ],
-        'nama' => 'required|string|max:255',
-        'id_keg' => 'required|exists:m_kegs,id_keg',
-        'tahun' => 'required|exists:years,year'
+        $validated = $request->validate([
+                    'kode_sub_kegiatan' => [
+                                    'required',
+                                    'string',
+                                    'regex:/^[0-9.]+$/',
+                                        Rule::unique('sub_kegiatan', 'kode_sub_kegiatan')
+                                        ->where(fn($query) => $query->where(['tahun' => $tahun_aktif->tahun_sub_kegiatan , 'id_kegiatan' => $request->id_kegiatan]))],
+                    'nama_sub_kegiatan' => 'required|string|max:255',
+                    'id_kegiatan' => 'required|exists:kegiatan,id_kegiatan',
+                    'tahun' => TAHUN
     ]);
 
     try {
-        DB::transaction(function () use ($request, $tahun_aktif) {
+        DB::transaction(function () use ($validated) {
             SubKegiatanModel::create([
-                'id_subkeg' => $request->id_subkeg,
-                'nama' => $request->nama,
-                'id_keg' => $request->id_keg,
-                'tahun' => $tahun_aktif->keg
+                'kode_sub_kegiatan' => $validated['kode_sub_kegiatan'],
+                'nama_sub_kegiatan' => $validated['nama_sub_kegiatan'],
+                'id_kegiatan' => $validated['id_kegiatan'],
+                'tahun' => $validated['tahun']
             ]);
         });
 
@@ -160,38 +154,34 @@ class SubkegiatanController extends Controller
     $tahun = Cookie::get('tahun');
     $tahun_aktif = TahunModel::where('tahun', $tahun)->first();
 
-    // Validasi tahun
     if (!$tahun_aktif) {
         return back()->withErrors(['system' => SESI]);
     }
-
-
+    $request['tahun'] = $tahun_aktif->tahun_sub_kegiatan;
     try {
         $validated = $request->validate([
-            'id_subkeg' => [
-                'required',
-                'string',
-                'max:50',
-                Rule::unique('m_subkegs')->where(fn ($query) => $query
-                    ->where('id_keg', $request->id_keg)
-                    ->where('tahun', $tahun_aktif->year)
-                )->ignore($request->id)
-            ],
-            'nama' => 'required|string',
-            'id_keg' => 'required|exists:m_kegs,id_keg'
-        ]);
+                'kode_sub_kegiatan' => [
+                            'required',
+                            'string',
+                            'regex:/^[0-9.]+$/',
+                                Rule::unique('sub_kegiatan', 'kode_sub_kegiatan')
+                                ->where(fn($query) => $query->where(['tahun' => $tahun_aktif->tahun_sub_kegiatan , 'id_kegiatan' => $request->id_kegiatan]))
+                                ->ignore($request->id_sub_kegiatan, 'id_sub_kegiatan')
+                        ],
+                        'nama_sub_kegiatan' => 'required|string|max:255',
+                        'id_kegiatan' => 'required|exists:kegiatan,id_kegiatan',
+                        'tahun' => TAHUN
+            ]);
 
         // Update data
-        $subkegiatan->where('id', $request->id)->update([
-            'id_subkeg' => $validated['id_subkeg'],
-            'nama' => $validated['nama'],
-            'id_keg' => $validated['id_keg'],
-            'tahun' => $tahun_aktif->year
+        $subkegiatan->where(['id_sub_kegiatan' => $request->id_sub_kegiatan , 'id_kegiatan' => $request->id_kegiatan])->update([
+            'kode_sub_kegiatan' => $validated['kode_sub_kegiatan'],
+            'nama_sub_kegiatan' => $validated['nama_sub_kegiatan']
         ]);
 
         return redirect()->back()->with('success', 'Sub Kegiatan berhasil diperbarui');
     } catch (\Exception $e) {
-        dd($e);
+
         return redirect()->back()->with('error', 'Gagal memperbarui sub kegiatan: ' . $e->getMessage());
     }
 }
@@ -201,7 +191,7 @@ class SubkegiatanController extends Controller
 
         try {
             DB::transaction(function () use ($subkegiatan, $id) {
-                $subkegiatan->where('id', $id)->delete();
+                $subkegiatan->where('id_sub_kegiatan', $id)->delete();
             });
 
             return redirect()->back()->with('success', 'Sub Kegiatan berhasil dihapus');

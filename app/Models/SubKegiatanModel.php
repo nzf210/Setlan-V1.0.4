@@ -15,7 +15,7 @@ class SubKegiatanModel extends Model
     protected $fillable = [
         'id_subkegiatan',
         'id_kegiatan',
-        'kode_subkegiatan',
+        'kode_sub_kegiatan',
         'nama_sub_kegiatan',
         'tahun'
     ];
@@ -44,4 +44,8 @@ class SubKegiatanModel extends Model
         return $this->belongsTo(KegiatanModel::class, 'id_kegiatan', 'id_kegiatan');
     }
 
+    public function tahun()
+    {
+        return $this->belongsTo(TahunModel::class, 'tahun', 'tahun');
+    }
 }

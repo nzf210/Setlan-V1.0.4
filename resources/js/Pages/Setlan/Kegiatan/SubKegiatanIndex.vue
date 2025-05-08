@@ -43,23 +43,18 @@ import {
     UploadIcon,
     SquarePlus,
 } from "lucide-vue-next";
-
-interface PaginationFilters {
-    search?: string;
-    year?: string;
-    per_page?: number;
-}
+import { PaginationFilters } from "@/types";
 
 interface SubKegiatan {
-    id_subkeg?: string;
-    id_keg?: string;
-    id?: number | string;
-    kode: string;
-    nama: string;
-    namasub?: string;
+    id_sub_kegiatan?: number;
+    id_kegiatan?: number;
+    kode_kegiatan: string;
+    kode_sub_kegiatan: string;
+    nama_kegiatan: string;
+    nama_sub_kegiatan?: string;
     type: string;
     tahun?: string | number;
-    parent_id?: string;
+    parent_id?: string | number;
 }
 
 interface PaginatedResult<Kegiatan> {
@@ -78,40 +73,43 @@ interface PaginatedResult<Kegiatan> {
     links: { url: string | null; label: string; active: boolean }[];
 }
 interface Tahun {
-    year: number;
+    tahun: number;
 }
 
 const props = defineProps<{
     subkegiatans: PaginatedResult<SubKegiatan>;
-    kegiatan: PaginatedResult<Kegiatan>;
+    // kegiatan: PaginatedResult<Kegiatan>;
     filters: PaginationFilters;
-    years: Array<{ year: number }>;
+    tahun: Array<{ tahun: number }>;
     auth: { role: string };
 }>();
 
 const filters = ref({
     search: props.filters.search || "",
-    year: props.filters.year || "",
+    tahun: props.filters.tahun || "",
     per_page: props.filters.per_page || 10,
 });
 
 const page = ref(props.subkegiatans.current_page);
 
+console.log("subkegiatans", props);
+
 const showModal = ref(false);
 const formAdd = ref<{
-    id?: number | string;
-    kode: string;
-    nama: string;
+    id_kegiatan?: number | string;
+    kode_kegiatan: string;
+    nama_kegiatan: string;
     tahun: string;
-    namasub: string;
-    id_keg: string;
+    nama_sub_kegiatan: string;
+    kode_sub_kegiatan: string;
 }>({
-    id: "",
-    kode: "",
-    nama: "",
+    id_kegiatan: "",
+    kode_kegiatan: "",
+    nama_kegiatan: "",
     tahun: "",
-    namasub: "",
-    id_keg: "",
+    nama_sub_kegiatan: "",
+    kode_sub_kegiatan: "",
+
 });
 
 const notifikasi = ref({
@@ -148,8 +146,7 @@ const columns = roles
 
 const openSubKeg = (kegiatan: SubKegiatan) => {
     /*
-                                                                                                                                                                                                                                                          // router.visit(`/subkegiatan/${kegiatan.id}`);
-                                                                                                                                                                                                                                                          */
+              // router.visit(`/subkegiatan/${kegiatan.id}`);*/
 };
 
 const submit = () => {
@@ -184,17 +181,17 @@ const submit = () => {
 };
 const showAddSubDialog = ref(false);
 const parentKegiatan = ref<{
-    id_keg: string;
-    tahun: string;
-    nama: string;
-    namasub: string;
-    kode: string;
+    id_kegiatan: number;
+    kode_kegiatan: string;
+    tahun: number;
+    nama_kegiatan: string;
+    nama_sub_kegiatan: string;
 }>({
-    id_keg: "",
-    tahun: "",
-    nama: "",
-    namasub: "",
-    kode: "",
+    id_kegiatan: 0,
+    tahun: 0,
+    nama_kegiatan: "",
+    nama_sub_kegiatan: "",
+    kode_kegiatan: "",
 });
 
 const formImport = useForm({
@@ -205,50 +202,58 @@ const formImport = useForm({
 });
 
 const newSub = ref<SubKegiatan>({
-    id_subkeg: "",
-    nama: "",
-    id_keg: "",
+    kode_sub_kegiatan: "",
+    nama_sub_kegiatan: "",
+    id_kegiatan: 0,
     tahun: 0,
-    namasub: "",
-    id: 0,
-    kode: "",
+    id_sub_kegiatan: 0,
     type: "",
     parent_id: "",
+    nama_kegiatan: "",
+    kode_kegiatan: ''
 });
 
 const editKegiatan = (kegiatan: SubKegiatan) => {
-    parentKegiatan.value = {
-        id_keg: kegiatan.parent_id!,
-        kode: kegiatan.kode,
-        nama: kegiatan.nama,
-        namasub: kegiatan.namasub!,
-        tahun: "",
-    };
-    newSub.value = {
-        id_keg: kegiatan.parent_id!,
-        nama: kegiatan.nama,
-        namasub: kegiatan.nama!,
-        tahun: 0,
-        id_subkeg: kegiatan.kode,
-        id: kegiatan.id,
-        kode: kegiatan.kode,
-        type: kegiatan.type,
-        parent_id: kegiatan.parent_id,
-    };
-    form.value = {
-        id_keg: kegiatan.parent_id,
-        id: kegiatan.id,
-        nama: kegiatan.nama,
-        namasub: kegiatan.nama,
-        id_subkeg: kegiatan.kode,
-    };
+    router.visit(route("setlan.gsV1.kegiatan", { id: kegiatan.parent_id }), {
+        preserveState: true,
+        async: true,
+        preserveScroll: true,
+        onSuccess: (page) => {
+            parentKegiatan.value = {
+                id_kegiatan: Number(kegiatan.parent_id),
+                kode_kegiatan: page.props.flash.value[0].kode_kegiatan,
+                nama_kegiatan: page.props.flash.value[0].nama_kegiatan,
+                nama_sub_kegiatan: kegiatan.nama_sub_kegiatan!,
+                tahun: 0,
+            };
+            newSub.value = {
+                id_kegiatan: Number(kegiatan.parent_id),
+                nama_kegiatan: kegiatan.nama_kegiatan!,
+                nama_sub_kegiatan: kegiatan.nama_sub_kegiatan!,
+                tahun: 0,
+                id_sub_kegiatan: kegiatan.id_kegiatan,
+                kode_sub_kegiatan: kegiatan.kode_kegiatan,
+                type: kegiatan.type,
+                parent_id: kegiatan.parent_id,
+                kode_kegiatan: kegiatan.kode_kegiatan,
+            };
+            form.value = {
+                id_kegiatan: kegiatan.parent_id,
+                id_sub_kegiatan: kegiatan.id_kegiatan,
+                nama_kegiatan: page.props.flash.value[0].nama_kegiatan,
+                kode_kegiatan: page.props.flash.value[0].kode_kegiatan,
+                nama_sub_kegiatan: kegiatan.nama_sub_kegiatan,
+                kode_sub_kegiatan: kegiatan.kode_kegiatan,
+            };
+        },
+    });
     editing.value = true;
     showModal.value = true;
 };
 
 const deleteKegiatan = (id: SubKegiatan) => {
     if (confirm("Apakah Anda yakin ingin menghapus?")) {
-        router.delete(route("setlan.subKegiatan.pengaturan.delete", { id: id.id }), {
+        router.delete(route("setlan.subKegiatan.pengaturan.delete", { id: id.id_kegiatan }), {
             onSuccess() {
                 showNotifikasi("success", "Berhasil menghapus sub kegiatan");
             },
@@ -316,23 +321,23 @@ const handleFileSelect = (event: Event) => {
     }
 };
 
-const openAddSubDialog = (row: any) => {
+const openAddSubDialog = (row: SubKegiatan) => {
     parentKegiatan.value = {
-        id_keg: row.id_keg,
-        tahun: row.tahun,
-        nama: row.nama,
-        namasub: row.namasub,
-        kode: row.id_subkeg,
+        id_kegiatan: Number(row.id_kegiatan),
+        nama_kegiatan: row.nama_kegiatan,
+        kode_kegiatan: row.kode_kegiatan,
+        nama_sub_kegiatan: '',
+        tahun: 0,
     };
     newSub.value = {
-        kode: row.kode,
-        id_keg: row.id_keg,
-        namasub: row.namasub,
-        id_subkeg: "",
-        nama: "",
-        tahun: row.tahun, // atau ambil dari cookie/global state
-        parent_id: row.id_keg,
-        id: row.id,
+        id_kegiatan: Number(row.id_kegiatan),
+        nama_kegiatan: row.nama_kegiatan,
+        parent_id: row.parent_id,
+        kode_kegiatan: row.kode_kegiatan,
+        kode_sub_kegiatan: "",
+        nama_sub_kegiatan: '',
+        id_sub_kegiatan: 0,
+        tahun: row.tahun,
         type: row.type,
     };
     showAddSubDialog.value = true;
@@ -340,28 +345,35 @@ const openAddSubDialog = (row: any) => {
 const submitSubKegiatan = () => {
     router.post(route("setlan.subKegiatan.pengaturan.create"), newSub.value, {
         preserveScroll: true,
-        onSuccess: () => {
+        onSuccess: (page) => {
             showAddSubDialog.value = false;
             newSub.value = {
-                id_subkeg: "",
-                nama: "",
-                id_keg: "",
-                namasub: "",
+                id_sub_kegiatan: 0,
+                nama_kegiatan: "",
+                id_kegiatan: 0,
+                nama_sub_kegiatan: "",
                 tahun: "",
-                kode: "",
-                id: "",
+                kode_sub_kegiatan: "",
                 type: "",
                 parent_id: "",
+                kode_kegiatan: "",
             };
+            if (page.props.flash.success) {
+                showNotifikasi("success", "Berhasil menambah sub kegiatan");
+            } else {
+                showNotifikasi("error", "Gagal menambah sub kegiatan");
+            }
         },
     });
 };
 
 // Modals Untuk Sub Kegiatan
 interface Kegiatan {
-    id_keg: string;
-    nama: string;
+    id_kegiatan?: string | number | undefined;
+    nama_kegiatan: string;
+    kode_kegiatan: string;
     tahun: number;
+    type: string;
 }
 
 const searchQuery = ref("");
@@ -372,10 +384,10 @@ const showModalAdd = ref(false);
 const errors = ref<Record<string, string>>({});
 
 const form = ref<{ [key: string]: any | undefined }>({
-    id_subkeg: "",
-    nama: "",
-    id_keg: "",
-    id: "",
+    id_sub_kegiatan: 0,
+    nama_sub_kegiatan: "",
+    id_kegiatan: 0,
+    kode_sub_kegiatan: "",
     // tahun: props.tahunOptions[0]?.year.toString() || "",
 });
 
@@ -411,7 +423,7 @@ const searchKegiatan = () => {
 
 const submitForm = () => {
     try {
-        formAdd.value.namasub = "nsub";
+        formAdd.value.nama_sub_kegiatan = "nsub";
         router.post(route("setlan.subKegiatan.pengaturan.create"), formAdd.value, {
             preserveScroll: true,
             onSuccess: () => {
@@ -419,11 +431,12 @@ const submitForm = () => {
                 selectedKegiatan.value = null;
                 showNotifikasi("success", "Berhasil menambah sub kegiatan");
                 formAdd.value = {
-                    kode: "",
-                    nama: "",
-                    id_keg: "",
-                    namasub: "",
+                    kode_kegiatan: "",
+                    nama_kegiatan: "",
+                    id_kegiatan: "",
+                    nama_sub_kegiatan: "",
                     tahun: "",
+                    kode_sub_kegiatan: "",
                 };
                 searchQuery.value = "";
             },
@@ -436,11 +449,12 @@ const submitForm = () => {
                 showModalAdd.value = false;
                 showNotifikasi("error", "Gagal menambah sub kegiatan");
                 formAdd.value = {
-                    kode: "",
-                    nama: "",
-                    id_keg: "",
-                    namasub: "",
+                    kode_kegiatan: "",
+                    nama_kegiatan: "",
+                    id_kegiatan: "",
+                    nama_sub_kegiatan: "",
                     tahun: "",
+                    kode_sub_kegiatan: ''
                 };
                 selectedKegiatan.value = null;
                 searchQuery.value = "";
@@ -453,7 +467,7 @@ const submitForm = () => {
 
 const selectKegiatan = (kegiatan: Kegiatan) => {
     selectedKegiatan.value = kegiatan;
-    formAdd.value.id_keg = kegiatan.id_keg;
+    formAdd.value.id_kegiatan = kegiatan.id_kegiatan;
     searchQuery.value = "";
 };
 
@@ -461,12 +475,12 @@ watch(
     newSub,
     (newValue: SubKegiatan) => {
         form.value = {
-            id_subkeg: newValue.id_subkeg,
-            nama: newValue.nama,
-            id_keg: newValue.id_keg,
+            id_sub_kegiatan: newValue.id_sub_kegiatan,
+            kode_sub_kegiatan: newValue.kode_kegiatan,
+            nama_sub_kegiatan: newValue.nama_kegiatan,
+            id_kegiatan: newValue.id_kegiatan,
+            nama_kegiatan: newValue.nama_kegiatan,
             tahun: newValue.tahun,
-            namasub: newValue.namasub,
-            id: newValue.id,
         };
     },
     { deep: true }
@@ -524,14 +538,15 @@ watch(
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    <TableRow v-for="row in subkegiatans.data" :key="row.kode">
+                    <TableRow v-for="row in subkegiatans.data" :key="row.kode_sub_kegiatan">
                         <TableCell :class="row.type !== 'sub' ? 'font-bold' : 'font-thin'">{{
-                            row.kode
+                            row.kode_kegiatan
                             }}</TableCell>
                         <TableCell :class="row.type !== 'sub' ? 'font-bold text-cyan-950' : 'font-thin flex gap-2'
                             ">
                             <CornerDownRight v-if="row.type === 'sub'"
-                                :class="row.type === 'sub' ? 'text-blue-800' : ''" class="w-4 h-4" />{{ row.nama }}
+                                :class="row.type === 'sub' ? 'text-blue-800' : ''" class="w-4 h-4" />{{
+                                    row.nama_kegiatan }}
                         </TableCell>
                         <TableCell :class="row.type !== 'sub' ? 'font-bold' : 'font-thin'">{{
                             row?.tahun
@@ -570,7 +585,7 @@ watch(
                             <PaginationListItem v-if="item.type === 'page'" :key="index" :value="item.value">
                                 <Button class="w-10 h-10 p-0" :variant="subkegiatans.current_page === item.value ? 'default' : 'outline'
                                     " :disabled="!subkegiatans.links.find((l) => parseInt(l.label) === item.value)?.url
-                    ">
+                                        ">
                                     {{ item.value }}
                                 </Button>
                             </PaginationListItem>
@@ -585,7 +600,7 @@ watch(
             <!-- Pagination -->
         </div>
 
-        <!-- Add Modal Kegiatan  -->
+        <!-- Add Modal sub Kegiatan baru  -->
         <Dialog v-model:open="showModalAdd">
             <DialogContent class="sm:max-w-[625px]">
                 <DialogHeader>
@@ -614,12 +629,12 @@ watch(
 
                             <div v-else-if="kegiatanOptions.length > 0 && searchQuery"
                                 class="absolute z-10 w-full mt-1 bg-background border rounded-md shadow-lg max-h-60 overflow-y-auto">
-                                <div v-for="kegiatan in kegiatanOptions" :key="kegiatan.id_keg"
+                                <div v-for="kegiatan in kegiatanOptions" :key="kegiatan.id_kegiatan"
                                     class="p-2 hover:bg-accent cursor-pointer transition-colors"
                                     @click="selectKegiatan(kegiatan)">
-                                    <div class="font-medium text-sm">{{ kegiatan.id_keg }}</div>
+                                    <div class="font-medium text-sm">{{ kegiatan.id_kegiatan }}</div>
                                     <div class="text-xs text-muted-foreground truncate">
-                                        {{ kegiatan.nama }}
+                                        {{ kegiatan.nama_kegiatan }}
                                     </div>
                                 </div>
                             </div>
@@ -630,9 +645,9 @@ watch(
                     <div v-if="selectedKegiatan" class="grid grid-cols-4 items-center gap-4">
                         <Label for="kegiatan" class="text-right"> Kode / Nama Kegiatan </Label>
                         <div class="col-span-3 space-y-1">
-                            <div class="font-medium text-sm">{{ selectedKegiatan.id_keg }}</div>
+                            <div class="font-medium text-sm">{{ selectedKegiatan.id_kegiatan }}</div>
                             <div class="text-xs text-muted-foreground">
-                                {{ selectedKegiatan.nama }}
+                                {{ selectedKegiatan.nama_kegiatan }}
                             </div>
                         </div>
                     </div>
@@ -641,9 +656,10 @@ watch(
                     <div class="grid grid-cols-4 items-center gap-4">
                         <Label for="id_subkeg" class="text-right"> Kode Sub </Label>
                         <div class="col-span-3 space-y-2">
-                            <Input id="id_subkeg" v-model="formAdd.kode" placeholder="Contoh: 1.01.01.2.02.0001" />
+                            <Input id="id_subkeg" v-model="formAdd.kode_kegiatan"
+                                placeholder="Contoh: 1.01.01.2.02.0001" />
                             <Alert v-if="errors.id_subkeg" variant="destructive" class="text-xs py-1 px-2">
-                                {{ errors.id_subkeg }}
+                                {{ errors.kode_sub_kegiatan }}
                             </Alert>
                         </div>
                     </div>
@@ -651,9 +667,9 @@ watch(
                     <div class="grid grid-cols-4 items-center gap-4">
                         <Label for="nama" class="text-right"> Nama Sub </Label>
                         <div class="col-span-3 space-y-2">
-                            <Input id="nama" v-model="formAdd.nama" placeholder="Masukkan nama sub kegiatan" />
+                            <Input id="nama" v-model="formAdd.nama_kegiatan" placeholder="Masukkan nama sub kegiatan" />
                             <Alert v-if="errors.nama" variant="destructive" class="text-xs py-1 px-2">
-                                {{ errors.nama }}
+                                {{ errors.nama_kegiatan }}
                             </Alert>
                         </div>
                     </div>
@@ -662,7 +678,7 @@ watch(
                 <DialogFooter>
                     <Button variant="outline" @click="showModalAdd = false"> Batal </Button>
                     <Button type="submit" @click="submitForm"
-                        :disabled="!formAdd.kode || !formAdd.kode || !formAdd.nama">
+                        :disabled="!formAdd.kode_kegiatan || !formAdd.nama_kegiatan">
                         Simpan
                     </Button>
                 </DialogFooter>
@@ -698,7 +714,7 @@ watch(
             </DialogContent>
         </Dialog>
 
-        <!-- Add Modal -->
+        <!-- Add Modal Tambah sub kegiatan -->
         <Dialog v-model:open="showAddSubDialog">
             <DialogContent>
                 <DialogHeader>
@@ -706,7 +722,7 @@ watch(
                     <DialogDescription>
                         Kode / Nama Kegiatan :
                         <span class="font-semibold">
-                            {{ parentKegiatan?.kode }} - {{ parentKegiatan?.nama }}
+                            {{ parentKegiatan?.kode_kegiatan }} - {{ parentKegiatan?.nama_kegiatan }}
                         </span>
                     </DialogDescription>
                 </DialogHeader>
@@ -714,19 +730,20 @@ watch(
                 <div class="grid gap-4 py-4">
                     <div class="grid grid-cols-4 items-center gap-4">
                         <Label for="id_subkeg" class="text-right"> Kode Sub Kegiatan </Label>
-                        <Input id="id_subkeg" v-model="newSub.id_subkeg" class="col-span-3"
+                        <Input id="id_subkeg" v-model="newSub.kode_sub_kegiatan" class="col-span-3"
                             placeholder="Masukkan kode sub kegiatan" />
                     </div>
                     <div class="grid grid-cols-4 items-center gap-4">
                         <Label for="nama" class="text-right"> Nama Sub Kegiatan </Label>
-                        <Input id="nama" v-model="newSub.nama" class="col-span-3"
+                        <Input id="nama" v-model="newSub.nama_sub_kegiatan" class="col-span-3"
                             placeholder="Masukkan nama sub kegiatan" />
                     </div>
                 </div>
 
                 <DialogFooter>
                     <Button variant="outline" @click="showAddSubDialog = false"> Batal </Button>
-                    <Button type="submit" @click="submitSubKegiatan" :disabled="!newSub.id_subkeg || !newSub.nama">
+                    <Button type="submit" @click="submitSubKegiatan"
+                        :disabled="!newSub.kode_sub_kegiatan || !newSub.nama_sub_kegiatan">
                         Simpan
                     </Button>
                 </DialogFooter>
@@ -741,7 +758,7 @@ watch(
                     <DialogDescription>
                         Kode / Nama Sub Kegiatan :
                         <span class="font-semibold">
-                            {{ parentKegiatan?.kode }} - {{ parentKegiatan?.nama }}
+                            {{ parentKegiatan?.kode_kegiatan }} - {{ parentKegiatan?.nama_kegiatan }}
                         </span>
                     </DialogDescription>
                 </DialogHeader>
@@ -749,19 +766,19 @@ watch(
                 <div class="grid gap-4 py-4">
                     <div class="grid grid-cols-4 items-center gap-4">
                         <Label for="id_subkeg" class="text-right"> Kode Sub Kegiatan </Label>
-                        <Input id="id_subkeg" v-model="newSub.id_subkeg" class="col-span-3"
+                        <Input id="id_subkeg" v-model="newSub.kode_kegiatan" class="col-span-3"
                             placeholder="Masukkan kode sub kegiatan" />
                     </div>
                     <div class="grid grid-cols-4 items-center gap-4">
                         <Label for="nama" class="text-right"> Nama Sub Kegiatan </Label>
-                        <Input id="nama" v-model="newSub.nama" class="col-span-3"
+                        <Input id="nama" v-model="newSub.nama_kegiatan" class="col-span-3"
                             placeholder="Masukkan nama sub kegiatan" />
                     </div>
                 </div>
 
                 <DialogFooter>
                     <Button variant="outline" @click="showModal = false"> Batal </Button>
-                    <Button type="submit" @click="submit" :disabled="!newSub.id_subkeg || !newSub.nama">
+                    <Button type="submit" @click="submit" :disabled="!newSub.kode_kegiatan || !newSub.nama_kegiatan">
                         Simpan
                     </Button>
                 </DialogFooter>

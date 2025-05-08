@@ -14,16 +14,7 @@ import {
     Loader2,
     X,
 } from "lucide-vue-next";
-import { Can } from "@/types";
-
-interface Tahun {
-    id_tahun: number;
-    tahun: number;
-    tahun_akun: number;
-    tahun_kode_barang: number;
-    tahun_sub_kegiatan: number;
-    tahun_kegiatan: number;
-}
+import { Can, Tahun } from "@/types";
 
 const props = defineProps<{
     tahun: Tahun[];
@@ -301,8 +292,8 @@ const hapusTahun = (id: number) => {
                                             class="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
                                             :disabled="updatingKegId === tahun.id_tahun">
                                             <option v-for="opt in daftarTahun" :key="'keg-' + opt.tahun_kode_barang"
-                                                :value="opt.tahun_kode_barang">
-                                                {{ opt.tahun_kode_barang }}
+                                                :value="opt.tahun">
+                                                {{ opt.tahun }}
                                             </option>
                                         </select>
                                         <Loader2 v-if="updatingKegId === tahun.id_tahun"
@@ -317,8 +308,8 @@ const hapusTahun = (id: number) => {
                                             class="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
                                             :disabled="updatingSubKegId === tahun.id_tahun">
                                             <option v-for="opt in daftarTahun" :key="'sub-' + opt.id_tahun"
-                                                :value="opt.tahun_sub_kegiatan">
-                                                {{ opt.tahun_sub_kegiatan }}
+                                                :value="opt.tahun">
+                                                {{ opt.tahun }}
                                             </option>
                                         </select>
                                         <Loader2 v-if="updatingSubKegId === tahun.id_tahun"
@@ -333,8 +324,8 @@ const hapusTahun = (id: number) => {
                                             class="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
                                             :disabled="updatingAkunId === tahun.id_tahun">
                                             <option v-for="opt in daftarTahun" :key="'akun-' + opt.id_tahun"
-                                                :value="opt.tahun_akun">
-                                                {{ opt.tahun_akun }}
+                                                :value="opt.tahun">
+                                                {{ opt.tahun }}
                                             </option>
                                         </select>
                                         <Loader2 v-if="updatingAkunId === tahun.id_tahun"

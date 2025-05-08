@@ -128,6 +128,7 @@ Route::middleware(['auth', 'cors'])->prefix('setlan')->group(function () {
     /**# Get Data Support */
     Route::get('/gsV1/kab', [GetDataController::class, 'getkabupaten'])->name('setlan.gsV1.kabupaten');
     Route::get('/gsV1/opd', [GetDataController::class, 'getopd'])->name('setlan.gsV1.opd');
+    Route::get('/gsV1/{id}/kegiatan', [GetDataController::class, 'getkegiatan'])->name('setlan.gsV1.kegiatan');
 });
 
 Route::prefix('setlan')->middleware(['auth', 'cors'])->group(function () {

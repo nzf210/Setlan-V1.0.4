@@ -46,3 +46,25 @@ export interface Can {
     edit: boolean;
     delete: boolean;
 }
+
+export interface Kegiatan {
+    id_kegiatan: number;
+    kode_kegiatan: string;
+    nama_kegiatan: string;
+    tahun: number;
+}
+
+export interface PaginationFilters {
+    search?: string;
+    tahun?: string;
+    per_page?: number;
+}
+
+export interface Tahun {
+    id_tahun: number;
+    tahun: number;
+    tahun_akun: number;
+    tahun_kode_barang: number;
+    tahun_sub_kegiatan: number;
+    tahun_kegiatan: number;
+}

@@ -40,19 +40,7 @@ import {
     X,
     UploadIcon,
 } from "lucide-vue-next";
-
-interface PaginationFilters {
-    search?: string;
-    tahun?: string;
-    per_page?: number;
-}
-
-interface Kegiatan {
-    id_kegiatan: number;
-    kode_kegiatan: string;
-    nama_kegiatan: string;
-    tahun: number;
-}
+import { Kegiatan, PaginationFilters } from "@/types";
 
 interface PaginatedResult<Kegiatan> {
     data: Kegiatan[];

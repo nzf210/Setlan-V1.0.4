@@ -18,3 +18,7 @@ yarn-error.log
 /.idea
 /.vscode
 .prettierrc
+.eslintrc.cjs
+eslint.config.cjs
+eslint.config.js
+.eslintrc.js
