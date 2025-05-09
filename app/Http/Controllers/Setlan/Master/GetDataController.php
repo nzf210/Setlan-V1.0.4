@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Http\Controllers\Setlan;
+namespace App\Http\Controllers\Setlan\Master;
 
-use App\Http\Controllers\Controller;
-use App\Models\KabupatenModel;
-use App\Models\KegiatanModel;
+use Cookie;
 use App\Models\OpdModel;
 use App\Models\TahunModel;
-use Cookie;
 use Illuminate\Http\Request;
+use App\Models\KegiatanModel;
+use App\Models\KabupatenModel;
+use App\Http\Controllers\Controller;
 
 class GetDataController extends Controller
 {
@@ -19,7 +19,7 @@ class GetDataController extends Controller
         $kab = KabupatenModel::query()
             ->when($keyword, function ($query) use ($keyword) {
                 $query->where('id_kabupaten', '=', $keyword)
-                    ->orWhere('nama_kab', 'LIKE', "%{$keyword}%");
+                    ->orWhere('nama_kabupaten', 'LIKE', "%{$keyword}%");
             })
             ->paginate(10);
             $kab->getCollection()->transform(fn ($item) => [

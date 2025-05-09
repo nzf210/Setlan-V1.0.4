@@ -1,7 +1,10 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Setlan\Kegiatan;
 
+use App\Http\Controllers\Controller;
+use App\Http\Controllers\Setlan\Persediaan\MutasiController;
+use App\Http\Resources\SubKegiatanAktifResource;
 use DB;
 use Cookie;
 use Inertia\Inertia;
@@ -24,14 +27,14 @@ class SubkegiatanController extends Controller
         $tahun = $mutasiController->getCookies()[3];
         $m_subkeg = collect();
         if($tahun && $idKab && $idOpd && $idUnit){
-            $m_subkeg = SubKegiatanAktifModel::with(['subKegiatan'])
+            $m_subkeg = SubKegiatanAktifModel::with(['sub_kegiatan'])
             ->where(['id_kabupaten' => $idKab,
                                 'id_opd' => $idOpd,
                                 'id_unit' => $idUnit,
                                 'tahun' => $tahun])->paginate(10);
         }
 
-        $m_subkegResource = SubKegiatanResource::collection($m_subkeg);
+        $m_subkegResource = SubKegiatanAktifResource::collection($m_subkeg);
         return redirect()->back()->with(["value" =>  $m_subkegResource]);
     }
 
@@ -108,7 +111,6 @@ class SubkegiatanController extends Controller
     public function store(Request $request)
 {
 
-    dd($request->all());
         $tahun = Cookie::get('tahun');
 
         // Validasi tahun

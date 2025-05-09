@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Setlan;
 
-use App\Models\BeritaAcaraModel;
+use App\Http\Controllers\Controller;
+use App\Models\SaldoModel;
 use Illuminate\Http\Request;
 
-class BeritaAcaraController extends Controller
+class SaldoController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -34,7 +35,7 @@ class BeritaAcaraController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(BeritaAcaraModel $berita_acara)
+    public function show(SaldoModel $saldo)
     {
         //
     }
@@ -42,7 +43,7 @@ class BeritaAcaraController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(BeritaAcaraModel $berita_acara)
+    public function edit(SaldoModel $saldo)
     {
         //
     }
@@ -50,7 +51,7 @@ class BeritaAcaraController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, BeritaAcaraModel $berita_acara)
+    public function update(Request $request, SaldoModel $saldo)
     {
         //
     }
@@ -58,7 +59,7 @@ class BeritaAcaraController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(BeritaAcaraModel $berita_acara)
+    public function destroy(SaldoModel $saldo)
     {
         //
     }

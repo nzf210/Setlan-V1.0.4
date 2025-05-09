@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Setlan\Master;
 
+use App\Http\Controllers\Controller;
 use App\Models\TahunModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cookie;

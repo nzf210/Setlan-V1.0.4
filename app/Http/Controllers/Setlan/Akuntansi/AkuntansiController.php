@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Setlan\Akuntansi;
 
+use App\Http\Controllers\Controller;
 use App\Models\AkunBelanjaAktifModel;
 use App\Models\AkunBelanjaModel;
 use App\Models\TahunModel;

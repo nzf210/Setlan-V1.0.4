@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Setlan\Master;
 
 use App\Models\KabupatenModel;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 
 class KabupatenController extends Controller
 {

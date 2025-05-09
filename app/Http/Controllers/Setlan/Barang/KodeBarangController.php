@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Setlan\Barang;
 
+use App\Http\Controllers\Controller;
 use Inertia\Inertia;
 use App\Models\TahunModel;
 use Illuminate\Http\Request;
@@ -35,6 +36,7 @@ class KodeBarangController extends Controller
         $idKab = Cookie::get('id_kabupaten');
         $tahun = Cookie::get('tahun');
         $tahun_aktif = TahunModel::where(['tahun' => $tahun, 'id_kabupaten' => $idKab])->first();
+
         if (!$idKab || !$tahun || !$tahun_aktif) {
             return back()->withErrors([
                 'system' => SESI

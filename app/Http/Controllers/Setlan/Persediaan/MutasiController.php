@@ -1,21 +1,21 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Setlan\Persediaan;
 
-use App\Http\Controllers\Setlan\SubKegiatanAktifController;
-use App\Http\Controllers\Setlan\UnitSubKegController;
-use App\Http\Resources\MutasiDraftMasukResource;
-use App\Http\Resources\MutasiResource;
-use App\Http\Resources\SubKegiatanResource;
-use App\Models\KabupatenModel;
-use App\Models\MutasiModel;
+use Inertia\Inertia;
 use App\Models\OpdModel;
 use App\Models\UnitModel;
+use App\Models\MutasiModel;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use App\Models\KabupatenModel;
 use Illuminate\Support\Facades\Log;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
+use App\Http\Resources\MutasiResource;
 use Illuminate\Validation\ValidationException;
-use Inertia\Inertia;
+use App\Http\Resources\SubKegiatanAktifResource;
+use App\Http\Resources\MutasiDraftMasukResource;
+use App\Http\Controllers\Setlan\Kegiatan\SubKegiatanAktifController;
 
 define("BRG_MSK", "Berhasil Menambah barang masuk.");
 define("MB", "Master Barang");
@@ -93,7 +93,7 @@ class MutasiController extends Controller
                 $dataMutasi = $query->paginate(10);
                 $dataMutasiResource = MutasiDraftMasukResource::collection($dataMutasi);
                 $datasub = (new SubKegiatanAktifController())->getUnitSubKeg($search_sub);
-                $subKegiatanResource = SubKegiatanResource::collection($datasub);
+                $subKegiatanResource = SubKegiatanAktifResource::collection($datasub);
                             return Inertia::render('Setlan/Barang/Masuk/Draft',
                             [    'data' =>  $dataMutasiResource,
                                         'calc' => $this->show(['draft_masuk']),

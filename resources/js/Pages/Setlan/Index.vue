@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import SetlanLayout from "@/Pages/Setlan/Components/Layouts.vue";
 import HeadTitle from "@/Components/HeadTitle.vue";
+import SetlanLayout from "@/Pages/Setlan/Components/Layouts.vue";
 
 defineProps<{
     title: string;

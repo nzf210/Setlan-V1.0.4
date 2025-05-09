@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Setlan\Master;
 
-use App\Models\OpdModel;
+use App\Http\Controllers\Controller;
+use App\Models\UnitModel;
 use Illuminate\Http\Request;
 
-class OpdController extends Controller
+class UnitController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -34,7 +35,7 @@ class OpdController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(OpdModel $m_opd)
+    public function show(UnitModel $m_unit)
     {
         //
     }
@@ -42,7 +43,7 @@ class OpdController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(OpdModel $m_opd)
+    public function edit(UnitModel $m_unit)
     {
         //
     }
@@ -50,7 +51,7 @@ class OpdController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, OpdModel $m_opd)
+    public function update(Request $request, UnitModel $m_unit)
     {
         //
     }
@@ -58,7 +59,7 @@ class OpdController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(OpdModel $m_opd)
+    public function destroy(UnitModel $m_unit)
     {
         //
     }

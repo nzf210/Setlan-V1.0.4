@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Setlan\Kegiatan;
 
+use App\Http\Controllers\Controller;
 use DB;
 use Inertia\Inertia;
 use App\Models\TahunModel;

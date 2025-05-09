@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Setlan\Barang;
 
+use App\Http\Controllers\Controller;
 use App\Http\Resources\BarangResource;
 use App\Http\Resources\CategoryResource;
 use App\Models\BarangModel;

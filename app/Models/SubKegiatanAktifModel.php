@@ -13,7 +13,7 @@ class SubKegiatanAktifModel extends Model
     protected $fillable = [
         'id_sub_kegiatan_aktif',
         'id_sub_kegiatan',
-        'id_kabuten',
+        'id_kabupaten',
         'id_opd',
         'id_unit',
         'tahun',

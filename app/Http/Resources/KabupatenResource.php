@@ -16,7 +16,7 @@ class KabupatenResource extends JsonResource
     {
         return [
             'id_kabupaten' => $this->id_kabupaten,
-            'nama_kab' => $this->nama_kab,
+            'nama_kabupaten' => $this->nama_kab,
         ];
     }
 }

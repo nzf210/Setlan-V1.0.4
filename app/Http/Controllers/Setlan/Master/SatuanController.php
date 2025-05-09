@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Http\Controllers\Setlan;
-use App\Http\Controllers\Controller;
+namespace App\Http\Controllers\Setlan\Master;
 use App\Models\SatuanModel;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 
 class SatuanController extends Controller
 {

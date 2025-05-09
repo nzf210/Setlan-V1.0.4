@@ -1,22 +1,22 @@
 <?php
 
-use App\Http\Controllers\AkuntansiController;
-use App\Http\Controllers\BarangController;
-use App\Http\Controllers\KodeBarangController;
-use App\Http\Controllers\KegiatanController;
-use App\Http\Controllers\Setlan\SubKegiatanAktifController;
-use App\Http\Controllers\SubkegiatanController;
-use App\Http\Controllers\MutasiController;
-use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\Setlan\DashboardController;
-use App\Http\Controllers\Setlan\GetDataController;
-use App\Http\Controllers\Setlan\SatuanController;
-use App\Http\Controllers\Setlan\SetCookieController;
-use App\Http\Controllers\StokController;
-use App\Http\Controllers\TahunController;
-use Illuminate\Foundation\Application;
-use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Route;
+use Illuminate\Foundation\Application;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Setlan\StokController;
+use App\Http\Controllers\Setlan\DashboardController;
+use App\Http\Controllers\Setlan\SetCookieController;
+use App\Http\Controllers\Setlan\Master\TahunController;
+use App\Http\Controllers\Setlan\Barang\BarangController;
+use App\Http\Controllers\Setlan\Master\SatuanController;
+use App\Http\Controllers\Setlan\Master\GetDataController;
+use App\Http\Controllers\Setlan\Kegiatan\KegiatanController;
+use App\Http\Controllers\Setlan\Barang\KodeBarangController;
+use App\Http\Controllers\Setlan\Persediaan\MutasiController;
+use App\Http\Controllers\Setlan\Akuntansi\AkuntansiController;
+use App\Http\Controllers\Setlan\Kegiatan\SubkegiatanController;
+use App\Http\Controllers\Setlan\Kegiatan\SubKegiatanAktifController;
 
 define('PROFILE_ROUTE', 'profile');
 define('LOGIN', 'login');
@@ -117,17 +117,17 @@ Route::middleware(['auth', 'cors'])->prefix('setlan')->group(function () {
 
     /**# Unit Sub Kegiatan */
     Route::get('/unitsubkeg', [SubKegiatanAktifController::class, 'index'])->name('setlan.unitSubKeg');
+    Route::patch('/unitsubkeg/edit', [SubKegiatanAktifController::class, 'update'])->name('setlan.unitSubKeg.update');
+    Route::post('/unitsubkegSimpan', [SubKegiatanAktifController::class, 'saveData'])->name('setlan.unitSubKegSimpan');
     Route::get('/unitsubkegopd/{id_kab}', [SubKegiatanAktifController::class, 'getOpds'])->name('setlan.unitSubKegOpd');
     Route::get('/unitsubkegunit/{id_opd}', [SubKegiatanAktifController::class, 'getUnits'])->name('setlan.unitSubKegUnit');
-    Route::get('/unitsubkegiatan', [SubKegiatanAktifController::class, 'getSubKegiatans'])->name('setlan.unitSubKegiatan');
-    Route::get('/unitsubkegiatanGet/{idOrName?}', [SubKegiatanAktifController::class, 'getUnitSubkegiatan'])->name('setlan.getUnitSubKegiatan');
-    Route::post('/unitsubkegSimpan', [SubKegiatanAktifController::class, 'saveData'])->name('setlan.unitSubKegSimpan');
-    Route::patch('/unitsubkeg/edit', [SubKegiatanAktifController::class, 'update'])->name('setlan.unitSubKeg.update');
     Route::delete('/unitsubkegs/{id}/hapus', [SubKegiatanAktifController::class, 'destroy'])->name('setlan.unitSubKeg.delete');
-
+    Route::get('/unitsubkegiatanGet/{idOrName?}', [SubKegiatanAktifController::class, 'getUnitSubkegiatan'])->name('setlan.getUnitSubKegiatan');
+    /** Sub Kegiatan Aktif */
+    Route::get('/subKegiatanAktif', [SubKegiatanAktifController::class, 'getSubKegiatanAktif'])->name('setlan.subKegiatanAktif');
     /**# Get Data Support */
-    Route::get('/gsV1/kab', [GetDataController::class, 'getkabupaten'])->name('setlan.gsV1.kabupaten');
     Route::get('/gsV1/opd', [GetDataController::class, 'getopd'])->name('setlan.gsV1.opd');
+    Route::get('/gsV1/kab', [GetDataController::class, 'getkabupaten'])->name('setlan.gsV1.kabupaten');
     Route::get('/gsV1/{id}/kegiatan', [GetDataController::class, 'getkegiatan'])->name('setlan.gsV1.kegiatan');
 });
 

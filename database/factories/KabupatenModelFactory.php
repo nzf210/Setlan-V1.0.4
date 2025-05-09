@@ -10,9 +10,9 @@ class KabupatenModelFactory extends Factory
     protected $model = KabupatenModel::class;
     protected static $index = 0;
     protected static $kabupaten = [
-        ['id_kabupaten' => '91.19', 'nama_kab' => 'Supiori'],
-        ['id_kabupaten' => '91.20', 'nama_kab' => 'Membramo Raya'],
-        ['id_kabupaten' => '01.01', 'nama_kab' => 'Kabupaten Tes']
+        ['id_kabupaten' => '91.19', 'nama_kabupaten' => 'Supiori'],
+        ['id_kabupaten' => '91.20', 'nama_kabupaten' => 'Membramo Raya'],
+        ['id_kabupaten' => '01.01', 'nama_kabupaten' => 'Kabupaten Tes']
     ];
 
     public function definition()
@@ -22,7 +22,7 @@ class KabupatenModelFactory extends Factory
 
         return [
             'kode_kabupaten' => $kabupaten['id_kabupaten'],
-            'nama_kabupaten' => $kabupaten['nama_kab'],
+            'nama_kabupaten' => $kabupaten['nama_kabupaten'],
         ];
     }
 }

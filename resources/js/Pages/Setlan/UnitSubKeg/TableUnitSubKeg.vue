@@ -6,6 +6,7 @@ import {
     FileStack,
     Trash,
     CheckCircle,
+    X,
 } from "lucide-vue-next";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { router } from "@inertiajs/vue3";
@@ -32,50 +33,38 @@ import {
     PaginationLast,
 } from "@/components/ui/pagination";
 
-interface Kabupaten {
-    nama_kab: string;
-}
-
-interface Opd {
-    nama_opd: string;
-}
-
-interface Unit {
-    nama_unit: string;
-}
-
-interface Kegiatan {
-    nama: string;
-}
-
-interface SubKegiatan {
-    nama: string;
-    kegs?: Kegiatan;
-}
-
 interface UnitSubKeg {
-    id: number;
-    kabupaten?: Kabupaten;
-    opd?: Opd;
-    unit?: Unit;
-    sub_kegiatan?: SubKegiatan;
+    id_kabupaten: number;
+    nama_kabupaten?: string;
+    id_opd: number;
+    nama_opd: string;
+    id_unit: number;
+    nama_unit: string;
+    id_sub_kegiatan_aktif: number;
+    kode_kegiatan: string;
+    nama_kegiatan: string;
+    kode_sub_kegiatan: string;
+    nama_sub_kegiatan: string;
     tahun: number;
+    nomor_urut: number;
 }
 
 interface PaginatedResult<UnitSubKeg> {
     data: UnitSubKeg[];
-    total: number;
-    first_page_url: string;
-    from: number;
-    last_page: number;
-    last_page_url: string;
-    next_page_url: string | null;
-    path: string;
-    per_page: number;
-    current_page: number;
-    prev_page_url: string | null;
-    to: number;
-    links: { url: string | null; label: string; active: boolean }[];
+    meta: {
+        total: number;
+        first_page_url: string;
+        from: number;
+        last_page: number;
+        last_page_url: string;
+        next_page_url: string | null;
+        path: string;
+        per_page: number;
+        current_page: number;
+        prev_page_url: string | null;
+        to: number;
+        links: { url: string | null; label: string; active: boolean }[];
+    }
 }
 
 const unitSubKegs = ref<UnitSubKeg[]>([]);
@@ -173,6 +162,7 @@ const roles = props.role === "operator";
             <Table>
                 <TableHeader class="bg-muted">
                     <TableRow>
+                        <TableHead>No</TableHead>
                         <TableHead>Kabupaten</TableHead>
                         <TableHead>OPD</TableHead>
                         <TableHead>Unit</TableHead>
@@ -183,20 +173,21 @@ const roles = props.role === "operator";
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    <TableRow v-for="item in unitSubKegs" :key="item.id" class="hover:bg-muted/50">
-                        <TableCell>{{ item?.kabupaten || "-" }}</TableCell>
-                        <TableCell>{{ item?.opd || "-" }}</TableCell>
-                        <TableCell>{{ item?.unit || "-" }}</TableCell>
+                    <TableRow v-for="item in unitSubKegs" :key="item.id_sub_kegiatan_aktif" class="hover:bg-muted/50">
+                        <TableCell>{{ item?.nomor_urut || "-" }}</TableCell>
+                        <TableCell>{{ item?.nama_kabupaten || "-" }}</TableCell>
+                        <TableCell>{{ item?.nama_opd || "-" }}</TableCell>
+                        <TableCell>{{ item?.nama_unit || "-" }}</TableCell>
                         <TableCell>
                             <div class="flex items-center gap-2">
                                 <FolderKanban class="w-4 h-4 text-primary" />
-                                {{ item?.nama_keg || "-" }}
+                                {{ item?.nama_kegiatan || "-" }}
                             </div>
                         </TableCell>
                         <TableCell>
                             <div class="flex items-center gap-2">
                                 <FileStack class="w-4 h-4 text-emerald-600" />
-                                {{ item?.nama || "-" }}
+                                {{ item?.nama_sub_kegiatan || "-" }}
                             </div>
                         </TableCell>
                         <TableCell>
@@ -206,7 +197,7 @@ const roles = props.role === "operator";
                         </TableCell>
                         <TableCell v-if="!roles">
                             <Trash variant="outline" class="w-4 h-4 text-red-400 cursor-pointer"
-                                @click="deteleUnitSubKeg(item.id)">
+                                @click="deteleUnitSubKeg(item.id_sub_kegiatan_aktif)">
                             </Trash>
                         </TableCell>
                     </TableRow>

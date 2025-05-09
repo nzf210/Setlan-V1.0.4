@@ -423,7 +423,6 @@ const searchKegiatan = () => {
 
 const submitForm = () => {
     try {
-        formAdd.value.nama_sub_kegiatan = "nsub";
         router.post(route("setlan.subKegiatan.pengaturan.create"), formAdd.value, {
             preserveScroll: true,
             onSuccess: () => {
@@ -469,6 +468,11 @@ const selectKegiatan = (kegiatan: Kegiatan) => {
     selectedKegiatan.value = kegiatan;
     formAdd.value.id_kegiatan = kegiatan.id_kegiatan;
     searchQuery.value = "";
+    router.replace({
+        url: window.location.pathname, // Gunakan pathname tanpa query
+        preserveState: true, // Pertahankan state saat ini
+        preserveScroll: true // Pertahankan posisi scroll
+    });
 };
 
 watch(
@@ -485,6 +489,16 @@ watch(
     },
     { deep: true }
 );
+
+watch(() => showModalAdd.value, (newValue) => {
+    if (!newValue) {
+        router.replace({
+            url: window.location.pathname,
+            preserveState: true,
+            preserveScroll: true
+        });
+    }
+})
 </script>
 
 <template>
@@ -541,7 +555,7 @@ watch(
                     <TableRow v-for="row in subkegiatans.data" :key="row.kode_sub_kegiatan">
                         <TableCell :class="row.type !== 'sub' ? 'font-bold' : 'font-thin'">{{
                             row.kode_kegiatan
-                            }}</TableCell>
+                        }}</TableCell>
                         <TableCell :class="row.type !== 'sub' ? 'font-bold text-cyan-950' : 'font-thin flex gap-2'
                             ">
                             <CornerDownRight v-if="row.type === 'sub'"
@@ -550,7 +564,7 @@ watch(
                         </TableCell>
                         <TableCell :class="row.type !== 'sub' ? 'font-bold' : 'font-thin'">{{
                             row?.tahun
-                            }}</TableCell>
+                        }}</TableCell>
                         <TableCell class="flex gap-2" v-if="row.type === 'sub' && roles">
                             <Button variant="outline" title="Edit" size="sm" @click="editKegiatan(row)">
                                 <Edit class="w-4 h-4" color="#2865c8" />
@@ -632,7 +646,7 @@ watch(
                                 <div v-for="kegiatan in kegiatanOptions" :key="kegiatan.id_kegiatan"
                                     class="p-2 hover:bg-accent cursor-pointer transition-colors"
                                     @click="selectKegiatan(kegiatan)">
-                                    <div class="font-medium text-sm">{{ kegiatan.id_kegiatan }}</div>
+                                    <div class="font-medium text-sm">{{ kegiatan.kode_kegiatan }}</div>
                                     <div class="text-xs text-muted-foreground truncate">
                                         {{ kegiatan.nama_kegiatan }}
                                     </div>
@@ -645,7 +659,7 @@ watch(
                     <div v-if="selectedKegiatan" class="grid grid-cols-4 items-center gap-4">
                         <Label for="kegiatan" class="text-right"> Kode / Nama Kegiatan </Label>
                         <div class="col-span-3 space-y-1">
-                            <div class="font-medium text-sm">{{ selectedKegiatan.id_kegiatan }}</div>
+                            <div class="font-medium text-sm">{{ selectedKegiatan.kode_kegiatan }}</div>
                             <div class="text-xs text-muted-foreground">
                                 {{ selectedKegiatan.nama_kegiatan }}
                             </div>
@@ -656,9 +670,9 @@ watch(
                     <div class="grid grid-cols-4 items-center gap-4">
                         <Label for="id_subkeg" class="text-right"> Kode Sub </Label>
                         <div class="col-span-3 space-y-2">
-                            <Input id="id_subkeg" v-model="formAdd.kode_kegiatan"
+                            <Input id="id_subkeg" v-model="formAdd.kode_sub_kegiatan"
                                 placeholder="Contoh: 1.01.01.2.02.0001" />
-                            <Alert v-if="errors.id_subkeg" variant="destructive" class="text-xs py-1 px-2">
+                            <Alert v-if="errors.kode_sub_kegiatan" variant="destructive" class="text-xs py-1 px-2">
                                 {{ errors.kode_sub_kegiatan }}
                             </Alert>
                         </div>
@@ -667,9 +681,10 @@ watch(
                     <div class="grid grid-cols-4 items-center gap-4">
                         <Label for="nama" class="text-right"> Nama Sub </Label>
                         <div class="col-span-3 space-y-2">
-                            <Input id="nama" v-model="formAdd.nama_kegiatan" placeholder="Masukkan nama sub kegiatan" />
-                            <Alert v-if="errors.nama" variant="destructive" class="text-xs py-1 px-2">
-                                {{ errors.nama_kegiatan }}
+                            <Input id="nama" v-model="formAdd.nama_sub_kegiatan"
+                                placeholder="Masukkan nama sub kegiatan" />
+                            <Alert v-if="errors.nama_sub_kegiatan" variant="destructive" class="text-xs py-1 px-2">
+                                {{ errors.nama_sub_kegiatan }}
                             </Alert>
                         </div>
                     </div>
@@ -678,7 +693,7 @@ watch(
                 <DialogFooter>
                     <Button variant="outline" @click="showModalAdd = false"> Batal </Button>
                     <Button type="submit" @click="submitForm"
-                        :disabled="!formAdd.kode_kegiatan || !formAdd.nama_kegiatan">
+                        :disabled="!formAdd.kode_sub_kegiatan || !formAdd.nama_sub_kegiatan">
                         Simpan
                     </Button>
                 </DialogFooter>

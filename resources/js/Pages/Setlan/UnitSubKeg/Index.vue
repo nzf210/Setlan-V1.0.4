@@ -9,7 +9,7 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { AlertCircle, CheckCircle, Plus } from "lucide-vue-next";
+import { AlertCircle, CheckCircle, Plus, X } from "lucide-vue-next";
 import Dialog from "@/components/ui/dialog/Dialog.vue";
 import DialogContent from "@/components/ui/dialog/DialogContent.vue";
 import DialogHeader from "@/components/ui/dialog/DialogHeader.vue";
@@ -24,18 +24,34 @@ const props = defineProps<{
     unitSubKegs: any;
 }>();
 
+interface Kegiatan {
+    id_kegiatan: number;
+    kode_kegiatan: string;
+    nama_kegiatan: string;
+    tahun: number;
+}
+
+interface SubKegiatan {
+    id_kegiatan: number;
+    id_sub_kegiatan: number;
+    kode_sub_kegiatan: string;
+    nama_sub_kegiatan: string;
+    tahun: number;
+}
+
 const form = useForm({
     kabupaten_id: null,
     opd_id: null,
     unit_id: null,
-    id_subkeg: null,
+    kode_sub_kegiatan: null,
+    id_sub_kegiatan: null,
 });
 
 console.log("Initial Data:", props.initialData);
 
 const opds = ref(props.initialData.opds || []);
 const units = ref(props.initialData.units || []);
-const unitSubKegiatans = ref<any>();
+const unitSubKegiatans = ref<any>([]);
 
 const notifikasi = ref({
     show: false,
@@ -106,16 +122,19 @@ import _ from "lodash";
 import TableUnitSubKeg from "./TableUnitSubKeg.vue";
 const fetchSubKegiatans = _.debounce(async () => {
     router.visit(
-        route("setlan.unitSubKegiatan", {
-            id_subkeg: form.id_subkeg,
+        route("setlan.subKegiatanAktif", {
+            kode_sub_keg: form.kode_sub_kegiatan,
             search: searchQuery.value,
         }),
         {
+            async: true,
+            method: "get",
             preserveScroll: true,
             preserveState: true,
-            onSuccess: (page) => {
+            onSuccess: (page: any) => {
                 unitSubKegiatans.value = page.props.unitSubKegs;
                 const response = page.props.flash.value;
+                console.log("response", response);
                 subKegiatans.value = response;
             },
         }
@@ -138,7 +157,7 @@ const submit = () => {
         preserveScroll: true,
         async: true,
         preserveState: true,
-        onSuccess: (page) => {
+        onSuccess: (page: any) => {
             if (page.props.flash.error) {
                 showNotifikasi("error", page.props.flash.error);
                 return;
@@ -280,7 +299,7 @@ watch(isOpen, (open) => {
                         <!-- Sub Kegiatan Dropdown -->
                         <div class="grid gap-2">
                             <label for="sub_kegiatan">Sub Kegiatan</label>
-                            <Select v-model="form.id_subkeg">
+                            <Select v-model="form.id_sub_kegiatan">
                                 <SelectTrigger>
                                     <SelectValue placeholder="Pilih Sub Kegiatan" />
                                 </SelectTrigger>
@@ -292,14 +311,14 @@ watch(isOpen, (open) => {
                                             class="w-full px-3 py-2 text-sm border rounded-md focus:outline-none focus:ring-2 focus:ring-primary" />
                                     </div>
                                     <template v-if="subKegiatans.length > 0">
-                                        <SelectItem v-for="sub in subKegiatans" :key="sub?.id_subkeg"
-                                            :value="sub.id_subkeg">
+                                        <SelectItem v-for="sub in subKegiatans" :key="sub?.id_sub_kegiatan"
+                                            :value="sub.id_sub_kegiatan">
                                             <div>
                                                 <div class="font-semibold text-xs">
-                                                    {{ sub?.kegs?.nama }}
+                                                    {{ sub?.kegiatan?.nama_kegiatan }}
                                                 </div>
                                                 <div>
-                                                    {{ sub.nama }}
+                                                    {{ sub.nama_sub_kegiatan }}
                                                 </div>
                                             </div>
                                         </SelectItem>

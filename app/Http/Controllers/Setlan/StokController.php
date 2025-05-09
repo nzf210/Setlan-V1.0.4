@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Setlan;
 
+use App\Http\Controllers\Controller;
+use App\Http\Controllers\Setlan\Persediaan\MutasiController;
 use App\Http\Resources\MutasiResource;
-use App\Models\Mutasi;
 use App\Models\MutasiModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;

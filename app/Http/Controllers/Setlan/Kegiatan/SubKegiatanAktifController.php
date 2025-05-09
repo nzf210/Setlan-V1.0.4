@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Http\Controllers\Setlan;
+namespace App\Http\Controllers\Setlan\Kegiatan;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\SubKegiatanResource;
+use App\Http\Resources\SubKegiatanAktifResource;
 use App\Models\KabupatenModel;
 use App\Models\OpdModel;
 use App\Models\SubKegiatanAktifModel;
@@ -39,7 +39,7 @@ class SubKegiatanAktifController extends Controller
     ];
 
     $unitSubKeg = $this->getUnitSubKeg();
-    $unitRes = SubKegiatanResource::collection($unitSubKeg);
+    $unitRes = SubKegiatanAktifResource::collection($unitSubKeg);
     return Inertia::render('Setlan/UnitSubKeg/Index', [
         'initialData' => $initialData,
         'unitSubKegs' => $unitRes,
@@ -56,11 +56,11 @@ class SubKegiatanAktifController extends Controller
         return back()->with('value', $data);
     }
 
-    public function getSubKegiatans(Request $request) {
-
+    public function getSubKegiatanAktif(Request $request) {
         $query = SubKegiatanModel::query();
-        $query->with(['kegs'])->when($request->search, fn($q) => $q->where('nama', 'like', "%{$request->search}%"))
-        ->orWhere('id_subkeg', 'like', "%{$request->search}%");
+        $query->with(['kegiatan'])->when($request->search, fn($q) =>
+        $q->where('nama_sub_kegiatan', 'like', "%{$request->search}%"))
+        ->orWhere('kode_sub_kegiatan', 'like', "%{$request->search}%");
         $data = $query->limit(10)->get();
         return back()->with('value', $data);
     }
@@ -68,45 +68,43 @@ class SubKegiatanAktifController extends Controller
     public function saveData(Request $request) {
         $tahun = Cookie::get('tahun');
         $user = auth()->user();
-
         $idKabUser = UserKabupatenModel::where('id_user', $user->id)->pluck('id_kabupaten')->first();
         $idOpd = UserOpdModel::where('id_user', $user->id)->pluck('id_opd')->first();
         $role = $user->roles->pluck('name')[0];
 
+
         if ($role === 'super_admin') {
-            $request['kabupaten_id'] = $request->input('kabupaten_id');
-        } elseif ($role === 'admin_kab') {
-            $request['kabupaten_id'] = $idKabUser;
-        } elseif ($role === 'admin_opd') {
-            $request['kabupaten_id'] = $idKabUser;
-            $request['opd_id'] = $idOpd;
-        }
+                $request['id_kabupaten'] = $request->input('id_kabupaten');
+            } elseif ($role === 'admin_kab') {
+                $request['id_kabupaten'] = $idKabUser;
+            } elseif ($role === 'admin_opd') {
+                $request['id_kabupaten'] = $idKabUser;
+                $request['opd_id'] = $idOpd;
+            }
 
         try {
 
-        $request['tahun'] = $tahun;
-        $validated = $request->validate([
-            'kabupaten_id' => 'required',
-            'opd_id' => 'required',
-            'unit_id' => 'required',
-            'id_subkeg' => 'required',
-            'tahun' => [
-                'required',
-                'exists:years,year',
-            ],
-        ]);
-        SubKegiatanAktifModel::create([
-            'id_kabupaten' => $validated['kabupaten_id'],
-            'id_opd' => $validated['opd_id'],
-            'id_unit' => $validated['unit_id'],
-            'id_subkeg' => $validated['id_subkeg'],
-            'tahun' => $validated['tahun'],
-        ]);
+            $request['tahun'] = $tahun;
+            $validated = $request->validate([
+                'id_kabupaten' => 'required',
+                'opd_id' => 'required',
+                'unit_id' => 'required',
+                'id_sub_kegiatan' => 'required',
+                'tahun' => TAHUN,
+            ]);
+            SubKegiatanAktifModel::create([
+                'id_kabupaten' => $validated['id_kabupaten'],
+                'id_opd' => $validated['opd_id'],
+                'id_unit' => $validated['unit_id'],
+                'id_sub_kegiatan' => $validated['id_sub_kegiatan'],
+                'tahun' => $validated['tahun'],
+            ]);
         // Simpan data ke database atau lakukan operasi lain
         return back()
             ->with('success', 'Data berhasil disimpan!')
             ->with('unitSubKegs', $this->getUnitSubKeg());
     } catch (\Exception $e) {
+        dd($e);
         return back()->with('error', 'Data gagal disimpan!.');
     }
     }
@@ -133,14 +131,14 @@ class SubKegiatanAktifController extends Controller
             'kabupaten',
             'opd',
             'unit',
-            'subKegiatan.kegs'
+            'sub_kegiatan.kegiatan'
         ])->where('tahun', Cookie::get('tahun'));
 
         $query->when($idOrName, function ($q) use ($idOrName) {
-            $q->where('id_subkeg', 'like', "%{$idOrName}%")
-                ->orWhereHas('subKegiatan', function ($q) use ($idOrName) {
-                    $q->where('nama', 'like', "%{$idOrName}%");
-                });
+            $q->whereHas('sub_kegiatan', function ($q) use ($idOrName) {
+                $q->where('nama_sub_kegiatan', 'like', "%{$idOrName}%")
+                    ->orWhere('kode_sub_kegiatan', 'like', "%{$idOrName}%");
+            });
         });
 
         switch ($role) {
@@ -159,13 +157,17 @@ class SubKegiatanAktifController extends Controller
             default:
                 return [];
         }
-
-        return $query->paginate(10);
+        $results = $query->paginate(10);
+        $results->getCollection()->transform(function ($item, $key) use ($results) {
+            $item->nomor_urut = $results->firstItem() + $key; // Nomor urut berdasarkan halaman
+            return $item;
+        });
+        return $results;
     }
 
     public function getUnitSubkegiatan(string $idOrName = null ){
         $unitSubKeg = $this->getUnitSubKeg($idOrName);
-        $unitRes = SubKegiatanResource::collection($unitSubKeg);
+        $unitRes = SubKegiatanAktifResource::collection($unitSubKeg);
         return back()->with('value', $unitRes);
     }
 }
