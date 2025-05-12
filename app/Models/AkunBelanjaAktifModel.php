@@ -9,7 +9,8 @@ use Illuminate\Database\Eloquent\Model;
 class AkunBelanjaAktifModel extends Model
 {
     use HasFactory;
-    protected $table = 'akunaktif';
+    protected $table = 'akun_aktif';
+    protected $primaryKey = 'id_akun_aktif';
     public $timestamps = false;
     protected $fillable = [
         'id_akun_aktif',

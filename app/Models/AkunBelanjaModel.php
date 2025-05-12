@@ -19,4 +19,23 @@ class AkunBelanjaModel extends Model
         'kode_akun'
     ];
 
+    public function  scopeFiltered(Builder $quary)
+    {
+        if (request('nama_akun') == null) {
+            return $quary;
+        }
+        $quary
+            ->when(request('nama_akun'), function (Builder $q) {
+                $q->where('nama_akun', 'like', '%' . request('nama_akun') . '%')
+                ->orWhere('kode_akun', 'like', '%' . request('nama_akun') . '%');
+            })
+            ->when(request('sort_by'), function (Builder $q) {
+                $sortBy = request('sort_by');
+                $sortOrder = request('sort_order', 'asc');
+                if (in_array($sortBy, ['nama_akun'])) {
+                    $q->orderBy($sortBy, $sortOrder);
+                }
+            });
+    }
+
 }

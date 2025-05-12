@@ -15,7 +15,6 @@ return new class extends Migration
         $table->foreignIdFor(KabupatenModel::class, 'id_kabupaten')->nullable()->constrained('kabupaten', 'id_kabupaten')->onDelete('cascade');
         $table->foreignIdFor(AkunBelanjaModel::class, 'id_akun')->nullable()->constrained('akun_belanja', 'id_akun')->onDelete('cascade');
         $table->unsignedInteger('tahun');
-        $table->string('nama_akun_aktif');
         $table->unique(['id_akun', 'id_kabupaten', 'tahun'], 'unique_akun_aktif');
     });
 }

@@ -18,7 +18,8 @@ import Swal from "sweetalert2";
 import { Page } from "@/types";
 
 const filterNamaAkun = useForm({
-    nama: "",
+    nama_akun: "",
+    kode_akun: "",
     tahun: 0,
 });
 
@@ -35,23 +36,24 @@ let query = ref([
 
 interface Akuns {
     checked?: boolean;
-    id: number;
-    ids: number;
-    id_akun: string;
-    m_kab?: {
-        id_kab: string;
-        nama_kab: string;
+    id_akun: number;
+    id_akun_aktif: number;
+    kode_akun: string;
+    kabupaten?: {
+        id_kabupaten: string;
+        nama_kabupaten: string;
     };
-    nama: string;
+    nama_kabupaten: string;
+    nama_akun: string;
     induk: Array<{
         id_akun: string;
-        nama: string;
+        nama_akun: string;
     }>;
 }
 
 const akunRole = ref<string>("");
 const selectedAkuns = ref<any>([]);
-const selectAkuns = ref<any>([]);
+const selectAkuns = ref<Akuns | any>();
 
 const akuns = ref<Akuns[]>();
 
@@ -79,55 +81,53 @@ onMounted(() => {
     searchNamaAkun();
 });
 
-const removeDraft = (e: number) => {
-    akunsAktif.value = [...removeByIds(akunsAktif.value, e)];
-    selectedAkuns.value = [...removeByIds(selectedAkuns.value, e)];
+const removeDraft = (id_akun: number) => {
+    akunsAktif.value = [...removeByIds(akunsAktif.value, id_akun)];
+    selectedAkuns.value = [...removeByIds(selectedAkuns.value, id_akun)];
 };
 
-function removeByIds(array: Akuns[] | any, id: number) {
-    return array.filter((item: any) => item.id !== id);
+function removeByIds(array: Akuns[] | any, id_akun: number) {
+    return array.filter((item: Akuns) => item.id_akun !== id_akun);
 }
 
 function searchNamaAkun(e: string = "", t: boolean = false) {
     filterNamaAkun
         .transform((data: any) => ({
             ...data,
-            nama: e,
+            nama_akun: e
         }))
         .get(route("setlan.akuntansi.akundata"), {
             preserveState: true,
             preserveScroll: true,
+            async: true,
             onSuccess: (page) => {
                 if (!page.props.flash?.value?.data) {
                     return;
                 }
-
                 selectAkuns.value = page.props.flash?.value?.data;
-
                 akunRole.value = page.props.auth?.role;
-                router.get(
+                router.visit(
                     route("setlan.akuntansi.akunaktif"),
-                    {},
                     {
                         preserveState: true,
+                        preserveScroll: true,
+                        async: true,
                         onSuccess: (page: Page) => {
-                            const akunaktif = page.props.flash?.value?.data;
-                            console.log("akunaktif", akunaktif);
+                            const akunaktif = page.props.flash?.value;
                             let akun = selectAkuns.value.map((akun: Akuns) => {
                                 let checked: boolean = true;
                                 return { ...akun, checked: checked };
                             });
                             let idsAkunAktif: any = [];
                             if (akunaktif && akunaktif.length > 0) {
-                                idsAkunAktif = new Set(akunaktif.map((item: any) => item.ids));
-                                akun = akun.map((item: any) => ({
+                                idsAkunAktif = new Set(akunaktif.map((item: any) => item.id_akun));
+                                akun = akun.map((item: Akuns) => ({
                                     ...item,
-                                    checked: idsAkunAktif.has(item.id) ? false : item.checked,
+                                    checked: idsAkunAktif.has(item.id_akun) ? false : item.checked,
                                 }));
                             }
-                            console.log("akun akunaktif", akunaktif);
                             akuns.value = akun;
-                            init.value = akunaktif;
+                            init.value = akunaktif || [];
                             initialData.value = init.value;
                             akunsAktif.value = [...initialData.value];
                         },
@@ -181,7 +181,7 @@ const createdAkunAktif = (e: any[]) => {
         }
     });
 };
-const deleteAkunAktif = (e: number = 0, n: string = "") => {
+const deleteAkunAktif = (id: number = 0, n: string = "") => {
     Swal.fire({
         title: "Hapus Akun !!!",
         text:
@@ -198,19 +198,29 @@ const deleteAkunAktif = (e: number = 0, n: string = "") => {
     }).then((result) => {
         if (result.isConfirmed) {
             try {
-                console.log("e", e);
-
-                router.delete(route("setlan.akuntansi.akundelete", { id: e }), {
+                router.delete(route("setlan.akuntansi.akundelete", { id: id }), {
                     onSuccess: (page) => {
-                        Swal.fire({
-                            toast: true,
-                            icon: "success",
-                            position: "top-end",
-                            showConfirmButton: false,
-                            title: page.props.flash.success,
-                            timer: 2500,
-                        });
-                        router.visit(route("setlan.akuntansi.akundata"));
+                        if (page.props.flash.success) {
+                            Swal.fire({
+                                toast: true,
+                                icon: "success",
+                                position: "top-end",
+                                showConfirmButton: false,
+                                title: page.props.flash.success,
+                                timer: 2500,
+                            });
+                            router.visit(route("setlan.akuntansi.akundata"));
+                        } else {
+                            Swal.fire({
+                                toast: true,
+                                icon: "error",
+                                position: "top-end",
+                                showConfirmButton: false,
+                                title: page.props.flash.error,
+                                timer: 2500,
+                            });
+                        }
+
                     },
                     preserveState: true,
                     preserveScroll: true,
@@ -251,7 +261,7 @@ const deleteAkunAktif = (e: number = 0, n: string = "") => {
                                             class="flex w-full items-center justify-between bg-slate-50 py-3 text-sm text-gray-400 hover:text-gray-500">
                                             <span class="font-medium text-gray-900 px-2 z-50">{{
                                                 section.name
-                                                }}</span>
+                                            }}</span>
                                             <span class="ml-6 flex items-center">
                                                 <PlusIcon v-if="!open" class="h-5 w-5" aria-hidden="true" />
                                                 <MinusIcon v-else class="h-5 w-5" aria-hidden="true" />
@@ -284,15 +294,15 @@ const deleteAkunAktif = (e: number = 0, n: string = "") => {
                                             <div
                                                 class="w-full text-xl font-semibold ml-1 max-h-60 overflow-y-auto mt-1">
                                                 <div class="flex items-center w-full space-x-2 rounded p-2 hover:bg-gray-100 accent-teal-600"
-                                                    v-for="akun in akuns" :key="akun?.id ?? ''">
-                                                    <input :id="'input' + akun.id" type="checkbox"
-                                                        :name="String(akun.id)" :value="akun" :disabled="!akun.checked"
-                                                        v-model="selectedAkuns"
+                                                    v-for="akun in akuns" :key="akun?.id_akun ?? ''">
+                                                    <input :id="'input' + akun.id_akun" type="checkbox"
+                                                        :name="String(akun.id_akun)" :value="akun"
+                                                        :disabled="!akun.checked" v-model="selectedAkuns"
                                                         class="h-4 w-4 rounded border-gray-300 text-slate-600 shadow-sm focus:border-teal-300 focus:ring focus:ring-teal-200 focus:ring-opacity-50 focus:ring-offset-0 disabled:cursor-not-allowed disabled:text-gray-400" />
-                                                    <label :for="'input' + akun.id"
+                                                    <label :for="'input' + akun.id_akun"
                                                         class="flex w-full space-x-2 text-sm"
                                                         :class="!akun.checked ? 'text-gray-400' : 'text-gray-600'">
-                                                        {{ akun.nama }}
+                                                        {{ akun.nama_akun }}
                                                     </label>
                                                 </div>
                                             </div>
@@ -309,7 +319,7 @@ const deleteAkunAktif = (e: number = 0, n: string = "") => {
                                         <tr>
                                             <th scope="col"
                                                 class="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                Kab
+                                                Kabupaten
                                             </th>
                                             <th scope="col"
                                                 class="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -326,7 +336,7 @@ const deleteAkunAktif = (e: number = 0, n: string = "") => {
                                             </th>
                                             <th scope="col"
                                                 class="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                Sub Rinc
+                                                Sub Rincian
                                             </th>
                                             <th scope="col"
                                                 class="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -343,30 +353,30 @@ const deleteAkunAktif = (e: number = 0, n: string = "") => {
                                         v-if="selectAkuns && akunsAktif && akunsAktif.length > 0">
                                         <tr v-for="(akun, index) in akunsAktif" :key="index">
                                             <td class="px-2 py-2 whitespace-nowrap">
-                                                <div v-if="!akun?.checked">{{ akun?.m_kab?.nama_kab }}</div>
+                                                <div v-if="!akun?.checked">{{ akun?.nama_kabupaten }}</div>
                                                 <div v-else>Kab Draft</div>
                                             </td>
                                             <td class="px-2 py-4 whitespace-nowrap">
                                                 <div class="text-sm text-gray-900">
-                                                    {{ akun?.induk[4]?.nama }}
+                                                    {{ akun?.induk[4]?.nama_akun }}
                                                 </div>
                                                 <div class="text-sm text-gray-500">
-                                                    {{ akun?.induk[3]?.nama }}
+                                                    {{ akun?.induk[3]?.nama_akun }}
                                                 </div>
                                             </td>
                                             <td class="px-2 py-2 max-w-30">
                                                 <div class="text-sm text-gray-900">
-                                                    {{ akun?.induk[2]?.nama }}
+                                                    {{ akun?.induk[2]?.nama_akun }}
                                                 </div>
                                                 <div class="text-sm text-gray-500">
-                                                    {{ akun?.induk[1]?.nama }}
+                                                    {{ akun?.induk[1]?.nama_akun }}
                                                 </div>
                                             </td>
                                             <td class="px-2 py-2 max-w-40 text-sm text-gray-500">
-                                                {{ akun?.induk[0]?.nama }}
+                                                {{ akun?.induk[0]?.nama_akun }}
                                             </td>
                                             <td class="px-2 py-2 text-sm text-gray-500 max-w-50">
-                                                {{ akun.nama }}
+                                                {{ akun.nama_akun }}
                                             </td>
                                             <td class="px-2 py-2 whitespace-nowrap">
                                                 <span v-if="!akun.checked"
@@ -383,10 +393,11 @@ const deleteAkunAktif = (e: number = 0, n: string = "") => {
                                                 <button v-if="
                                                     (!akun.checked && akunRole === 'admin_kab') ||
                                                     akunRole === 'super_admin'
-                                                " @click="deleteAkunAktif(akun.id, akun.nama)" class="ml-2 text-red-600 hover:text-red-900">
+                                                " @click="deleteAkunAktif(akun.id_akun_aktif, akun.nama_akun)"
+                                                    class="ml-2 text-red-600 hover:text-red-900">
                                                     Delete
                                                 </button>
-                                                <button v-else @click="removeDraft(akun.id)"
+                                                <button v-else @click="removeDraft(akun.id_akun)"
                                                     class="ml-2 text-slate-400 hover:text-slate-500">
                                                     Delete
                                                 </button>

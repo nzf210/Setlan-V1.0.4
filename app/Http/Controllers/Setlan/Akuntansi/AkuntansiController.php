@@ -29,74 +29,73 @@ class AkuntansiController extends Controller
 
     public function getAkunData(Request $request)
     {
+
         $validatedData = $request->validate([
-            'nama' => 'nullable|string',
-            'id_akun' => 'nullable|string'
+            'nama_akun' => 'nullable|string'
         ]);
 
         $tahun = Cookie::get('tahun');
         $tahun_aktif = TahunModel::where('tahun', $tahun)->first();
 
-        if (!$tahun_aktif || !$tahun_aktif->akun) {
+        if (!$tahun_aktif || !$tahun_aktif->tahun_akun) {
             return back()->withError('Tahun aktif tidak ditemukan atau belum memiliki data akun');
         } else {
 
             $query = AkunBelanjaModel::query()
-            ->whereRaw('LENGTH(id_akun) = 17')
-            ->where('tahun', $tahun_aktif->akun);
+                ->whereRaw('LENGTH(kode_akun)=17')
+                ->where('tahun', $tahun_aktif->tahun_akun);
 
-            $this->applySearchFilters($query, $validatedData);
+            if(!empty($validatedData['nama_akun'])){
+                $this->applySearchFilters($query, $validatedData);
+            }
 
             $accounts = $query->paginate(10)
-            ->withQueryString()
-            ->through(function ($item) {
-                $item->induk = $this->getIndukHierarki($item->id_akun);
-                return $item;
-            });
+                ->withQueryString()
+                ->through(function ($item) {
+                    $item->induk = $this->getIndukHierarki($item->kode_akun);
+                    return $item;
+                });
             return back()->with('value', $accounts);
         }
     }
 
     protected function applySearchFilters($query, array $filters)
     {
-        if (!empty($filters['nama'])) {
-            $query->where('nama', 'like', '%' . $filters['nama'] . '%');
-        }
-
-        if (!empty($filters['id_akun'])) {
-            $query->where('id_akun', 'like', '%' . $filters['id_akun'] . '%');
+        if (!empty($filters['nama_akun'])) {
+            $query->where('nama_akun', 'like', '%' . $filters['nama_akun'] . '%')
+            ->orWhere('kode_akun', 'like', '%' . $filters['nama_akun'] . '%');
         }
     }
 
-    private function getIndukHierarki($id_akun,$now=true)
+    private function getIndukHierarki($kode_akun)
         {
             $indukHierarki = [];
             // Loop untuk mengambil induk berdasarkan panjang ID akun
-            while (strlen($id_akun) > 1) {
+            while (strlen($kode_akun) > 1) {
                 // Kurangi panjang ID akun sesuai dengan hierarki
-                switch (strlen($id_akun)) {
+                switch (strlen($kode_akun)) {
                     case 17: // R6 -> R5 (12 karakter)
-                        $id_akun = substr($id_akun, 0, 12);
+                        $kode_akun = substr($kode_akun, 0, 12);
                         break;
                     case 12: // R5 -> R4 (9 karakter)
-                        $id_akun = substr($id_akun, 0, 9);
+                        $kode_akun = substr($kode_akun, 0, 9);
                         break;
                     case 9: // R4 -> R3 (6 karakter)
-                        $id_akun = substr($id_akun, 0, 6);
+                        $kode_akun = substr($kode_akun, 0, 6);
                         break;
                     case 6: // R3 -> R2 (3 karakter)
-                        $id_akun = substr($id_akun, 0, 3);
+                        $kode_akun = substr($kode_akun, 0, 3);
                         break;
                     case 3: // R3 -> R2 (3 karakter)
-                        $id_akun = substr($id_akun, 0, 1);
+                        $kode_akun = substr($kode_akun, 0, 1);
                         break;
                     default:
                         break;
                 }
 
                 $tahun = Cookie::get('tahun');
-                $tahun_aktif = $now ? TahunModel::where('tahun', $tahun)->first()->akun : $tahun;
-                $induk = AkunBelanjaModel::where(['tahun' => $tahun_aktif , 'id_akun'=> $id_akun])->first();
+                $tahun_aktif = TahunModel::where('tahun', $tahun)->first()->tahun_akun;
+                $induk = AkunBelanjaModel::where(['tahun' => $tahun_aktif , 'kode_akun'=> $kode_akun])->first();
                 if ($induk) {
                     $indukHierarki[] = $induk;
                 }
@@ -111,14 +110,26 @@ public function GetAkunAktif(){
         if (!$idKab || !$tahun) {
             return redirect()->back()->withErrors('Parameter tahun atau kabupaten tidak valid');
         }
+        $akunAktif = AkunBelanjaAktifModel::with(['akun', 'kabupaten'])
+        ->where('id_kabupaten', $idKab)
+        ->where('tahun', $tahun)
+        ->filtered()
+        ->paginate(25);
+        $dt = $akunAktif->getCollection()->transform(function ($item) {
+                $akun = $item->akun;
+                $kabupaten = $item->kabupaten;
 
-        $data = AkunBelanjaAktifModel::with(['akun','mKab'])->where(['id_kabupaten' => $idKab, 'tahun' => $tahun]);
-        $dt= $data->filtered()->paginate(25)->withQueryString();
-
-        $dt->getCollection()->transform(function ($item) {
-            $item->induk = $this->getIndukHierarki($item->id_akun,false);
-            return $item;
-        });
+                return (object) [
+                    'id_akun_aktif' => $item->id_akun_aktif,
+                    'original' => $item,
+                    'induk' => $this->getIndukHierarki($akun->kode_akun),
+                    'kode_akun' => $akun->kode_akun,
+                    'id_akun' => $akun->id_akun,
+                    'nama_akun' => $akun->nama_akun,
+                    'nama_kabupaten' => $kabupaten->nama_kabupaten,
+                    'tahun' => $item->tahun
+                ];
+            });
         return back()->with(['value'=> $dt]);
 }
 
@@ -146,22 +157,20 @@ public function CreateAkunAktif(Request $request)
 
         try {
         $akuns = $request->input('akuns', []);
-        $akunsWithIdKab = array_map(function($akun) use ($idKab,$tahun) {
-            $akun['id_kabupaten'] = $idKab;
-            $akun['tahun'] = $tahun;
-            $akun['ids'] = $akun['id'];
-            return $akun;
-            }, $akuns);
-            $modifiedRequest = new Request(['akuns' => $akunsWithIdKab]);
 
-            $validatedData = $modifiedRequest->validate([
-                'akuns' => 'required|array',
-                'akuns.*.ids' => 'required|numeric',
-                'akuns.*.id_akun' => 'required|string|max:17',
-                'akuns.*.id_kab' => 'required|string|max:5',
-                'akuns.*.nama' => 'required|string|max:255',
-                'akuns.*.tahun' => 'required|numeric',
-            ]);
+        $akunsWithIdKab = array_map(function($akun) use ($idKab,$tahun) {
+                $akun['id_kabupaten'] = $idKab;
+                $akun['tahun'] = $tahun;
+                return $akun;
+                }, $akuns);
+        $modifiedRequest = new Request(['akuns' => $akunsWithIdKab]);
+
+        $validatedData = $modifiedRequest->validate([
+            'akuns' => 'required|array',
+            'akuns.*.id_kabupaten' => REQ_NUM,
+            'akuns.*.tahun' => REQ_NUM,
+            'akuns.*.id_akun' => REQ_NUM,
+        ]);
             DB::transaction(function () use ($validatedData) {
                 $succes = 0;
                 foreach ($validatedData['akuns'] as $akunData) {
@@ -176,13 +185,19 @@ public function CreateAkunAktif(Request $request)
         } catch (ValidationException $e) {
             return back()->withErrors($e->errors())->withInput();
         } catch (\Exception $e) {
-            return back()->with('error', 'Terjadi kesalahan saat menambah daftar akun.')->withInput();
+            dd($e->getMessage());
+            return back()->with('error', 'Terjadi kesalahan saat menambah daftar akun.'. $e->getMessage())->withInput();
         }
 }
-
-public function DeleteAkunAktif(Request $request, $id){
-        AkunBelanjaAktifModel::where('id', $id)->firstOrFail()->delete();
+public function DeleteAkunAktif($id) {
+    try {
+        $id_akun_aktif = $id;
+        $record = AkunBelanjaAktifModel::findOrFail($id_akun_aktif);
+        $record->delete();
         return redirect()->back()->with('success', 'Berhasil Menghapus Akun Aktif.');
+    } catch (\Exception $e) {
+        return redirect()->back()->with('error', 'Gagal menghapus: ' . $e->getMessage());
     }
+}
 
 }
