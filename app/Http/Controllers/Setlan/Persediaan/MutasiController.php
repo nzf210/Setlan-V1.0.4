@@ -76,7 +76,7 @@ class MutasiController extends Controller
                 $search = $request->input('search');
                 $search_sub = $request->input('search_sub');
 
-                $query = MutasiModel::where(["type" => "draft_masuk","id_kab" => $idKab, "id_opd" => $idOpd, "id_unit" => $idUnit , "tahun" => $tahun])
+                $query = MutasiModel::where(["type" => "draft_masuk","id_kabupaten" => $idKab, "id_opd" => $idOpd, "id_unit" => $idUnit , "tahun" => $tahun])
                             ->with(['unit','opd','kabupaten','barang.category','barang.akun','barang.satuan','subkeg.subKegiatan']);
                 if ($search) {
                     $query->where(function ($q) use ($search) {

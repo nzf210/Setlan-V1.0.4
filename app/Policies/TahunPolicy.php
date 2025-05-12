@@ -22,16 +22,16 @@ class TahunPolicy
 
     public function create(User $user)
     {
-        return in_array($user->roles[0]->name, ['admin_kab', 'super_admin']);
+        return $user->hasRole(['super_admin' , 'admin_kab']);
     }
 
     public function update(User $user)
     {
-        return in_array($user->roles[0]->name, ['admin_kab', 'super_admin']);
+        return $user->hasRole(['super_admin' , 'admin_kab']);
     }
 
     public function delete(User $user)
     {
-        return $user->roles[0]->name === 'super_admin';
+        return $user->hasRole('super_admin');
     }
 }

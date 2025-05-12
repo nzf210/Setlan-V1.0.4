@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\TahunModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cookie;
+use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 class TahunController extends Controller
 {
@@ -30,8 +31,9 @@ class TahunController extends Controller
             ]);
     }
 
-    public function store(Request $request)
+    public function store(Request $request, TahunModel $tahun)
     {
+        Gate::authorize('create', $tahun);
         $idkab = Cookie::get('id_kabupaten');
         $request['id_kabupaten'] = $idkab;
         $validated = $request->validate([
@@ -51,10 +53,11 @@ class TahunController extends Controller
         return redirect()->back();
     }
 
-    public function update(Request $request, $id)
+    public function update(Request $request, $id, TahunModel $tahun)
     {
-        $tahun = TahunModel::findOrFail($id);
 
+        Gate::authorize('update', $tahun);
+        $tahun = TahunModel::findOrFail($id);
         $validated = $request->validate([
             'tahun_akun' => TAHUN,
             'tahun_kegiatan' => TAHUN,
@@ -72,7 +75,7 @@ class TahunController extends Controller
 
     public function destroy(TahunModel $tahun, $id)
     {
-
+        Gate::authorize('delete', $tahun);
         $tahun->where('id_tahun', $id)->delete();
         return redirect()->back();
     }
