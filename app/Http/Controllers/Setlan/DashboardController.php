@@ -70,15 +70,42 @@ class DashboardController extends Controller
 
 
     private function getTahun()
-    {
-        return TahunModel::select('tahun')
-            ->orderBy('tahun', 'desc')
-            ->get()
-            ->map(fn($item) => [
-                'value' => (string) $item->tahun,
-                'label' => (string) $item->tahun,
-            ]);
-    }
+{
+        $user = Auth::user();
+        $role = $user->getRoleNames()->first();
+
+        $idUserKabupaten = UserKabupatenModel::where('id_user', $user->id)
+                            ->value('id_kabupaten');
+
+        if ($role === 'admin_opd') {
+            $idUserOpd = UserOpdModel::where('id_user', $user->id)->value('id_opd');
+            $idUserKabupaten = OpdModel::where('id_opd', $idUserOpd)->value('id_kabupaten');
+        }
+
+        if ($role === 'operator') {
+            $idUserUnit = UserUnitModel::where('id_user', $user->id)->pluck('id_unit');
+            $idUserOpd = UnitModel::where('id_unit', $idUserUnit[0])->value('id_opd');
+            $idUserKabupaten = OpdModel::where('id_opd', $idUserOpd)->value('id_kabupaten');
+        }
+
+        return match ($role) {
+            'super_admin' => TahunModel::select('tahun')
+                ->distinct()
+                ->orderByDesc('tahun')
+                ->get()
+                ->map(fn($item) => [
+                    'value' => (string) $item->tahun,
+                    'label' => (string) $item->tahun,
+                ]),
+            default => TahunModel::where('id_kabupaten', $idUserKabupaten)
+                ->orderByDesc('tahun')
+                ->get()
+                ->map(fn($item) => [
+                    'value' => (string) $item->tahun,
+                    'label' => (string) $item->tahun,
+                ])
+        };
+}
 
     private function checkRoleLogin()
 {

@@ -12,12 +12,14 @@ class TahunController extends Controller
 
     public function index()
     {
-        $tahun = TahunModel::all();
+        $idkab = Cookie::get('id_kabupaten');
+        $tahun = TahunModel::where('id_kabupaten', $idkab)->get();
         return back()->with('value', $tahun);
     }
     public function view()
     {
-        $tahun = TahunModel::all();
+        $idkab = Cookie::get('id_kabupaten');
+        $tahun = TahunModel::where('id_kabupaten', $idkab)->get();
         return Inertia::render('Setlan/Tahun/Index',
         ['tahun' => $tahun,
                 'can' => [
