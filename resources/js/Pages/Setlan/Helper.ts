@@ -136,44 +136,61 @@ export const constructNestedArray = (options:any) => {
   }
 
   export interface Kabupaten {
-    id_kab: string;
-    nama_kab: string;
+    id_kabupaten: string;
+    nama_kabupaten: string;
   }
 
   export interface KodeBarang {
-    id_kd_barang: string;
-    nama: string;
+    id_kode_barang: string;
+    kode_barang: string;
+    nama_kode_barang: string;
   }
 
   export interface Satuan {
-    id: number;
-    nama: string;
+    id_satuan: number;
+    nama_satuan: string;
+    description: string;
   }
 
   export interface Akun {
     id_akun: string;
-    nama: string;
+    nama_akun: string;
   }
 
   export interface Barang {
+    akun: {
+        id_akun_aktif: number;
+        kode_akun_aktif: string;
+        nama_akun_aktif: string;
+    };
+    satuan: {
+        id_satuan: number;
+        nama_satuan: string;
+    };
+    kode_barang: {
+        id_kode_barang: number;
+        tahun: number;
+        id_kabupaten: number;
+        kode_barang: string;
+        nama_kode_barang: string;
+    };
     id_barang: string;
     nama_barang: string;
-    merek: string | null;
-    type: string | null;
-    tahun_buat: string | null;
-    tahun_beli: string | null;
+    merek: string;
+    type: string;
     harga: string;
-    id_kd_barang: number | null;
-    satuan_id: number | null;
-    created_by: number | null;
+    id_kabupaten: number;
+    id_unit: number;
+    id_opd: number;
+    id_kode_barang: number;
+    id_akun_aktif: number;
+    id_satuan: number;
+    created_by: number;
     updated_by: number | null;
     deleted_by: number | null;
-    created_at: string | null;
-    updated_at: string | null;
-    id_akun: number | null;
-    kode_barang: KodeBarang; // Mungkin null tergantung relasi
-    satuan: Satuan; // Mungkin null tergantung relasi
-    akun: Akun; // Mungkin null tergantung relasi
+    tahun: number;
+    created_at: string; // Format ISO 8601
+    updated_at: string; // Format ISO 8601
   }
 
   export interface SubKegiatanDetail  {
@@ -200,7 +217,7 @@ export const constructNestedArray = (options:any) => {
     id: number;
     id_barang: string;
     id_subkeg: number;
-    id_kab: string;
+    id_kabupaten: string;
     id_opd: string;
     id_unit: string;
     jumlah: number;
@@ -223,12 +240,12 @@ export const constructNestedArray = (options:any) => {
     kabupaten?: Kabupaten; // Mungkin null tergantung relasi
     barang?: Barang; // Mungkin null tergantung relasi
     unit_sub_keg?: UnitSubKeg; // Mungkin null tergantung relasi
-    subkeg?: UnitSubKeg; // Mungkin null tergantung relasi
+    sub_kegiatan?: UnitSubKeg; // Mungkin null tergantung relasi
   }
   export interface UnitSubKeg {
     id: number;
-    id_subkeg: string;
-    id_kab: string;
+    id_sub_kegiatan: string;
+    id_kabupaten: string;
     id_opd: string;
     id_unit: string;
     tahun: number;

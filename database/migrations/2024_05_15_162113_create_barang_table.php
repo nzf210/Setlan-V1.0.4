@@ -22,7 +22,7 @@ return new class extends Migration
             $table->string('merek');
             $table->string('type')->nullable();
             $table->decimal('harga', 19, 2)->default(0);
-            $table->foreignIdFor(KabupatenModel::class, 'id_kabuten')->constrained('kabupaten', 'id_kabupaten')->onDelete('cascade');
+            $table->foreignIdFor(KabupatenModel::class, 'id_kabupaten')->constrained('kabupaten', 'id_kabupaten')->onDelete('cascade');
             $table->foreignIdFor(UnitModel::class, 'id_unit')->constrained('unit', 'id_unit')->onDelete('cascade');
             $table->foreignIdFor(OpdModel::class, 'id_opd')->constrained('opd', 'id_opd')->onDelete('cascade');
             $table->foreignIdFor(KodeBarangModel::class, 'id_kode_barang')->constrained('kode_barang', 'id_kode_barang')->onDelete('cascade');

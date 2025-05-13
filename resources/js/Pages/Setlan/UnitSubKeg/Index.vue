@@ -24,6 +24,7 @@ const props = defineProps<{
     unitSubKegs: any;
 }>();
 
+console.log(props);
 interface Kegiatan {
     id_kegiatan: number;
     kode_kegiatan: string;
@@ -40,14 +41,13 @@ interface SubKegiatan {
 }
 
 const form = useForm({
-    kabupaten_id: null,
+    id_kabupaten: null,
     opd_id: null,
     unit_id: null,
     kode_sub_kegiatan: null,
     id_sub_kegiatan: null,
 });
 
-console.log("Initial Data:", props.initialData);
 
 const opds = ref(props.initialData.opds || []);
 const units = ref(props.initialData.units || []);
@@ -76,10 +76,10 @@ watch(
 );
 
 watch(
-    () => form.kabupaten_id,
+    () => form.id_kabupaten,
     async (kabupatenId) => {
         if (!kabupatenId) return;
-        router.visit(route("setlan.unitSubKegOpd", { id_kab: kabupatenId }), {
+        router.visit(route("setlan.unitSubKegOpd", { id_kabupaten: kabupatenId }), {
             replace: true,
             preserveScroll: true,
             preserveState: true,
@@ -134,7 +134,6 @@ const fetchSubKegiatans = _.debounce(async () => {
             onSuccess: (page: any) => {
                 unitSubKegiatans.value = page.props.unitSubKegs;
                 const response = page.props.flash.value;
-                console.log("response", response);
                 subKegiatans.value = response;
             },
         }
@@ -253,14 +252,14 @@ watch(isOpen, (open) => {
                         <!-- Super Admin: Pilih Kabupaten -->
                         <div v-if="props?.auth.role === 'super_admin'" class="grid gap-2">
                             <label for="kabupaten">Kabupaten</label>
-                            <Select v-model="form.kabupaten_id">
+                            <Select v-model="form.id_kabupaten">
                                 <SelectTrigger>
                                     <SelectValue placeholder="Pilih Kabupaten" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem v-for="kab in initialData.kabupatens" :key="kab.id_kab"
-                                        :value="kab.id_kab">
-                                        {{ kab.nama_kab }}
+                                    <SelectItem v-for="kab in initialData.kabupatens" :key="kab.id_kabupaten"
+                                        :value="kab.id_kabupaten">
+                                        {{ kab.nama_kabupaten }}
                                     </SelectItem>
                                 </SelectContent>
                             </Select>

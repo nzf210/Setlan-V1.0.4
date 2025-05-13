@@ -14,7 +14,7 @@ import { basicStore } from "@/store/basicStrore";
 import { useMenuStore } from "@/store/menuStore";
 import Bookmark from "@/Pages/Setlan/Icons/Bookmark.vue";
 import { ElMenu, ElIcon, ElMenuItem, ElMenuItemGroup, ElSubMenu } from "element-plus";
-import { fa } from "element-plus/es/locales.mjs";
+
 const basicStoreInfo = basicStore();
 const menu_strore = useMenuStore();
 const isCollapse = computed(() => basicStoreInfo.showSideBar || false);
@@ -37,7 +37,7 @@ onBeforeUpdate(() => {
     console.info("On Before Update menu");
 });
 onMounted(() => {
-    console.log("Elemen DOM:");
+    console.info("Elemen DOM:");
 });
 </script>
 

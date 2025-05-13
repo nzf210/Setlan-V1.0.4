@@ -292,7 +292,7 @@ const formImport = useForm({
                 <h3 class="mb-2 text-lg font-medium text-gray-900">Data Kosong</h3>
                 <p class="text-gray-500 mb-4">kegiatan tidak ditemukan</p>
                 <Button class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-                    @click="showModal = true" as="button">
+                    v-if="roles" @click="showModal = true" as="button">
                     Tambah Baru
                 </Button>
             </div>

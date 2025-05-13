@@ -111,10 +111,10 @@ public function GetAkunAktif(){
             return redirect()->back()->withErrors('Parameter tahun atau kabupaten tidak valid');
         }
         $akunAktif = AkunBelanjaAktifModel::with(['akun', 'kabupaten'])
-        ->where('id_kabupaten', $idKab)
-        ->where('tahun', $tahun)
-        ->filtered()
-        ->paginate(25);
+            ->where('id_kabupaten', $idKab)
+            ->where('tahun', $tahun)
+            ->filtered()
+            ->paginate(25);
         $dt = $akunAktif->getCollection()->transform(function ($item) {
                 $akun = $item->akun;
                 $kabupaten = $item->kabupaten;

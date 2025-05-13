@@ -43,30 +43,30 @@ const loadSatuanAktif = (qry: string, setOptions: Function) => {
             onSuccess: (page) => {
                 const satuanaktif = page.props.flash?.value?.data as any[];
                 const isReady = satuanaktif.some(
-                    (akun: { id: number }) => akun.id === master_barangStore.satuan_id
+                    (akun: { id_satuan: number }) => akun.id_satuan === master_barangStore.id_satuan
                 );
 
-                if (master_barangStore.editMode && master_barangStore.satuan_id && !isReady) {
+                if (master_barangStore.editMode && master_barangStore.id_satuan && !isReady) {
                     satuanaktif.unshift({
-                        id: master_barangStore.satuan_id,
-                        nama: master_barangStore.satuan_nama,
+                        id: master_barangStore.id_satuan_,
+                        nama: master_barangStore.nama_satuan,
                     });
                 }
 
-                if (master_barangStore.editMode && master_barangStore.satuan_id) {
+                if (master_barangStore.editMode && master_barangStore.id_satuan) {
                     indexSatuan.value = satuanaktif.findIndex(
-                        (akun: { id: number }) => akun.id === master_barangStore.satuan_id
+                        (akun: { id_satuan: number }) => akun.id_satuan === master_barangStore.id_satuan
                     );
 
                     satuanAktif.value = {
-                        id: satuanaktif[indexSatuan.value]?.id,
-                        name: satuanaktif[indexSatuan.value]?.nama,
+                        id: satuanaktif[indexSatuan.value]?.id_satuan,
+                        name: satuanaktif[indexSatuan.value]?.nama_satuan,
                     };
                 }
 
-                const options = satuanaktif.map((akun: { id: number; nama: string }) => ({
-                    id: akun.id,
-                    name: akun.nama,
+                const options = satuanaktif.map((akun: { id_satuan: number; nama_satuan: string }) => ({
+                    id: akun.id_satuan,
+                    name: akun.nama_satuan,
                 }));
 
                 setOptions(options);
@@ -92,32 +92,33 @@ let loadAkunAktif = (qry: string, setOptions: Function) => {
             replace: true,
             preserveState: true,
             onSuccess: (page) => {
-                const akunaktif = page.props.flash?.value?.data as any[];
+                const akunaktif = page.props.flash?.value as any[];
+
                 const isReady = akunaktif.some(
-                    (akun: { id: number }) => akun.id == master_barangStore.id_akun
+                    (akun: { id_akun_aktif: number }) => akun.id_akun_aktif == master_barangStore.id_akun_aktif
                 );
 
-                if (master_barangStore.editMode && master_barangStore.id_akun && !isReady) {
+                if (master_barangStore.editMode && master_barangStore.id_akun_aktif && !isReady) {
                     akunaktif.unshift({
-                        id: master_barangStore.id_akun,
+                        id: master_barangStore.id_akun_aktif,
                         nama: master_barangStore.nama_akun,
                     });
                 }
 
-                if (master_barangStore.editMode && master_barangStore.id_akun) {
+                if (master_barangStore.editMode && master_barangStore.id_akun_aktif) {
                     indexAktif.value = akunaktif.findIndex(
-                        (akun: { id: number }) => akun.id === master_barangStore.id_akun
+                        (akun: { id_akun_aktif: number }) => akun.id_akun_aktif === master_barangStore.id_akun_aktif
                     );
 
                     akunAktif.value = {
-                        id: akunaktif[indexAktif.value]?.id,
-                        name: akunaktif[indexAktif.value]?.nama,
+                        id: akunaktif[indexAktif.value]?.id_akun_aktif,
+                        name: akunaktif[indexAktif.value]?.nama_akun,
                     };
                 }
 
-                const options = akunaktif.map((akun: { id: number; nama: string }) => ({
-                    id: akun.id,
-                    name: akun.nama,
+                const options = akunaktif.map((akun: { id_akun_aktif: number; nama_akun: string }) => ({
+                    id: akun.id_akun_aktif,
+                    name: akun.nama_akun,
                 }));
 
                 setOptions(options);
@@ -154,32 +155,31 @@ const loadCategoryAktif = (qry: string, setOptions: Function) => {
             replace: true,
             onSuccess: (page) => {
                 const categoryaktif = page.props.flash?.value?.data as any[];
-
                 const isReady = categoryaktif.some(
-                    (akun: { id: number }) => akun.id == master_barangStore.id_kd_barang
+                    (akun: { id_kode_barang: number }) => akun.id_kode_barang == master_barangStore.id_kode_barang
                 );
 
-                if (master_barangStore.editMode && master_barangStore.id_kd_barang && !isReady) {
+                if (master_barangStore.editMode && master_barangStore.id_kode_barang && !isReady) {
                     categoryaktif.unshift({
-                        id: master_barangStore.id_kd_barang,
-                        nama: master_barangStore.kd_barang_nama,
+                        id: master_barangStore.id_kode_barang,
+                        nama: master_barangStore.nama_kode_barang,
                     });
                 }
 
-                if (master_barangStore.editMode && master_barangStore.id_kd_barang) {
+                if (master_barangStore.editMode && master_barangStore.id_kode_barang) {
                     indexCategory.value = categoryaktif.findIndex(
-                        (akun: { id: number }) => akun.id == master_barangStore.id_kd_barang
+                        (akun: { id_kode_barang: number }) => akun.id_kode_barang == master_barangStore.id_kode_barang
                     );
 
                     categoryAktif.value = {
-                        id: categoryaktif[indexCategory.value]?.id,
-                        name: categoryaktif[indexCategory.value]?.nama,
+                        id: categoryaktif[indexCategory.value]?.id_kode_barang,
+                        name: categoryaktif[indexCategory.value]?.nama_kode_barang,
                     };
                 }
 
-                const options = categoryaktif.map((akun: { id: number; nama: string }) => ({
-                    id: akun.id,
-                    name: akun.nama,
+                const options = categoryaktif.map((akun: { id_kode_barang: number; nama_kode_barang: string }) => ({
+                    id: akun.id_kode_barang,
+                    name: akun.nama_kode_barang,
                 }));
 
                 setOptions(options);

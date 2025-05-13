@@ -15,8 +15,8 @@ class SatuanResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id' => $this->id,
-            'nama' => $this->nama,
+            'id_satuan' => $this->id_satuan,
+            'nama_satuan' => $this->nama_satuan,
         ];
     }
 }

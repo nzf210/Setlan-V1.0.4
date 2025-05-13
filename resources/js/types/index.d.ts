@@ -20,7 +20,7 @@ export interface Message {
     warning: string;
     opd: Array<{ id_opd: string; nama_opd: string }>;
     unit: Array<{ id_unit: string; nama_unit: string }>
-    kab: Array<{ id_kab: string; nama_kab: string }>
+    kabupaten: Array<{ id_kabupaten: string; nama_kabupaten: string }>
 }
 
 export type PageProps<T extends Record<string, unknown> = Record<string, unknown>> = T & {

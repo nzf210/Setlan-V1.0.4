@@ -104,8 +104,6 @@ const updateKodeBarang = async (tahun: Tahun) => {
 const updateSubKegiatan = async (tahun: Tahun) => {
     updatingSubKegId.value = tahun.id_tahun;
     const originalValue = tahun.tahun_sub_kegiatan;
-
-    console.log("originalValue", originalValue, tahun);
     try {
         router.patch(
             route("setlan.pengaturan.tahun.edit", { id: tahun.id_tahun }),

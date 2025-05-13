@@ -32,7 +32,7 @@ const form = useForm({
 });
 
 const handleComboKab = (e: any) => {
-    console.log("handleComboKab", e);
+    console.info("handleComboKab", e);
 };
 </script>
 

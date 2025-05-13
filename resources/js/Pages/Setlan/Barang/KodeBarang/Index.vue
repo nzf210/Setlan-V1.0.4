@@ -150,7 +150,6 @@ const submitHapus = (id: number) => {
     });
 };
 const submitCreate = () => {
-    console.log("form submitCreate", form.data());
     form.post(route("setlan.pengaturan.kodeBarang.create"), {
         onSuccess: (page) => {
             showTambahModal.value = false;
@@ -206,7 +205,6 @@ const handleSearch = () => {
 // Reset filter jika input dikosongkan
 watch(search, (newVal) => {
     if (newVal) {
-        console.log("newVal", newVal);
         router.visit(route("setlan.pengaturan.kodebarang", { search: newVal }), {
             preserveState: true,
             replace: true,
@@ -300,7 +298,7 @@ watch(search, (newVal) => {
                             <PaginationListItem v-if="item.type === 'page'" :key="index" :value="item.value">
                                 <Button class="w-10 h-10 p-0" :variant="kodeBarang.current_page === item.value ? 'default' : 'outline'
                                     " :disabled="!kodeBarang.links.find((l) => parseInt(l.label) === item.value)?.url
-                    ">
+                                        ">
                                     {{ item.value }}
                                 </Button>
                             </PaginationListItem>

@@ -38,7 +38,10 @@ import {
 } from "@heroicons/vue/20/solid";
 import { filterSearchStore } from "@/store/FilterSearchStore";
 import { masterBarangStore } from "@/store/MasterBarangStore";
-import { Capitalized, useDebouncedRef } from "../Helper";
+import {
+    Barang as InterfaceBarang, useDebouncedRef,
+    Capitalized
+} from "@/Pages/Setlan/Helper";
 import { router } from "@inertiajs/vue3";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
@@ -66,16 +69,18 @@ const setCurrentOption = (index: number) => {
     });
 };
 
-defineProps<{
+const props = defineProps<{
     categories: any;
-    barangs: any;
+    barangs: InterfaceBarang[];
     meta: any;
     breadcrumb: any;
 }>();
 
+console.log(props);
+
 const filters = [
     {
-        id: "id_kd_barang",
+        id: "kode_barang",
         name: "Kode Nama Barang",
         options: [{ value: "2l", label: "2L", checked: false }],
     },
@@ -89,7 +94,7 @@ const button = () => {
 };
 
 const exportXcel = () => {
-    console.log("export excel");
+    console.info("export excel");
 };
 
 const isChecked = ref(false);
@@ -142,8 +147,8 @@ watch(dbBounce, (newVal) => {
                                         <XMarkIcon class="h-6 w-6" aria-hidden="true" />
                                     </button>
                                 </div>
-
                                 <!-- price mobile -->
+
                                 <!-- price filter -->
                                 <h3 class="font-semibold ml-4 mt-8">Harga</h3>
                                 <div class="flex items-center justify-between space-x-3 mt-0 flex-col">
@@ -175,6 +180,7 @@ watch(dbBounce, (newVal) => {
                                     </SecondaryButtonVue>
                                 </div>
                                 <!-- price mobile -->
+
                                 <!-- Filters mobile -->
                                 <form class="mt-4 border-t border-gray-200">
                                     <Disclosure as="div" v-for="section in filters" :key="section.id"
@@ -190,19 +196,20 @@ watch(dbBounce, (newVal) => {
                                                 </span>
                                             </DisclosureButton>
                                         </h3>
+
                                         <!-- category Mobile -->
                                         <DisclosurePanel class="pt-6">
                                             <div class="space-y-6">
                                                 <div v-for="option in categories?.data" :key="option.nama"
                                                     class="flex items-center">
-                                                    <input :id="`filter-mobile-${option.id_kd_barang}`"
-                                                        :name="option.id_kd_barang" :value="option.id_kd_barang"
+                                                    <input :id="`filter-mobile-${option.id_kode_barang}`"
+                                                        :name="option.id_kode_barang" :value="option.id_kode_barang"
                                                         type="checkbox" :checked="option.checked"
                                                         v-model="filter_searchStore.selectedCategories"
                                                         class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500" />
-                                                    <label :for="`filter-mobile-${option.id_kd_barang}`"
-                                                        class="ml-3 min-w-0 flex-1 text-gray-500">{{ option.nama
-                                                        }}</label>
+                                                    <label :for="`filter-mobile-${option.id_kode_barang}`"
+                                                        class="ml-3 min-w-0 flex-1 text-gray-500">
+                                                        {{ option.nama_kode_barang }}</label>
                                                 </div>
                                             </div>
                                         </DisclosurePanel>
@@ -388,15 +395,15 @@ watch(dbBounce, (newVal) => {
                                     </div>
                                     <!-- search -->
                                     <div class="space-y-4 max-h-60 overflow-y-auto">
-                                        <div v-for="category in categories.data" :key="category.id_kd_barang"
+                                        <div v-for="category in categories.data" :key="category.id_kode_barang"
                                             class="flex items-center ml-1 py-1">
-                                            <input :id="`filter-${category.id_kd_barang}`"
-                                                :value="category.id_kd_barang" type="checkbox"
+                                            <input :id="`filter-${category.id_kode_barang}`"
+                                                :value="category.id_kode_barang" type="checkbox"
                                                 v-model="filter_searchStore.selectedCategories"
                                                 class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500" />
-                                            <label :for="`filter-${category.id_kd_barang}`"
+                                            <label :for="`filter-${category.id_kode_barang}`"
                                                 class="ml-3 text-sm text-gray-600 bg-slate-100 px-2 py-1 rounded-sm">
-                                                {{ Capitalized(category.nama) }}</label>
+                                                {{ Capitalized(category.nama_kode_barang) }}</label>
                                         </div>
                                     </div>
                                 </DisclosurePanel>

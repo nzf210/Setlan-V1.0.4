@@ -14,8 +14,6 @@ const { barangs, categories } = defineProps<{
     breadcrumb: any;
 }>();
 
-console.log("Master", barangs.data, categories);
-
 onMounted(() => {
     filter_searchStore.masterBarangData = barangs;
 });

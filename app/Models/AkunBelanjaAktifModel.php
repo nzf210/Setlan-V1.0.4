@@ -29,22 +29,27 @@ class AkunBelanjaAktifModel extends Model
         return $this->belongsTo(AkunBelanjaModel::class, 'id_akun','id_akun');
     }
 
-    public function  scopeFiltered(Builder $quary)
-    {
-        if (request('nama') == null) {
-            return $quary;
-        }
-        $quary
-            ->when(request('nama'), function (Builder $q) {
-                $q->where('nama', 'like', '%' . request('nama') . '%');
-            })
-            ->when(request('sort_by'), function (Builder $q) {
-                $sortBy = request('sort_by');
-                $sortOrder = request('sort_order', 'asc');
-                if (in_array($sortBy, ['nama'])) {
-                    $q->orderBy($sortBy, $sortOrder);
-                }
+    public function scopeFiltered(Builder $query)
+{
+    $query
+        ->when(request('nama'), function (Builder $q) {
+            $q->whereHas('akun', function ($subQuery) {
+                $subQuery->where('nama_akun', 'like', '%' . request('nama') . '%');
             });
-    }
+        })
+        ->when(request('sort_by'), function (Builder $q) {
+            $sortBy = request('sort_by');
+            $sortOrder = request('sort_order', 'asc');
+
+            if ($sortBy === 'nama_akun') {
+                $q->join('akun_belanja', 'akun_aktif.id_akun', '=', 'akun_belanja.id_akun')
+                    ->orderBy('akun_belanja.nama_akun', $sortOrder);
+            }
+
+            elseif (in_array($sortBy, ['nama_akun_aktif'])) {
+                $q->orderBy($sortBy, $sortOrder);
+            }
+        });
+}
 
 }

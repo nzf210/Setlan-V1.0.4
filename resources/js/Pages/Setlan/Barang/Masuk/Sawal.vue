@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import HeadTitle from "@/Components/HeadTitle.vue";
 import {
     currencyFormat,
     safeParseFloat,
@@ -16,8 +15,6 @@ const props = defineProps<{
     calc: any;
     breadcrumb: any;
 }>();
-
-console.log("Saldo Awal", props.data, props.calc);
 
 const akunList = reactive(props.data.data);
 const akunValues = reactive<any>({});

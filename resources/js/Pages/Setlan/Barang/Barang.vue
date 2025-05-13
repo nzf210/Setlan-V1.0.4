@@ -82,7 +82,7 @@ const editBarang = (br: InterfaceBarang, b: boolean = false) => {
             <p>
                 <span class="font-thin text-slate-600 text-xs">Nama Kode Barang :</span>
                 <span class="font-xs font-thin">
-                    {{ Capitalized(barang.kode_barang?.nama ?? "") }}
+                    {{ Capitalized(barang.kode_barang.nama_kode_barang) }}
                 </span>
             </p>
         </div>

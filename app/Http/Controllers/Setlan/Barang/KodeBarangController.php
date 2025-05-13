@@ -18,7 +18,7 @@ class KodeBarangController extends Controller
         $tahun = Cookie::get('tahun');
         $idKabupaten = Cookie::get('id_kabupaten');
         $tahun_aktif = TahunModel::where(['tahun' => $tahun, 'id_kabupaten' => $idKabupaten])->first();
-        $query = KodeBarangModel::whereRaw('LENGTH(id_kd_barang) = 20')->where(['id_kabupaten' => $idKabupaten, 'tahun' => $tahun_aktif->tahun_kode_barang]);
+        $query = KodeBarangModel::whereRaw('LENGTH(kode_barang) = 20')->where(['id_kabupaten' => $idKabupaten, 'tahun' => $tahun_aktif->tahun_kode_barang]);
         $search = $request->has('nama_kode_barang');
         if ($search && $request->nama != '') {
             if (preg_match('/[0-9\.]/', $request->nama)) {
@@ -108,7 +108,7 @@ class KodeBarangController extends Controller
         // Handle duplicate entry despite validation
         if ($e->errorInfo[1] === 1062) {
             return back()->withErrors([
-                'id_kd_barang' => 'Kombinasi ini sudah ada untuk kabupaten dan tahun aktif Anda'
+                'kode_barang' => 'Kombinasi ini sudah ada untuk kabupaten dan tahun aktif Anda'
             ])->withInput();
         }
 

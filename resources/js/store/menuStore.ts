@@ -45,19 +45,16 @@ export const useMenuStore = defineStore('menuStore', () => {
 
     function setNamaKabupaten(newNamaKabupaten: string) {
         namaKabupaten.value = newNamaKabupaten;
-        console.log('namaKabupaten.value', namaKabupaten.value);
 
     }
 
     function setNamaUnit(newNamaUnit: string) {
         namaUnit.value = newNamaUnit;
-        console.log('namaUnit.value', namaUnit.value);
 
     }
 
     function setNamaOpd(newNamaOpd: string) {
         namaOpd.value = newNamaOpd;
-        console.log('namaOpd.value', namaOpd.value);
 
     }
 

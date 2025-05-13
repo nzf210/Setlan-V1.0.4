@@ -15,8 +15,11 @@ class AkunAktifResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id_akun' => $this->id_akun,
-            'nama' => $this->nama,
+            'id_akun_aktif' => $this->id_akun_aktif,
+            'id_akun' => $this->akun->id_akun,
+            'nama_akun_aktif' => $this->akun->nama_akun,
+            'nama_akun' => $this->akun->nama_akun,
+            'kode_akun_aktif' => $this->akun->kode_akun,
         ];
     }
 }

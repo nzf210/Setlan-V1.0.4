@@ -12,9 +12,6 @@ const props = defineProps<{
 
 const meta = reactive(props.data) as any;
 
-console.log("Stock Barang Data", props.data);
-console.log("Stock Barang Calc", props.calc);
-
 const calcValues = Object.values(props.calc).reduce((sum, item: any) => {
     return sum + item.total_jumlah;
 }, 0);
@@ -214,7 +211,7 @@ akunList.forEach((akun: any) => {
                     <div class="relative mb-4 align-top">
                         <label for="name" class="leading-7 text-lg font-bold text-green-800">{{
                             currencyFormat(totalStock as number)
-                            }}</label>
+                        }}</label>
                         <div>
                             <div>
                                 <ul v-for="(entry, index) in akun_name" :id="'akun' + index" class="flex flex-row">

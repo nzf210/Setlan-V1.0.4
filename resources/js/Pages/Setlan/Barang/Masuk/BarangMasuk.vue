@@ -19,8 +19,6 @@ const props = defineProps<{
 
 const meta = reactive(props.data) as any;
 
-console.log("Barang Masuk", props.data);
-
 const akunList = reactive(props.data.data);
 const akunValues = reactive<any>({});
 const pajakValues = reactive<any>({});
@@ -230,7 +228,7 @@ const totalHarga = computed(() => {
                     <div class="relative mb-4 align-top">
                         <label for="name" class="leading-7 text-lg font-bold text-green-800">{{
                             currencyFormat(totalHarga)
-                            }}</label>
+                        }}</label>
                         <div>
                             <div>
                                 <ul v-for="(entry, index) in transformObject(props?.calc?.r6)" :id="'akun' + index"

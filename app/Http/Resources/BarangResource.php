@@ -22,16 +22,14 @@ class BarangResource extends JsonResource
             'tahun_buat' => $this->tahun_buat,
             'tahun_beli' => $this->tahun_beli,
             'harga' => $this->harga,
-            'id_kd_barang' => $this->id_kd_barang,
-            'satuan_id' => $this->satuan_id,
             'created_by' => $this->created_by,
             'updated_by' => $this->updated_by,
             'deleted_by' => $this->deleted_by,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
-            'id_akun' => $this->id_akun,
-            'kode_barang' =>  new CategoryResource($this->whenLoaded('category')),
+            'kode_barang' =>  new CategoryResource($this->whenLoaded('kode_barang')),
             'satuan' =>  new SatuanResource($this->whenLoaded('satuan')),
-            'akun' => new AkunAktifResource($this->whenLoaded('akun')),        ];
+            'akun' => new AkunAktifResource($this->whenLoaded('akun')),
+        ];
     }
 }

@@ -13,7 +13,7 @@ const emit = defineEmits(["update:modelValue", "inputValueChange"]);
 watch(
     () => props.value,
     (nv) => {
-        console.log("logs", nv);
+        console.info("logs", nv);
     }
 );
 

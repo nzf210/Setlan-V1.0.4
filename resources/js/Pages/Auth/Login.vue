@@ -42,7 +42,6 @@ watch(
     () => form.password,
     (newValue) => {
         if (newValue !== "") {
-            console.log("watch", newValue);
             typeView.value = true;
         } else {
             typeView.value = false;

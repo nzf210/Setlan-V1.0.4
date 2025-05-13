@@ -65,10 +65,6 @@ class TahunController extends Controller
             'tahun_kode_barang' => TAHUN
         ]);
 
-        if ($request->has('tahun_kegiatan')) {
-            $validated['tahun_sub_kegiatan'] = $validated['tahun_kegiatan'];
-        }
-
         $tahun->update($validated);
         return redirect()->back();
     }

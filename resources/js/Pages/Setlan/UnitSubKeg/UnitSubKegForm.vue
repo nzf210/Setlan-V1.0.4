@@ -44,10 +44,10 @@ const submit = () => {
         });
 };
 const handleComboKab = (e: any) => {
-    console.log("handleComboKab", e);
+    console.info("handleComboKab", e);
 };
 const handleComboOpd = (e: any) => {
-    console.log("handleCombo OPD", e);
+    console.info("handleCombo OPD", e);
 };
 </script>
 

@@ -119,7 +119,7 @@ Route::middleware(['auth', 'cors'])->prefix('setlan')->group(function () {
     Route::get('/unitsubkeg', [SubKegiatanAktifController::class, 'index'])->name('setlan.unitSubKeg');
     Route::patch('/unitsubkeg/edit', [SubKegiatanAktifController::class, 'update'])->name('setlan.unitSubKeg.update');
     Route::post('/unitsubkegSimpan', [SubKegiatanAktifController::class, 'saveData'])->name('setlan.unitSubKegSimpan');
-    Route::get('/unitsubkegopd/{id_kab}', [SubKegiatanAktifController::class, 'getOpds'])->name('setlan.unitSubKegOpd');
+    Route::get('/unitsubkegopd/{id_kabupaten}', [SubKegiatanAktifController::class, 'getOpds'])->name('setlan.unitSubKegOpd');
     Route::get('/unitsubkegunit/{id_opd}', [SubKegiatanAktifController::class, 'getUnits'])->name('setlan.unitSubKegUnit');
     Route::delete('/unitsubkegs/{id}/hapus', [SubKegiatanAktifController::class, 'destroy'])->name('setlan.unitSubKeg.delete');
     Route::get('/unitsubkegiatanGet/{idOrName?}', [SubKegiatanAktifController::class, 'getUnitSubkegiatan'])->name('setlan.getUnitSubKegiatan');

@@ -23,7 +23,7 @@ return new class extends Migration
             $table->foreignIdFor(OpdModel::class, 'id_opd')->constrained('opd', 'id_opd')->onDelete('cascade');
             $table->foreignIdFor(UnitModel::class, 'id_unit')->constrained('unit', 'id_unit')->onDelete('cascade');
             $table->foreignIdFor(SubKegiatanAktifModel::class, 'id_sub_kegiatan_aktif')->nullable()->constrained('sub_kegiatan_aktif', 'id_sub_kegiatan_aktif')->onDelete('set null');
-            $table->foreignIdFor(BeritaAcaraModel::class, 'id_berita_acara')->constrained('berita_acara', 'id_berita_acara')->onDelete('cascade');
+            $table->foreignIdFor(BeritaAcaraModel::class, 'id_berita_acara')->nullable()->constrained('berita_acara', 'id_berita_acara')->onDelete('cascade');
             $table->integer('jumlah')->default(1);
             $table->decimal('pajak', 3, 2)->default(0);
             $table->decimal('penyesuaian', 19, 2)->default(0);
@@ -34,8 +34,8 @@ return new class extends Migration
             $table->date('tgl_expired')->nullable();
             $table->unsignedInteger('tahun_buat')->nullable();
             $table->foreignIdFor(User::class, 'created_by')->constrained('users', 'id')->onDelete('cascade');
-            $table->foreignIdFor(User::class, 'updated_by')->constrained('users', 'id')->onDelete('cascade');
-            $table->foreignIdFor(User::class, 'deleted_by')->constrained('users', 'id')->onDelete('cascade');
+            $table->foreignIdFor(User::class, 'updated_by')->nullable()->constrained('users', 'id')->onDelete('cascade');
+            $table->foreignIdFor(User::class, 'deleted_by')->nullable()->constrained('users', 'id')->onDelete('cascade');
             $table->integer('tahun');
             $table->timestamps();
         });

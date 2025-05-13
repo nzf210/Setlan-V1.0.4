@@ -43,9 +43,10 @@ class SubkegiatanController extends Controller
         $search = $request->input('search');
         $perPage = 10;
         $tahun = Cookie::get('tahun');
+        $idKabupaten = Cookie::get('id_kabupaten');
 
         // Validasi tahun
-        $tahun_aktif = TahunModel::where('tahun', $tahun)->first();
+        $tahun_aktif = TahunModel::where(['tahun' => $tahun, 'id_kabupaten' => $idKabupaten])->first();
         if (!$tahun || !$tahun_aktif) {
             return back()->withErrors([
                 'system' => SESI
@@ -112,14 +113,15 @@ class SubkegiatanController extends Controller
 {
 
         $tahun = Cookie::get('tahun');
+        $idKabupaten = Cookie::get('id_kabupaten');
 
         // Validasi tahun
-        $tahun_aktif = TahunModel::where('tahun', $tahun)->first();
-        if (!$tahun || !$tahun_aktif) {
+        if (!$tahun || !$idKabupaten) {
             return back()->withErrors([
                 'system' => SESI
             ]);
         }
+        $tahun_aktif = TahunModel::where(['tahun' => $tahun, 'id_kabupaten' => $idKabupaten])->first();
         $request['tahun'] = $tahun_aktif->tahun_sub_kegiatan;
 
         $validated = $request->validate([
@@ -154,9 +156,10 @@ class SubkegiatanController extends Controller
 {
 
     $tahun = Cookie::get('tahun');
-    $tahun_aktif = TahunModel::where('tahun', $tahun)->first();
+    $idKabupaten = Cookie::get('id_kabupaten');
+    $tahun_aktif = TahunModel::where(['tahun' => $tahun , 'id_kabupaten' => $idKabupaten])->first();
 
-    if (!$tahun_aktif) {
+    if (!$tahun_aktif || !$idKabupaten) {
         return back()->withErrors(['system' => SESI]);
     }
     $request['tahun'] = $tahun_aktif->tahun_sub_kegiatan;

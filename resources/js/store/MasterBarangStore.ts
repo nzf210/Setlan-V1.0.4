@@ -14,14 +14,14 @@ export const masterBarangStore = defineStore('masterBarangStore', () => {
     const harga = ref<number>(0);
     const dateValue = ref<Array<string>>();
 
-    const id_kd_barang = ref<number>();
-    const kd_barang_nama = ref<string>();
+    const id_kode_barang = ref<number>();
+    const kode_nama_barang = ref<string>();
 
-    const nama_akun = ref<string>('');
-    const id_akun = ref<number>();
+    const nama_akun_aktif = ref<string>('');
+    const id_akun_aktif = ref<number>();
 
-    const satuan_nama = ref<string>('');
-    const satuan_id = ref<number>();
+    const nama_satuan = ref<string>('');
+    const id_satuan = ref<number>();
 
     const dialogVisible = ref<boolean>(false);
     const editMode = ref<boolean>(false);
@@ -38,26 +38,26 @@ export const masterBarangStore = defineStore('masterBarangStore', () => {
     }
 
     function setKdBarangId(value: number) {
-        id_kd_barang.value = value;
+        id_kode_barang.value = value;
     }
 
     function setKdBarangNama(value: string) {
-        kd_barang_nama.value = value;
+        kode_nama_barang.value = value;
     }
     function setIdAkun(value: number) {
-        id_akun.value = value;
+        id_akun_aktif.value = value;
     }
 
     function setNamaAkun(value: string) {
-        nama_akun.value = value;
+        nama_akun_aktif.value = value;
     }
 
     function setSatuan(value: number) {
-        satuan_id.value = value;
+        id_satuan.value = value;
     }
 
     function setSatuanNama(value: string) {
-        satuan_nama.value = value;
+        nama_satuan.value = value;
     }
 
     function addBarangDialog() {
@@ -70,18 +70,18 @@ export const masterBarangStore = defineStore('masterBarangStore', () => {
 
         id_barang.value = e.id_barang;
         nama_barang.value = e.nama_barang;
-        merek.value = e.merek;
-        type.value = e.type;
-        harga.value = e.harga;
+        merek.value = e.merek!;
+        type.value = e.type!;
+        harga.value = Number(e.harga);
 
-        setKdBarangId(e.id_kd_barang);
-        setKdBarangNama(e.kode_barang?.nama??'');
+        setKdBarangId(e.kode_barang.id_kode_barang);
+        setKdBarangNama(e.kode_barang.nama_kode_barang);
 
-        setIdAkun(e.id_akun);
-        setNamaAkun(e.akun?.nama ?? '');
+        setIdAkun(e.akun.id_akun_aktif);
+        setNamaAkun(e.akun.nama_akun_aktif);
 
-        setSatuan(e.satuan_id);
-        setSatuanNama(e.satuan?.nama ?? '');
+        setSatuan(e.satuan?.id_satuan);
+        setSatuanNama(e.satuan?.nama_satuan);
 
         isAddProduct.value = b;
         dialogVisible.value = true;
@@ -93,13 +93,13 @@ export const masterBarangStore = defineStore('masterBarangStore', () => {
         formData.append('nama_barang', nama_barang.value);
         formData.append('merek', merek.value);
         formData.append('type', type.value);
-        formData.append('id_kd_barang', String(id_kd_barang.value));
-        formData.append('satuan_id', String(satuan_id.value));
+        formData.append('id_kode_barang', String(id_kode_barang.value));
+        formData.append('id_satuan', String(id_satuan.value));
         formData.append('harga', String(harga.value));
-        formData.append('id_akun', String(id_akun.value));
+        formData.append('id_akun_aktif', String(id_akun_aktif.value));
         formData.append('is_add_draft', isAddDraft.value ? '0' : '1');
 
-        if (!nama_barang.value || !id_akun.value || !id_kd_barang.value || !satuan_id.value || (harga.value <= 0 || isNaN(harga.value))) {
+        if (!nama_barang.value || !id_akun_aktif.value || !id_kode_barang.value || !id_satuan.value || (harga.value <= 0 || isNaN(harga.value))) {
             Swal.fire({
                 icon: 'error',
                 title: 'Oops...',
@@ -124,6 +124,7 @@ export const masterBarangStore = defineStore('masterBarangStore', () => {
                 },
             })
         } catch (error) {
+            console.error(error);
             Swal.fire('Masalah', 'Maaf terjadi kesalahan', 'error');
         }
     };
@@ -136,9 +137,9 @@ export const masterBarangStore = defineStore('masterBarangStore', () => {
                 merek: merek.value,
                 type: type.value,
                 harga: harga.value,
-                id_kd_barang: id_kd_barang.value,
-                satuan_id: satuan_id.value,
-                id_akun: id_akun.value
+                id_kode_barang: id_kode_barang.value,
+                id_satuan: id_satuan.value,
+                id_akun: id_akun_aktif.value
             });
 
             form.patch(route('setlan.barang.master.edit'), {
@@ -158,6 +159,7 @@ export const masterBarangStore = defineStore('masterBarangStore', () => {
             })
 
         } catch (error) {
+            console.error(error);
             Swal.fire('Masalah', 'Maaf terjadi kesalahan', 'error');
         }
     };
@@ -190,8 +192,10 @@ function deleteBarang(e: string) {
                         preserveScroll: true
                     })
                 } catch (error) {
+                    console.error(error);
                     Swal.fire('Masalah', 'Maaf terjadi kesalahan', 'error');
-            }
+                    throw error;
+                }
         }
     })
 };
@@ -249,8 +253,8 @@ function saveToCart(id: string) {
     return {
         id_barang,
         nama_barang,
-        id_kd_barang,
-        kd_barang_nama,
+        id_kode_barang,
+        kode_nama_barang,
         merek,
         type,
         harga,
@@ -265,12 +269,12 @@ function saveToCart(id: string) {
         editBarang,
         deleteBarang,
         addToCart,
-        id_akun,
+        id_akun_aktif,
         setIdAkun,
         setNamaAkun,
-        nama_akun,
-        satuan_nama,
-        satuan_id,
+        nama_akun_aktif,
+        nama_satuan,
+        id_satuan,
         setSatuan,
         setSatuanNama,
         setIsAddDraft,

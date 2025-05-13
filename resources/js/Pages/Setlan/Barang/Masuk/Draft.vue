@@ -39,8 +39,6 @@ watch(id_barangJsonJumlah, (newValue) => {
     dbBounce.value = newValue;
 });
 
-console.log("props", props.data.data);
-
 function updateIdBarang(newId: string) {
     id_barangJsonJumlah.value = newId;
 }
@@ -539,9 +537,9 @@ const handleSearchBlur = () => {
                                                             akunValues[akun.id] *
                                                             (pajakValues[akun.id] === 0
                                                                 ? 0
-                                                : safeParseFloat(pajakValues[akun.id]))) /
-                                                100
-                                                )
+                                                                : safeParseFloat(pajakValues[akun.id]))) /
+                                                        100
+                                                    )
                                                 }}
                                             </span>
                                         </td>
@@ -563,7 +561,7 @@ const handleSearchBlur = () => {
                     <div class="relative mb-4 align-top">
                         <label for="name" class="leading-7 text-lg font-bold text-green-800">{{
                             currencyFormat(totalHarga)
-                            }}</label>
+                        }}</label>
                         <div>
                             <div>
                                 <ul v-for="(entry, index) in transformObject(props.calc.akun)" :id="'akun' + index"

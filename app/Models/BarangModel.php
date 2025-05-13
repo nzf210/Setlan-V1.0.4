@@ -15,12 +15,13 @@ class BarangModel extends Model
     protected $fillable = [
         'id_barang',
         'id_kode_barang',
+        'id_kabupaten',
         'nama_barang',
         'merek',
         'type',
         'tahun_buat',
         'tahun_beli',
-        'id_akun',
+        'id_akun_aktif',
         'id_satuan',
         'harga',
         'created_by',
@@ -38,7 +39,7 @@ class BarangModel extends Model
     }
 
     public function akun(){
-        return $this->belongsTo(AkunAktifModel::class,'id_akun','id_akun');
+        return $this->belongsTo(AkunBelanjaAktifModel::class,'id_akun_aktif','id_akun_aktif');
     }
 
     public function  scopeFiltered(Builder $quary)

@@ -83,7 +83,6 @@ const props = defineProps<{
 const { tahun, namaKabupaten, namaOpd, namaUnit, namaUser } = menuStrore;
 
 const roles = props.auth?.role !== "super_admin" && props.auth?.role !== "admin_kab";
-console.log("props.auth?.role", props.auth?.role, roles);
 
 watch(
     () => page.url,
@@ -381,8 +380,8 @@ function setActiveTeam(team: typeof data.value.teams[number]) {
                                 <CollapsibleTrigger as-child>
                                     <SidebarMenuButton :tooltip="item.title">
                                         <component :is="item.icon" :class="item.isActive
-                                                ? 'text-primary-primary'
-                                                : 'text-muted-foregroundicon'
+                                            ? 'text-primary-primary'
+                                            : 'text-muted-foregroundicon'
                                             " />
                                         <span v-if="item.items.length > 0"
                                             :class="item.isActive ? 'font-extrabold' : ''">{{ item.title }}</span>
@@ -401,12 +400,12 @@ function setActiveTeam(team: typeof data.value.teams[number]) {
                                                     <SidebarMenuSubButton as-child>
                                                         <Link :href="subItem.url">
                                                         <component :is="subItem.icon" class="w-4 h-4" :class="subItem.isActive
-                                                                ? 'text-primary'
-                                                                : 'text-muted-foreground'
+                                                            ? 'text-primary'
+                                                            : 'text-muted-foreground'
                                                             " />
                                                         <span :class="subItem.isActive
-                                                                ? 'font-extrabold text-primary-primary'
-                                                                : ''
+                                                            ? 'font-extrabold text-primary-primary'
+                                                            : ''
                                                             ">
                                                             {{ subItem.title }}
                                                         </span>

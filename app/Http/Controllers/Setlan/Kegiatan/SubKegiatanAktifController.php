@@ -46,8 +46,8 @@ class SubKegiatanAktifController extends Controller
     ]);
 }
 
-    public function getOpds($id_kab) {
-        $data = OpdModel::where('id_kabupaten', operator: $id_kab)->get();
+    public function getOpds($id_kabuten) {
+        $data = OpdModel::where('id_kabupaten', operator: $id_kabuten)->get();
         return back()->with('value', $data);
     }
 
