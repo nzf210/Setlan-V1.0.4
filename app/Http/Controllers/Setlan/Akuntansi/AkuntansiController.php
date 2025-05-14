@@ -35,7 +35,8 @@ class AkuntansiController extends Controller
         ]);
 
         $tahun = Cookie::get('tahun');
-        $tahun_aktif = TahunModel::where('tahun', $tahun)->first();
+        $idKabupaten = Cookie::get('id_kabupaten');
+        $tahun_aktif = TahunModel::where(['tahun' => $tahun , 'id_kabupaten' => $idKabupaten])->first();
 
         if (!$tahun_aktif || !$tahun_aktif->tahun_akun) {
             return back()->withError('Tahun aktif tidak ditemukan atau belum memiliki data akun');
