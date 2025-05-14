@@ -75,7 +75,7 @@ const editBarang = (br: InterfaceBarang, b: boolean = false) => {
                     <p class="mt-1 text-sm text-gray-500">Merk: {{ barang.merek }}</p>
                     <p class="text-sm font-medium text-gray-900">
                         <span class="font-thin text-xs"> Harga : </span>
-                        {{ currencyFormat(barang.harga ?? 0) }}
+                        {{ currencyFormat(Number(barang.harga) ?? 0) }}
                     </p>
                 </div>
             </div>

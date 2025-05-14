@@ -15,9 +15,9 @@ export const masterBarangStore = defineStore('masterBarangStore', () => {
     const dateValue = ref<Array<string>>();
 
     const id_kode_barang = ref<number>();
-    const kode_nama_barang = ref<string>();
+    const nama_kode_barang = ref<string>();
 
-    const nama_akun_aktif = ref<string>('');
+    const nama_akun = ref<string>('');
     const id_akun_aktif = ref<number>();
 
     const nama_satuan = ref<string>('');
@@ -42,14 +42,14 @@ export const masterBarangStore = defineStore('masterBarangStore', () => {
     }
 
     function setKdBarangNama(value: string) {
-        kode_nama_barang.value = value;
+        nama_kode_barang.value = value;
     }
     function setIdAkun(value: number) {
         id_akun_aktif.value = value;
     }
 
     function setNamaAkun(value: string) {
-        nama_akun_aktif.value = value;
+        nama_akun.value = value;
     }
 
     function setSatuan(value: number) {
@@ -254,7 +254,7 @@ function saveToCart(id: string) {
         id_barang,
         nama_barang,
         id_kode_barang,
-        kode_nama_barang,
+        nama_kode_barang,
         merek,
         type,
         harga,
@@ -272,7 +272,7 @@ function saveToCart(id: string) {
         id_akun_aktif,
         setIdAkun,
         setNamaAkun,
-        nama_akun_aktif,
+        nama_akun,
         nama_satuan,
         id_satuan,
         setSatuan,

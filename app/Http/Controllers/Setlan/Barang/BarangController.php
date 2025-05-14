@@ -10,6 +10,7 @@ use App\Models\KodeBarangModel;
 use App\Models\MutasiModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 
@@ -74,7 +75,7 @@ class BarangController extends Controller
         ]);
     } catch (\Throwable $th) {
         dd($th);
-        \Log::error('MasterBarang Error: '.$th->getMessage());
+        Log::error('MasterBarang Error: '.$th->getMessage());
         return back()->withErrors('error', PILIH_UNIT)->withInput();
     }
 }
@@ -138,7 +139,7 @@ class BarangController extends Controller
 
             $response = back()->with('success', 'Berhasil menambahkan data.');
             } catch (ValidationException $e) {
-                \log::error('MasterBarang Error: '.$e->getMessage());
+                Log::error('MasterBarang Error: '.$e->getMessage());
                 $response = back()->withErrors('error', PILIH_UNIT)->withInput();
         }
         return $response;

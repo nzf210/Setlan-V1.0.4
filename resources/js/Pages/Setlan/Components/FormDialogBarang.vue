@@ -2,7 +2,7 @@
 import { ElMessageBox, ElDialog } from "element-plus";
 import { masterBarangStore } from "@/store/MasterBarangStore";
 import ComboSelect from "@/Components/headlessui/ComboBoxSelect.vue";
-import { onUnmounted, ref, watch } from "vue";
+import { computed, onUnmounted, ref, watch } from "vue";
 import { router } from "@inertiajs/vue3";
 import { Checkbox } from "@/components/ui/checkbox";
 
@@ -48,7 +48,7 @@ const loadSatuanAktif = (qry: string, setOptions: Function) => {
 
                 if (master_barangStore.editMode && master_barangStore.id_satuan && !isReady) {
                     satuanaktif.unshift({
-                        id: master_barangStore.id_satuan_,
+                        id: master_barangStore.id_satuan,
                         nama: master_barangStore.nama_satuan,
                     });
                 }
@@ -213,6 +213,66 @@ const checkbox = () => {
 watch(chk, (nv) => {
     master_barangStore.setIsAddDraft(nv);
 });
+
+/// Setup Format Rupiah
+
+interface FormatRupiahOptions {
+    decimal?: boolean;
+}
+// Format currency with TypeScript type
+const formatRupiah = (value: number | string, options: FormatRupiahOptions = { decimal: true }): string => {
+    const numericValue = typeof value === 'string' ? parseFloat(value) : value;
+
+    if (isNaN(numericValue)) return '';
+
+    const [integerPart, decimalPart] = numericValue.toFixed(2).split('.');
+    const formattedInteger = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+
+    return options.decimal
+        ? `${formattedInteger},${decimalPart}`
+        : formattedInteger;
+};
+
+// Parse currency input to number
+const parseRupiah = (formattedValue: string): number => {
+    const sanitizedValue = formattedValue
+        .replace(/[^\d,]/g, '') // Remove non-digits and non-commas
+        .replace(/,(\d{2})$/, '.$1') // Convert decimal comma to dot
+        .replace(/\./g, ''); // Remove thousand separators
+
+    return parseFloat(sanitizedValue) || 0;
+};
+
+// Computed property untuk two-way binding
+const hargaFormatted = computed<string>({
+    get: () => {
+        return master_barangStore.harga
+            ? formatRupiah(master_barangStore.harga)
+            : '';
+    },
+    set: (value: string) => {
+        const parsedValue = parseRupiah(value);
+        master_barangStore.harga = parsedValue;
+    }
+});
+
+// Validation untuk input keyboard
+const handleNumberInput = (event: KeyboardEvent) => {
+    const allowedKeys = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', ',', '.'];
+    const isNumberKey = allowedKeys.includes(event.key);
+
+    if (!isNumberKey) {
+        event.preventDefault();
+        return;
+    }
+
+    // Handle decimal separator
+    const currentValue = (event.target as HTMLInputElement).value;
+    if (['.', ','].includes(event.key) && currentValue.includes(',')) {
+        event.preventDefault();
+    }
+};
+
 </script>
 
 <template>
@@ -262,10 +322,9 @@ watch(chk, (nv) => {
                     </label>
                 </div>
                 <div class="relative w-full mb-5 group">
-                    <input v-model="master_barangStore.harga" type="number" name="harga_barang"
-                        id="floating_harga_barang"
+                    <input v-model="hargaFormatted" type="text" name="harga_barang" id="floating_harga_barang"
                         class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                        placeholder=" " required step="0.01" min="0" />
+                        placeholder=" " required @keypress="handleNumberInput" />
                     <label for="floating_harga_barang"
                         class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-8 scale-75 top-3 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-8 after:content-['*'] after:ml-0.5 after:text-red-500">
                         Harga
