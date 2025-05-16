@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Setlan\Barang;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\BarangResource;
 use App\Http\Resources\CategoryResource;
+use App\Models\BarangDraftModel;
 use App\Models\BarangModel;
 use App\Models\KodeBarangModel;
 use App\Models\MutasiModel;
@@ -124,7 +125,7 @@ class BarangController extends Controller
             $hsl = $barang->save();
 
             if($request->is_add_draft === '1' && $hsl){
-                $mutasi = new MutasiModel();
+                $mutasi = new BarangDraftModel();
                 $mutasi->id_barang = $id;
                 $mutasi->id_unit = $idUnit;
                 $mutasi->id_opd = $idOpd;

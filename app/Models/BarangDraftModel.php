@@ -2,16 +2,17 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 
-class MutasiModel extends Model
+
+class BarangDraftModel extends Model
 {
     use HasFactory;
 
-    protected $table = 'mutasi';
-    protected $primaryKey = 'id_mutasi';
+    protected $table = 'draft_barang_masuk';
+    protected $primaryKey = 'id_draft';
     protected $fillable = [
         'id_barang',
         'id_unit',

@@ -40,6 +40,7 @@ const loadSatuanAktif = (qry: string, setOptions: Function) => {
             data: { nama: qry },
             replace: true,
             preserveState: true,
+            async: true,
             onSuccess: (page) => {
                 const satuanaktif = page.props.flash?.value?.data as any[];
                 const isReady = satuanaktif.some(
@@ -91,6 +92,7 @@ let loadAkunAktif = (qry: string, setOptions: Function) => {
             method: "get",
             replace: true,
             preserveState: true,
+            async: true,
             onSuccess: (page) => {
                 const akunaktif = page.props.flash?.value as any[];
 
@@ -153,6 +155,7 @@ const loadCategoryAktif = (qry: string, setOptions: Function) => {
             method: "get",
             preserveState: true,
             replace: true,
+            async: true,
             onSuccess: (page) => {
                 const categoryaktif = page.props.flash?.value?.data as any[];
                 const isReady = categoryaktif.some(
@@ -352,7 +355,7 @@ const handleNumberInput = (event: KeyboardEvent) => {
                         Kode Barang
                     </label>
                     <ComboSelect :load-options="loadCategoryAktif" :index="indexCategory" v-model="categoryAktif"
-                        :id="'kd_barang' + indexCategory" />
+                        :id="'kode_barang ' + indexCategory" />
                     <div class="flex items-center space-x-2 mt-2" v-if="!master_barangStore.editMode">
                         <Checkbox id="terms" :checked="!chk" @update:checked="checkbox"
                             class="w-4 h-4 text-blue-600 bg-blue-50 rounded border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-400 focus:ring-2 dark:bg-gray-300 dark:border-gray-200" />

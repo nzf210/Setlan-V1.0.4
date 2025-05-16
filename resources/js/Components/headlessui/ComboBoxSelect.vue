@@ -33,7 +33,7 @@ const props = defineProps<{
 const emit = defineEmits(["update:modelValue", "inputValueChange"]);
 const master_barangStore = masterBarangStore();
 const options = ref<Option[]>([]);
-let query = ref<string>("");
+let query = ref<string>('');
 const isLoading = ref(false);
 const dbBounce = useDebouncedRef(query.value, 1000);
 
@@ -96,7 +96,7 @@ watch(
 <template>
     <div class="" :id="props.id + '_combo'">
         <Combobox as="div" class="-z-1-" :id="props.id + '_combobox'" by="id" :model-value="props.modelValue"
-            @update:model-value="(id: any) => $emit('update:modelValue', id)" nullable
+            @update:model-value="(id: any) => { $emit('update:modelValue', id); query = ''; isOpen = false; }" nullable
             :disabled="props.enable ? true : false">
             <div class="relative mt-1">
                 <div
